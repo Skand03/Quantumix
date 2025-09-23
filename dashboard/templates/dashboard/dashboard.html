@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bionic Hand IoT Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #333;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            color: #4a5568;
+        }
+        
+        .status-bar {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .status-card {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            flex: 1;
+            min-width: 200px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .status-card h3 {
+            font-size: 1.2em;
+            margin-bottom: 10px;
+        }
+        
+        .status-card .value {
+            font-size: 2em;
+            font-weight: bold;
+        }
+        
+        .charts-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .chart-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .chart-card h3 {
+            color: #4a5568;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .finger-sensors {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .finger-sensors h3 {
+            color: #4a5568;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .fingers-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 15px;
+        }
+        
+        .finger {
+            text-align: center;
+            padding: 15px;
+            background: #f7fafc;
+            border-radius: 8px;
+            border: 2px solid #e2e8f0;
+        }
+        
+        .finger-name {
+            font-weight: bold;
+            color: #4a5568;
+            margin-bottom: 10px;
+        }
+        
+        .finger-value {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #2d3748;
+        }
+        
+        .online-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            background: #48bb78;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        
+        .error-message {
+            background: #fed7d7;
+            color: #c53030;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        
+        @media (max-width: 768px) {
+            .charts-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .fingers-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .status-bar {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🦾 Bionic Hand IoT Dashboard</h1>
+            <p>Real-time monitoring and control system</p>
+            <div class="online-indicator"></div> Live Data Feed
+        </div>
+        
+        <div class="error-message" id="errorMessage">
+            Connection error. Please check your network connection.
+        </div>
+        
+        <div class="status-bar">
+            <div class="status-card">
+                <h3>Hand Status</h3>
+                <div class="value" id="handStatus">Unknown</div>
+            </div>
+            <div class="status-card">
+                <h3>EMG Signal</h3>
+                <div class="value" id="emgSignal">0</div>
+            </div>
+            <div class="status-card">
+                <h3>Temperature</h3>
+                <div class="value" id="temperature">0°C</div>
+            </div>
+            <div class="status-card">
+                <h3>Grip Force</h3>
+                <div class="value" id="gripForce">0%</div>
+            </div>
+        </div>
+        
+        <div class="charts-container">
+            <div class="chart-card">
+                <h3>📊 Grip Force Over Time</h3>
+                <canvas id="gripChart"></canvas>
+            </div>
+            <div class="chart-card">
+                <h3>⚡ EMG Signal Strength</h3>
+                <canvas id="emgChart"></canvas>
+            </div>
+        </div>
+        
+        <div class="finger-sensors">
+            <h3>🖐️ Finger Flex Sensors (Degrees)</h3>
+            <div class="fingers-grid">
+                <div class="finger">
+                    <div class="finger-name">Thumb</div>
+                    <div class="finger-value" id="finger0">0°</div>
+                </div>
+                <div class="finger">
+                    <div class="finger-name">Index</div>
+                    <div class="finger-value" id="finger1">0°</div>
+                </div>
+                <div class="finger">
+                    <div class="finger-name">Middle</div>
+                    <div class="finger-value" id="finger2">0°</div>
+                </div>
+                <div class="finger">
+                    <div class="finger-name">Ring</div>
+                    <div class="finger-value" id="finger3">0°</div>
+                </div>
+                <div class="finger">
+                    <div class="finger-name">Pinky</div>
+                    <div class="finger-value" id="finger4">0°</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize charts
+        const gripCtx = document.getElementById('gripChart').getContext('2d');
+        const emgCtx = document.getElementById('emgChart').getContext('2d');
+        
+        const gripChart = new Chart(gripCtx, {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'Grip Force (%)',
+                    data: [],
+                    borderColor: 'rgb(75, 192, 192)',
+                    backgroundColor: 'rgba(75, 192, 192, 0.1)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: true
+                    }
+                }
+            }
+        });
+        
+        const emgChart = new Chart(emgCtx, {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'EMG Signal',
+                    data: [],
+                    borderColor: 'rgb(255, 99, 132)',
+                    backgroundColor: 'rgba(255, 99, 132, 0.1)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 600
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: true
+                    }
+                }
+            }
+        });
+        
+        // Update display elements
+        function updateDisplay(data) {
+            // Update status cards
+            document.getElementById('handStatus').textContent = data.hand_status || 'Unknown';
+            document.getElementById('emgSignal').textContent = data.emg_signal || '0';
+            document.getElementById('temperature').textContent = data.temperature ? data.temperature.toFixed(1) + '°C' : '0°C';
+            document.getElementById('gripForce').textContent = (data.grip_force || 0) + '%';
+            
+            // Update finger sensors
+            if (data.flex_sensor && Array.isArray(data.flex_sensor)) {
+                data.flex_sensor.forEach((value, index) => {
+                    const element = document.getElementById(`finger${index}`);
+                    if (element) {
+                        element.textContent = value + '°';
+                        
+                        // Color coding based on flex value
+                        const finger = element.parentElement;
+                        if (value > 60) {
+                            finger.style.background = '#fed7d7'; // Red for high flex
+                        } else if (value > 30) {
+                            finger.style.background = '#fef08a'; // Yellow for medium flex
+                        } else {
+                            finger.style.background = '#d1fae5'; // Green for low flex
+                        }
+                    }
+                });
+            }
+        }
+        
+        // Load and display data
+        async function loadData() {
+            try {
+                const response = await fetch("/api/sensors/");
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                // Hide error message if data loads successfully
+                document.getElementById('errorMessage').style.display = 'none';
+                
+                // Update display
+                updateDisplay(data);
+                
+                // Update charts
+                const time = new Date().toLocaleTimeString();
+                
+                // Update grip chart
+                gripChart.data.labels.push(time);
+                gripChart.data.datasets[0].data.push(data.grip_force || 0);
+                
+                // Update EMG chart
+                emgChart.data.labels.push(time);
+                emgChart.data.datasets[0].data.push(data.emg_signal || 0);
+                
+                // Keep only last 20 data points
+                if (gripChart.data.labels.length > 20) {
+                    gripChart.data.labels.shift();
+                    gripChart.data.datasets[0].data.shift();
+                    emgChart.data.labels.shift();
+                    emgChart.data.datasets[0].data.shift();
+                }
+                
+                gripChart.update('none'); // No animation for better performance
+                emgChart.update('none');
+                
+            } catch (error) {
+                console.error('Error loading data:', error);
+                document.getElementById('errorMessage').style.display = 'block';
+                document.getElementById('errorMessage').textContent = 
+                    'Connection error: ' + error.message + '. Retrying...';
+            }
+        }
+        
+        // Start data loading
+        loadData(); // Load immediately
+        setInterval(loadData, 2000); // Update every 2 seconds
+    </script>
+</body>
+</html>
