@@ -1,8 +1,13 @@
-# 🦾 Bionic Hand IoT Dashboard
+<<<<<<< HEAD
+# Quantumix
+
+A collection of innovative technology projects and experiments.
+
+## 🦾 Bionic Hand IoT Dashboard
 
 A real-time IoT monitoring dashboard for bionic hand prosthetics built with Django and Chart.js.
 
-## 🚀 Features
+### 🚀 Features
 
 - **Real-time Data Monitoring**: Live sensor data updates every 2 seconds
 - **Comprehensive Sensor Display**: 
@@ -15,26 +20,26 @@ A real-time IoT monitoring dashboard for bionic hand prosthetics built with Djan
 - **Error Handling**: Robust connection error handling with retry mechanisms
 - **Mobile Responsive**: Works seamlessly on desktop, tablet, and mobile devices
 
-## 📊 Dashboard Components
+### 📊 Dashboard Components
 
-### Status Cards
+#### Status Cards
 - **Hand Status**: Current state of the bionic hand
 - **EMG Signal**: Electromyography signal strength
 - **Temperature**: Real-time temperature monitoring
 - **Grip Force**: Current grip force percentage
 
-### Real-time Charts
+#### Real-time Charts
 - **Grip Force Timeline**: Historical grip force data over time
 - **EMG Signal Chart**: EMG signal strength visualization
 
-### Finger Monitoring
+#### Finger Monitoring
 - **Individual Flex Sensors**: Real-time monitoring of all 5 fingers
 - **Color-coded Status**: Visual indicators based on flex angles
   - Green: Low flex (0-30°)
   - Yellow: Medium flex (30-60°)
   - Red: High flex (60°+)
 
-## 🛠️ Technology Stack
+### 🛠️ Technology Stack
 
 - **Backend**: Django 5.2.6
 - **Frontend**: HTML5, CSS3, JavaScript
@@ -42,12 +47,12 @@ A real-time IoT monitoring dashboard for bionic hand prosthetics built with Djan
 - **Database**: SQLite (development)
 - **Real-time Updates**: AJAX polling
 
-## ⚙️ Installation & Setup
+### ⚙️ Installation & Setup
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/yourusername/iot_bionic_hand.git
-   cd iot_bionic_hand
+   git clone https://github.com/Skand03/Quantumix.git
+   cd Quantumix
    ```
 
 2. **Create virtual environment**
@@ -76,9 +81,9 @@ A real-time IoT monitoring dashboard for bionic hand prosthetics built with Djan
 6. **Open your browser**
    Navigate to `http://127.0.0.1:8000/` to view the dashboard
 
-## 📡 API Endpoints
+### 📡 API Endpoints
 
-### `/api/sensors/`
+#### `/api/sensors/`
 Returns real-time sensor data in JSON format:
 
 ```json
@@ -91,25 +96,25 @@ Returns real-time sensor data in JSON format:
 }
 ```
 
-## 🎯 Use Cases
+### 🎯 Use Cases
 
 - **Medical Monitoring**: Real-time patient prosthetic monitoring
 - **Research & Development**: Data collection for bionic hand improvements
 - **Training & Therapy**: Visual feedback for prosthetic training
 - **Quality Assurance**: Performance testing of bionic hand devices
 
-## 🔧 Customization
+### 🔧 Customization
 
-### Adding New Sensors
+#### Adding New Sensors
 1. Update the API response in `api/views.py`
 2. Add new display elements in `dashboard/templates/dashboard/dashboard.html`
 3. Update JavaScript to handle new data fields
 
-### Styling
+#### Styling
 - Modify CSS in the dashboard template for custom themes
 - Responsive breakpoints can be adjusted for different screen sizes
 
-## 📱 Screenshots
+### 📱 Screenshots
 
 The dashboard features a modern, medical-grade interface with:
 - Gradient backgrounds and professional styling
@@ -120,9 +125,9 @@ The dashboard features a modern, medical-grade interface with:
 ## 🤝 Contributing
 
 1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/new-sensor`)
-3. Commit your changes (`git commit -am 'Add new sensor support'`)
-4. Push to the branch (`git push origin feature/new-sensor`)
+2. Create a feature branch (`git checkout -b feature/new-feature`)
+3. Commit your changes (`git commit -am 'Add new feature'`)
+4. Push to the branch (`git push origin feature/new-feature`)
 5. Create a Pull Request
 
 ## 📄 License
@@ -131,10 +136,13 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## 🎉 Acknowledgments
 
-- Built for IoT medical device monitoring
+- Built for innovative technology solutions
 - Designed with accessibility and usability in mind
-- Optimized for real-time data visualization
+- Optimized for real-world applications
 
 ---
 
-**Note**: This is a development version with simulated sensor data. For production use, replace the dummy data in `api/views.py` with actual sensor integrations.
+**Note**: The bionic hand dashboard uses simulated sensor data for development. For production use, replace the dummy data in `api/views.py` with actual sensor integrations.
+=======
+# Quantumix
+>>>>>>> f2951b1fe61ea2b24a63a777861faa560edebffa
