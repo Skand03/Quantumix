@@ -1,0 +1,957 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token }}">
+    <title>Medical Dashboard - Bionic Hand System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a365d 0%, #2d3748 50%, #553c9a 100%);
+            min-height: 100vh;
+            color: #2d3748;
+            padding: 20px;
+        }
+
+        /* Navigation Bar */
+        .nav-bar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 15px 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 20px;
+            z-index: 1000;
+        }
+
+        .nav-brand {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #4a5568;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 30px;
+        }
+
+        .nav-item a {
+            text-decoration: none;
+            color: #4a5568;
+            font-weight: 500;
+            transition: color 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-item a:hover, .nav-item a.active {
+            color: #1a365d;
+        }
+
+        /* Container */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .page-header h1 {
+            font-size: 2.5em;
+            color: white;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .page-header p {
+            font-size: 1.2em;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+            background: linear-gradient(135deg, #1a365d, #553c9a);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .stat-value {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #2d3748;
+            margin-bottom: 10px;
+        }
+
+        .stat-label {
+            color: #718096;
+            font-size: 1.1em;
+            font-weight: 500;
+        }
+
+        .stat-change {
+            margin-top: 10px;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: 600;
+        }
+
+        .stat-change.positive {
+            background: rgba(72, 187, 120, 0.1);
+            color: #38a169;
+        }
+
+        .stat-change.negative {
+            background: rgba(245, 101, 101, 0.1);
+            color: #e53e3e;
+        }
+
+        /* Charts Section */
+        .charts-section {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .chart-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .chart-title {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #2d3748;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .chart-title i {
+            color: #1a365d;
+        }
+
+        /* Medical Analysis Results */
+        .analysis-overview {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .analysis-section {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .section-header h3 {
+            color: #2d3748;
+            font-size: 1.3em;
+        }
+
+        .section-header i {
+            font-size: 1.3em;
+            color: #1a365d;
+        }
+
+        /* Detection Results */
+        .detection-grid {
+            display: grid;
+            gap: 20px;
+        }
+
+        .detection-item {
+            background: rgba(26, 54, 93, 0.05);
+            border-radius: 15px;
+            padding: 20px;
+            border-left: 4px solid #1a365d;
+        }
+
+        .detection-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .detection-type {
+            font-weight: bold;
+            color: #2d3748;
+            font-size: 1.1em;
+        }
+
+        .detection-status {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.9em;
+            font-weight: 600;
+            margin-left: auto;
+        }
+
+        .status-detected {
+            background: rgba(245, 101, 101, 0.15);
+            color: #e53e3e;
+        }
+
+        .status-normal {
+            background: rgba(72, 187, 120, 0.15);
+            color: #38a169;
+        }
+
+        .confidence-display {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .confidence-bar {
+            flex: 1;
+            height: 8px;
+            background: #e2e8f0;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .confidence-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #1a365d, #553c9a);
+            transition: width 1s ease;
+        }
+
+        /* Recent Activity */
+        .recent-activity {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            margin-bottom: 40px;
+        }
+
+        .activity-list {
+            display: grid;
+            gap: 15px;
+        }
+
+        .activity-item {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            padding: 15px;
+            background: rgba(26, 54, 93, 0.03);
+            border-radius: 12px;
+            transition: background-color 0.3s ease;
+        }
+
+        .activity-item:hover {
+            background: rgba(26, 54, 93, 0.08);
+        }
+
+        .activity-icon {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2em;
+            color: white;
+        }
+
+        .activity-icon.xray {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+        }
+
+        .activity-icon.prescription {
+            background: linear-gradient(135deg, #48bb78, #38a169);
+        }
+
+        .activity-icon.report {
+            background: linear-gradient(135deg, #ed8936, #dd6b20);
+        }
+
+        .activity-content {
+            flex: 1;
+        }
+
+        .activity-title {
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 5px;
+        }
+
+        .activity-meta {
+            color: #718096;
+            font-size: 0.9em;
+        }
+
+        .activity-time {
+            color: #a0aec0;
+            font-size: 0.85em;
+        }
+
+        /* Quick Actions */
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .action-btn {
+            background: linear-gradient(135deg, #1a365d, #553c9a);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            text-decoration: none;
+            text-align: center;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            font-weight: 600;
+            box-shadow: 0 8px 25px rgba(26, 54, 93, 0.3);
+        }
+
+        .action-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(26, 54, 93, 0.4);
+        }
+
+        .action-btn i {
+            font-size: 1.5em;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .charts-section {
+                grid-template-columns: 1fr;
+            }
+            
+            .analysis-overview {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 15px;
+            }
+            
+            .stat-card {
+                padding: 20px;
+            }
+            
+            .stat-value {
+                font-size: 2em;
+            }
+            
+            .nav-menu {
+                display: none;
+            }
+            
+            .container {
+                padding: 0 10px;
+            }
+            
+            .quick-actions {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Loading Animation */
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #718096;
+        }
+
+        .spinner {
+            border: 3px solid #e2e8f0;
+            border-top: 3px solid #1a365d;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="nav-bar">
+        <div class="nav-brand">
+            <i class="fas fa-hand-paper"></i>
+            Bionic Hand System
+        </div>
+        <ul class="nav-menu">
+            <li class="nav-item">
+                <a href="{% url 'dashboard' %}">
+                    <i class="fas fa-tachometer-alt"></i> Dashboard
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="{% url 'xray_upload' %}">
+                    <i class="fas fa-x-ray"></i> X-ray Upload
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="{% url 'doctor_panel' %}">
+                    <i class="fas fa-user-md"></i> Doctor Panel
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="{% url 'medical_dashboard' %}" class="active">
+                    <i class="fas fa-chart-line"></i> Medical Dashboard
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="{% url 'analytics' %}">
+                    <i class="fas fa-chart-bar"></i> Analytics
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        <div class="page-header">
+            <h1><i class="fas fa-chart-line"></i> Medical Dashboard</h1>
+            <p>Comprehensive medical analytics and detection summaries</p>
+        </div>
+
+        <!-- Statistics Cards -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-x-ray"></i>
+                </div>
+                <div class="stat-value" id="totalXrays">--</div>
+                <div class="stat-label">Total X-rays Analyzed</div>
+                <div class="stat-change positive" id="xrayChange">
+                    <i class="fas fa-arrow-up"></i> +12% this month
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <div class="stat-value" id="fracturesDetected">--</div>
+                <div class="stat-label">Fractures Detected</div>
+                <div class="stat-change negative" id="fractureChange">
+                    <i class="fas fa-arrow-down"></i> -8% this month
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-prescription-bottle-alt"></i>
+                </div>
+                <div class="stat-value" id="prescriptions">--</div>
+                <div class="stat-label">Prescriptions Written</div>
+                <div class="stat-change positive" id="prescriptionChange">
+                    <i class="fas fa-arrow-up"></i> +15% this month
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <div class="stat-value" id="bionicRecommendations">--</div>
+                <div class="stat-label">Bionic Models Recommended</div>
+                <div class="stat-change positive" id="bionicChange">
+                    <i class="fas fa-arrow-up"></i> +25% this month
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Section -->
+        <div class="charts-section">
+            <div class="chart-container">
+                <div class="chart-header">
+                    <div class="chart-title">
+                        <i class="fas fa-chart-line"></i>
+                        Detection Trends Over Time
+                    </div>
+                    <select id="timeRange" onchange="updateDetectionChart()">
+                        <option value="7">Last 7 days</option>
+                        <option value="30" selected>Last 30 days</option>
+                        <option value="90">Last 90 days</option>
+                    </select>
+                </div>
+                <canvas id="detectionChart" width="400" height="200"></canvas>
+            </div>
+
+            <div class="chart-container">
+                <div class="chart-header">
+                    <div class="chart-title">
+                        <i class="fas fa-chart-pie"></i>
+                        Detection Distribution
+                    </div>
+                </div>
+                <canvas id="distributionChart" width="300" height="300"></canvas>
+            </div>
+        </div>
+
+        <!-- Analysis Overview -->
+        <div class="analysis-overview">
+            <div class="analysis-section">
+                <div class="section-header">
+                    <i class="fas fa-microscope"></i>
+                    <h3>Recent Detection Results</h3>
+                </div>
+                <div class="detection-grid" id="recentDetections">
+                    <!-- Detection results will be populated by JavaScript -->
+                    <div class="loading">
+                        <div class="spinner"></div>
+                        Loading recent detections...
+                    </div>
+                </div>
+            </div>
+
+            <div class="analysis-section">
+                <div class="section-header">
+                    <i class="fas fa-lightbulb"></i>
+                    <h3>AI Recommendations Summary</h3>
+                </div>
+                <div id="recommendationsSummary">
+                    <!-- Recommendations will be populated by JavaScript -->
+                    <div class="loading">
+                        <div class="spinner"></div>
+                        Loading recommendations...
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="recent-activity">
+            <div class="section-header">
+                <i class="fas fa-clock"></i>
+                <h3>Recent Activity</h3>
+            </div>
+            <div class="activity-list" id="recentActivity">
+                <!-- Activity items will be populated by JavaScript -->
+                <div class="loading">
+                    <div class="spinner"></div>
+                    Loading recent activity...
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="quick-actions">
+            <a href="{% url 'xray_upload' %}" class="action-btn">
+                <i class="fas fa-upload"></i>
+                Upload New X-ray
+            </a>
+            <a href="{% url 'doctor_panel' %}" class="action-btn">
+                <i class="fas fa-user-md"></i>
+                Doctor Panel
+            </a>
+            <a href="{% url 'future_scope' %}" class="action-btn">
+                <i class="fas fa-rocket"></i>
+                Future Technologies
+            </a>
+            <a href="{% url 'impact' %}" class="action-btn">
+                <i class="fas fa-heart"></i>
+                Patient Impact
+            </a>
+        </div>
+    </div>
+
+    <script>
+        let detectionChart;
+        let distributionChart;
+
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            loadDashboardData();
+            initializeCharts();
+        });
+
+        // Load dashboard data
+        async function loadDashboardData() {
+            try {
+                // Simulate loading medical statistics
+                await new Promise(resolve => setTimeout(resolve, 1000));
+
+                // Update statistics
+                updateStatistics();
+                loadRecentDetections();
+                loadRecommendationsSummary();
+                loadRecentActivity();
+            } catch (error) {
+                console.error('Error loading dashboard data:', error);
+            }
+        }
+
+        // Update statistics
+        function updateStatistics() {
+            // Simulate real data with animated counters
+            animateCounter('totalXrays', 0, 247);
+            animateCounter('fracturesDetected', 0, 89);
+            animateCounter('prescriptions', 0, 156);
+            animateCounter('bionicRecommendations', 0, 203);
+        }
+
+        // Animate counter
+        function animateCounter(elementId, start, end) {
+            const element = document.getElementById(elementId);
+            const duration = 2000;
+            const increment = (end - start) / (duration / 50);
+            let current = start;
+
+            const timer = setInterval(() => {
+                current += increment;
+                if (current >= end) {
+                    current = end;
+                    clearInterval(timer);
+                }
+                element.textContent = Math.floor(current);
+            }, 50);
+        }
+
+        // Initialize charts
+        function initializeCharts() {
+            // Detection trends chart
+            const detectionCtx = document.getElementById('detectionChart').getContext('2d');
+            detectionChart = new Chart(detectionCtx, {
+                type: 'line',
+                data: {
+                    labels: generateDateLabels(30),
+                    datasets: [{
+                        label: 'Fractures Detected',
+                        data: generateRandomData(30, 0, 15),
+                        borderColor: '#e53e3e',
+                        backgroundColor: 'rgba(229, 62, 62, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }, {
+                        label: 'Normal Results',
+                        data: generateRandomData(30, 5, 25),
+                        borderColor: '#38a169',
+                        backgroundColor: 'rgba(56, 161, 105, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }, {
+                        label: 'Arthritis Cases',
+                        data: generateRandomData(30, 0, 10),
+                        borderColor: '#ed8936',
+                        backgroundColor: 'rgba(237, 137, 54, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.1)'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.1)'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'top'
+                        }
+                    }
+                }
+            });
+
+            // Distribution chart
+            const distributionCtx = document.getElementById('distributionChart').getContext('2d');
+            distributionChart = new Chart(distributionCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Normal', 'Fractures', 'Arthritis', 'Other Conditions'],
+                    datasets: [{
+                        data: [158, 89, 67, 33],
+                        backgroundColor: [
+                            '#38a169',
+                            '#e53e3e',
+                            '#ed8936',
+                            '#1a365d'
+                        ],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+        }
+
+        // Load recent detections
+        function loadRecentDetections() {
+            const container = document.getElementById('recentDetections');
+            
+            // Simulate recent detection results
+            const detections = [
+                {
+                    type: 'Fracture Detection',
+                    status: 'detected',
+                    confidence: 94,
+                    details: 'Metacarpal fracture detected'
+                },
+                {
+                    type: 'Bone Density',
+                    status: 'normal',
+                    confidence: 87,
+                    details: 'Normal bone density levels'
+                },
+                {
+                    type: 'Arthritis Analysis',
+                    status: 'detected',
+                    confidence: 79,
+                    details: 'Mild arthritis indicators'
+                }
+            ];
+
+            container.innerHTML = detections.map(detection => `
+                <div class="detection-item">
+                    <div class="detection-header">
+                        <div class="detection-type">${detection.type}</div>
+                        <div class="detection-status ${detection.status === 'detected' ? 'status-detected' : 'status-normal'}">
+                            ${detection.status === 'detected' ? 'Detected' : 'Normal'}
+                        </div>
+                    </div>
+                    <div style="color: #4a5568; margin-bottom: 10px;">${detection.details}</div>
+                    <div class="confidence-display">
+                        <span style="color: #718096; font-size: 0.9em;">Confidence:</span>
+                        <div class="confidence-bar">
+                            <div class="confidence-fill" style="width: ${detection.confidence}%"></div>
+                        </div>
+                        <span style="color: #2d3748; font-weight: 600;">${detection.confidence}%</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Load recommendations summary
+        function loadRecommendationsSummary() {
+            const container = document.getElementById('recommendationsSummary');
+            
+            const recommendations = [
+                { model: 'Advanced Pro Model', count: 45, percentage: 35 },
+                { model: 'Standard Model', count: 38, percentage: 30 },
+                { model: 'Basic Model', count: 25, percentage: 20 },
+                { model: 'Pediatric Model', count: 19, percentage: 15 }
+            ];
+
+            container.innerHTML = recommendations.map(rec => `
+                <div class="detection-item">
+                    <div class="detection-header">
+                        <div class="detection-type">
+                            <i class="fas fa-robot"></i> ${rec.model}
+                        </div>
+                        <div style="color: #1a365d; font-weight: 600;">${rec.count} cases</div>
+                    </div>
+                    <div class="confidence-display">
+                        <span style="color: #718096; font-size: 0.9em;">Usage:</span>
+                        <div class="confidence-bar">
+                            <div class="confidence-fill" style="width: ${rec.percentage}%"></div>
+                        </div>
+                        <span style="color: #2d3748; font-weight: 600;">${rec.percentage}%</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Load recent activity
+        function loadRecentActivity() {
+            const container = document.getElementById('recentActivity');
+            
+            const activities = [
+                {
+                    icon: 'xray',
+                    iconClass: 'fas fa-x-ray',
+                    title: 'X-ray Analysis Completed',
+                    description: 'Patient: John Smith - Fracture detected in metacarpal region',
+                    time: '2 minutes ago'
+                },
+                {
+                    icon: 'prescription',
+                    iconClass: 'fas fa-prescription-bottle-alt',
+                    title: 'Prescription Generated',
+                    description: 'Advanced Pro Model recommended for Jane Doe',
+                    time: '15 minutes ago'
+                },
+                {
+                    icon: 'report',
+                    iconClass: 'fas fa-file-medical',
+                    title: 'Medical Report Created',
+                    description: 'Comprehensive report generated for Michael Johnson',
+                    time: '1 hour ago'
+                },
+                {
+                    icon: 'xray',
+                    iconClass: 'fas fa-x-ray',
+                    title: 'Bulk Analysis Completed',
+                    description: '5 X-rays processed with AI analysis',
+                    time: '2 hours ago'
+                },
+                {
+                    icon: 'prescription',
+                    iconClass: 'fas fa-user-md',
+                    title: 'Doctor Consultation',
+                    description: 'Dr. Smith reviewed patient cases',
+                    time: '3 hours ago'
+                }
+            ];
+
+            container.innerHTML = activities.map(activity => `
+                <div class="activity-item">
+                    <div class="activity-icon ${activity.icon}">
+                        <i class="${activity.iconClass}"></i>
+                    </div>
+                    <div class="activity-content">
+                        <div class="activity-title">${activity.title}</div>
+                        <div class="activity-meta">${activity.description}</div>
+                    </div>
+                    <div class="activity-time">${activity.time}</div>
+                </div>
+            `).join('');
+        }
+
+        // Update detection chart based on time range
+        function updateDetectionChart() {
+            const timeRange = parseInt(document.getElementById('timeRange').value);
+            
+            detectionChart.data.labels = generateDateLabels(timeRange);
+            detectionChart.data.datasets[0].data = generateRandomData(timeRange, 0, 15);
+            detectionChart.data.datasets[1].data = generateRandomData(timeRange, 5, 25);
+            detectionChart.data.datasets[2].data = generateRandomData(timeRange, 0, 10);
+            detectionChart.update();
+        }
+
+        // Generate date labels
+        function generateDateLabels(days) {
+            const labels = [];
+            const today = new Date();
+            
+            for (let i = days - 1; i >= 0; i--) {
+                const date = new Date(today);
+                date.setDate(date.getDate() - i);
+                labels.push(date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
+            }
+            
+            return labels;
+        }
+
+        // Generate random data for charts
+        function generateRandomData(length, min, max) {
+            const data = [];
+            for (let i = 0; i < length; i++) {
+                data.push(Math.floor(Math.random() * (max - min + 1)) + min);
+            }
+            return data;
+        }
+
+        // Auto-refresh data every 5 minutes
+        setInterval(() => {
+            loadDashboardData();
+        }, 5 * 60 * 1000);
+    </script>
+</body>
+</html>

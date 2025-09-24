@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token }}">
+    <title>Future Scope - Bionic Hand System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f0c29 0%, #24243e 50%, #313144 100%);
+            min-height: 100vh;
+            color: #2d3748;
+            padding: 20px;
+        }
+
+        /* Navigation Bar */
+        .nav-bar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 15px 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 20px;
+            z-index: 1000;
+        }
+
+        .nav-brand {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #4a5568;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 30px;
+        }
+
+        .nav-item a {
+            text-decoration: none;
+            color: #4a5568;
+            font-weight: 500;
+            transition: color 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-item a:hover, .nav-item a.active {
+            color: #0f0c29;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .page-header h1 {
+            font-size: 3em;
+            color: white;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .page-header p {
+            font-size: 1.3em;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        /* Technology Grid */
+        .tech-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-bottom: 50px;
+        }
+
+        .tech-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 25px;
+            padding: 40px 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            text-align: center;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tech-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+        }
+
+        .tech-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .tech-icon {
+            font-size: 4em;
+            margin-bottom: 25px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .tech-title {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #2d3748;
+            margin-bottom: 15px;
+        }
+
+        .tech-description {
+            color: #4a5568;
+            line-height: 1.6;
+            margin-bottom: 25px;
+        }
+
+        .tech-features {
+            list-style: none;
+            text-align: left;
+        }
+
+        .tech-features li {
+            padding: 8px 0;
+            color: #718096;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .tech-features li:before {
+            content: '✓';
+            color: #48bb78;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+
+        /* Timeline Section */
+        .timeline-section {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 25px;
+            padding: 50px;
+            margin: 50px 0;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .timeline-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .timeline-header h2 {
+            font-size: 2.5em;
+            color: #2d3748;
+            margin-bottom: 15px;
+        }
+
+        .timeline {
+            position: relative;
+            padding: 20px 0;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(180deg, #667eea, #764ba2);
+        }
+
+        .timeline-item {
+            position: relative;
+            margin: 40px 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .timeline-item:nth-child(odd) .timeline-content {
+            margin-right: auto;
+            margin-left: 0;
+            text-align: right;
+        }
+
+        .timeline-item:nth-child(even) .timeline-content {
+            margin-left: auto;
+            margin-right: 0;
+            text-align: left;
+        }
+
+        .timeline-content {
+            width: 45%;
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            border-left: 4px solid #667eea;
+        }
+
+        .timeline-year {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+
+        .timeline-title {
+            font-size: 1.4em;
+            font-weight: bold;
+            color: #2d3748;
+            margin-bottom: 10px;
+        }
+
+        .timeline-description {
+            color: #4a5568;
+            line-height: 1.6;
+        }
+
+        /* Interactive Demo Section */
+        .demo-section {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 25px;
+            padding: 50px;
+            margin: 50px 0;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+            text-align: center;
+        }
+
+        .demo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .demo-card {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+            border-radius: 20px;
+            padding: 30px;
+            border: 2px solid rgba(102, 126, 234, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .demo-card:hover {
+            transform: translateY(-5px);
+            border-color: #667eea;
+        }
+
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .tech-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .timeline::before {
+                left: 30px;
+            }
+            
+            .timeline-content {
+                width: calc(100% - 80px);
+                margin-left: 60px !important;
+                text-align: left !important;
+            }
+            
+            .timeline-year {
+                left: 30px;
+                transform: none;
+            }
+            
+            .nav-menu {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="nav-bar">
+        <div class="nav-brand">
+            <i class="fas fa-hand-paper"></i>
+            Bionic Hand System
+        </div>
+        <ul class="nav-menu">
+            <li class="nav-item">
+                <a href="{% url 'dashboard' %}">
+                    <i class="fas fa-tachometer-alt"></i> Dashboard
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="{% url 'xray_upload' %}">
+                    <i class="fas fa-x-ray"></i> X-ray Upload
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="{% url 'doctor_panel' %}">
+                    <i class="fas fa-user-md"></i> Doctor Panel
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="{% url 'medical_dashboard' %}">
+                    <i class="fas fa-chart-line"></i> Medical Dashboard
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="{% url 'future_scope' %}" class="active">
+                    <i class="fas fa-rocket"></i> Future Scope
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        <div class="page-header">
+            <h1><i class="fas fa-rocket"></i> Future Technologies</h1>
+            <p>Exploring the next frontier of bionic hand innovations</p>
+        </div>
+
+        <!-- Technology Grid -->
+        <div class="tech-grid">
+            <div class="tech-card">
+                <div class="tech-icon">
+                    <i class="fas fa-brain"></i>
+                </div>
+                <div class="tech-title">Neural Interface</div>
+                <div class="tech-description">
+                    Direct brain-computer interface technology enabling thought-controlled prosthetics with unprecedented precision and natural feel.
+                </div>
+                <ul class="tech-features">
+                    <li>EEG-based control system</li>
+                    <li>Machine learning adaptation</li>
+                    <li>Real-time neural feedback</li>
+                    <li>Cortical signal processing</li>
+                </ul>
+            </div>
+
+            <div class="tech-card">
+                <div class="tech-icon">
+                    <i class="fas fa-microchip"></i>
+                </div>
+                <div class="tech-title">IoT Integration</div>
+                <div class="tech-description">
+                    Smart home and device integration allowing seamless interaction with IoT ecosystem through gesture recognition and voice commands.
+                </div>
+                <ul class="tech-features">
+                    <li>Smart home connectivity</li>
+                    <li>Gesture-based device control</li>
+                    <li>Voice command integration</li>
+                    <li>Environmental adaptation</li>
+                </ul>
+            </div>
+
+            <div class="tech-card">
+                <div class="tech-icon">
+                    <i class="fas fa-eye"></i>
+                </div>
+                <div class="tech-title">Computer Vision</div>
+                <div class="tech-description">
+                    Advanced computer vision systems enabling object recognition, automatic grip adjustment, and predictive movement assistance.
+                </div>
+                <ul class="tech-features">
+                    <li>Object recognition AI</li>
+                    <li>Automatic grip selection</li>
+                    <li>Depth perception sensors</li>
+                    <li>Predictive movement</li>
+                </ul>
+            </div>
+
+            <div class="tech-card">
+                <div class="tech-icon">
+                    <i class="fas fa-hand-holding-heart"></i>
+                </div>
+                <div class="tech-title">Haptic Feedback</div>
+                <div class="tech-description">
+                    Revolutionary tactile feedback systems providing realistic touch sensations and temperature perception through advanced haptic technology.
+                </div>
+                <ul class="tech-features">
+                    <li>Multi-modal tactile feedback</li>
+                    <li>Temperature sensation</li>
+                    <li>Texture recognition</li>
+                    <li>Pressure sensitivity mapping</li>
+                </ul>
+            </div>
+
+            <div class="tech-card">
+                <div class="tech-icon">
+                    <i class="fas fa-battery-full"></i>
+                </div>
+                <div class="tech-title">Energy Harvesting</div>
+                <div class="tech-description">
+                    Self-sustaining power systems using kinetic energy harvesting, solar cells, and advanced battery technology for extended operation.
+                </div>
+                <ul class="tech-features">
+                    <li>Kinetic energy harvesting</li>
+                    <li>Solar cell integration</li>
+                    <li>Ultra-efficient batteries</li>
+                    <li>Wireless charging capability</li>
+                </ul>
+            </div>
+
+            <div class="tech-card">
+                <div class="tech-icon">
+                    <i class="fas fa-dna"></i>
+                </div>
+                <div class="tech-title">Bio-Integration</div>
+                <div class="tech-description">
+                    Advanced bio-compatible materials and tissue engineering for seamless integration with human biology and natural healing processes.
+                </div>
+                <ul class="tech-features">
+                    <li>Biocompatible materials</li>
+                    <li>Tissue integration support</li>
+                    <li>Self-healing components</li>
+                    <li>Biological signal enhancement</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Timeline Section -->
+        <div class="timeline-section">
+            <div class="timeline-header">
+                <h2>Development Roadmap</h2>
+                <p>Our vision for the future of bionic hand technology</p>
+            </div>
+            
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-year">2025</div>
+                    <div class="timeline-content">
+                        <div class="timeline-title">Advanced ML Integration</div>
+                        <div class="timeline-description">
+                            Implementation of sophisticated machine learning algorithms for better pattern recognition and adaptive control systems.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-year">2026</div>
+                    <div class="timeline-content">
+                        <div class="timeline-title">IoT Ecosystem Launch</div>
+                        <div class="timeline-description">
+                            Full smart home integration with gesture-based device control and environmental interaction capabilities.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-year">2027</div>
+                    <div class="timeline-content">
+                        <div class="timeline-title">Neural Interface Beta</div>
+                        <div class="timeline-description">
+                            First consumer-ready neural interface technology enabling direct thought-to-action control for prosthetic devices.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-year">2028</div>
+                    <div class="timeline-content">
+                        <div class="timeline-title">Haptic Feedback Revolution</div>
+                        <div class="timeline-description">
+                            Revolutionary tactile feedback systems providing realistic touch sensations and temperature perception.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-year">2030</div>
+                    <div class="timeline-content">
+                        <div class="timeline-title">Full Bio-Integration</div>
+                        <div class="timeline-description">
+                            Complete biological integration with self-healing capabilities and seamless nerve interface technology.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Interactive Demo Section -->
+        <div class="demo-section">
+            <h2>Experience the Future</h2>
+            <p>Explore our interactive demonstrations of future technologies</p>
+            
+            <div class="demo-grid">
+                <div class="demo-card">
+                    <h3><i class="fas fa-vr-cardboard"></i> VR Experience</h3>
+                    <p>Experience bionic hand control in virtual reality environment</p>
+                    <button class="btn btn-primary" onclick="launchVRDemo()">
+                        <i class="fas fa-play"></i> Launch VR Demo
+                    </button>
+                </div>
+
+                <div class="demo-card">
+                    <h3><i class="fas fa-mobile-alt"></i> AR Visualization</h3>
+                    <p>Visualize bionic hand integration using augmented reality</p>
+                    <button class="btn btn-primary" onclick="launchARDemo()">
+                        <i class="fas fa-camera"></i> Start AR View
+                    </button>
+                </div>
+
+                <div class="demo-card">
+                    <h3><i class="fas fa-gamepad"></i> Control Simulator</h3>
+                    <p>Test neural control interfaces with our advanced simulator</p>
+                    <button class="btn btn-primary" onclick="launchControlSim()">
+                        <i class="fas fa-brain"></i> Open Simulator
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Interactive demonstrations
+        function launchVRDemo() {
+            alert('VR Demo\n\nThis would launch an immersive virtual reality experience where users can:\n\n• Control a virtual bionic hand\n• Practice different grip patterns\n• Experience haptic feedback simulation\n• Test neural interface controls\n\nFull VR implementation coming in 2025!');
+        }
+
+        function launchARDemo() {
+            alert('AR Visualization\n\nThis would activate augmented reality features:\n\n• Overlay bionic hand models on real hands\n• Visualize nerve signal pathways\n• Show IoT device integration points\n• Display real-time sensor data\n\nAR capabilities launching soon!');
+        }
+
+        function launchControlSim() {
+            alert('Neural Control Simulator\n\nAdvanced simulation environment featuring:\n\n• EEG signal interpretation\n• Machine learning adaptation\n• Real-time feedback systems\n• Gesture recognition training\n\nBeta version available for researchers!');
+        }
+
+        // Animate timeline items on scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -100px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        // Observe timeline items
+        document.addEventListener('DOMContentLoaded', function() {
+            const timelineItems = document.querySelectorAll('.timeline-item');
+            timelineItems.forEach(item => {
+                item.style.opacity = '0';
+                item.style.transform = 'translateY(50px)';
+                item.style.transition = 'all 0.6s ease';
+                observer.observe(item);
+            });
+        });
+    </script>
+</body>
+</html>

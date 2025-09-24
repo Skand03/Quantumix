@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token }}">
+    <title>Patient Impact - Bionic Hand System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            min-height: 100vh;
+            color: #2d3748;
+            padding: 20px;
+        }
+
+        /* Navigation Bar */
+        .nav-bar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 15px 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 20px;
+            z-index: 1000;
+        }
+
+        .nav-brand {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #4a5568;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 30px;
+        }
+
+        .nav-item a {
+            text-decoration: none;
+            color: #4a5568;
+            font-weight: 500;
+            transition: color 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-item a:hover, .nav-item a.active {
+            color: #667eea;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .page-header h1 {
+            font-size: 3em;
+            color: white;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .page-header p {
+            font-size: 1.3em;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        /* Hero Statistics */
+        .hero-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 25px;
+            margin-bottom: 50px;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .stat-number {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #2d3748;
+            margin-bottom: 10px;
+        }
+
+        .stat-label {
+            color: #718096;
+            font-size: 1.1em;
+        }
+
+        /* Success Stories */
+        .stories-section {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 25px;
+            padding: 50px;
+            margin: 50px 0;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .section-header h2 {
+            font-size: 2.5em;
+            color: #2d3748;
+            margin-bottom: 15px;
+        }
+
+        .stories-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+        }
+
+        .story-card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .story-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+        }
+
+        .story-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .patient-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .patient-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+
+        .patient-details h3 {
+            color: #2d3748;
+            margin-bottom: 5px;
+        }
+
+        .patient-details p {
+            color: #718096;
+            font-size: 0.9em;
+        }
+
+        .story-content {
+            color: #4a5568;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .story-metrics {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .metric {
+            text-align: center;
+        }
+
+        .metric-value {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .metric-label {
+            font-size: 0.8em;
+            color: #718096;
+            margin-top: 5px;
+        }
+
+        /* Before/After Comparison */
+        .comparison-section {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 25px;
+            padding: 50px;
+            margin: 50px 0;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-top: 30px;
+        }
+
+        .comparison-card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .comparison-card.before {
+            border-left: 5px solid #e53e3e;
+        }
+
+        .comparison-card.after {
+            border-left: 5px solid #48bb78;
+        }
+
+        .comparison-icon {
+            font-size: 4em;
+            margin-bottom: 20px;
+        }
+
+        .before .comparison-icon {
+            color: #e53e3e;
+        }
+
+        .after .comparison-icon {
+            color: #48bb78;
+        }
+
+        .comparison-title {
+            font-size: 1.8em;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .before .comparison-title {
+            color: #e53e3e;
+        }
+
+        .after .comparison-title {
+            color: #48bb78;
+        }
+
+        .comparison-items {
+            list-style: none;
+            text-align: left;
+        }
+
+        .comparison-items li {
+            padding: 10px 0;
+            color: #4a5568;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .before .comparison-items li:before {
+            content: '✗';
+            color: #e53e3e;
+            font-weight: bold;
+        }
+
+        .after .comparison-items li:before {
+            content: '✓';
+            color: #48bb78;
+            font-weight: bold;
+        }
+
+        /* Impact Metrics */
+        .impact-metrics {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 25px;
+            padding: 50px;
+            margin: 50px 0;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        .impact-card {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            border: 2px solid rgba(102, 126, 234, 0.3);
+        }
+
+        .impact-value {
+            font-size: 2.2em;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .impact-description {
+            color: #4a5568;
+            font-size: 1.1em;
+        }
+
+        /* Call to Action */
+        .cta-section {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 25px;
+            padding: 50px;
+            text-align: center;
+            color: white;
+            margin: 50px 0;
+        }
+
+        .cta-title {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+        }
+
+        .cta-description {
+            font-size: 1.2em;
+            margin-bottom: 30px;
+            opacity: 0.9;
+        }
+
+        .cta-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-primary {
+            background: white;
+            color: #667eea;
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: white;
+            border: 2px solid white;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .comparison-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .hero-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .stories-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .metrics-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .nav-menu {
+                display: none;
+            }
+            
+            .cta-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero-stats,
+            .metrics-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="nav-bar">
+        <div class="nav-brand">
+            <i class="fas fa-hand-paper"></i>
+            Bionic Hand System
+        </div>
+        <ul class="nav-menu">
+            <li class="nav-item">
+                <a href="{% url 'dashboard' %}">
+                    <i class="fas fa-tachometer-alt"></i> Dashboard
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="{% url 'xray_upload' %}">
+                    <i class="fas fa-x-ray"></i> X-ray Upload
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="{% url 'doctor_panel' %}">
+                    <i class="fas fa-user-md"></i> Doctor Panel
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="{% url 'medical_dashboard' %}">
+                    <i class="fas fa-chart-line"></i> Medical Dashboard
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="{% url 'impact' %}" class="active">
+                    <i class="fas fa-heart"></i> Impact
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        <div class="page-header">
+            <h1><i class="fas fa-heart"></i> Patient Impact</h1>
+            <p>Transforming lives through innovative bionic hand technology</p>
+        </div>
+
+        <!-- Hero Statistics -->
+        <div class="hero-stats">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="stat-number">1,247</div>
+                <div class="stat-label">Lives Transformed</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-percentage"></i>
+                </div>
+                <div class="stat-number">96%</div>
+                <div class="stat-label">Satisfaction Rate</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <div class="stat-number">85%</div>
+                <div class="stat-label">Function Recovery</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="stat-number">30</div>
+                <div class="stat-label">Days Avg. Adaptation</div>
+            </div>
+        </div>
+
+        <!-- Success Stories -->
+        <div class="stories-section">
+            <div class="section-header">
+                <h2>Success Stories</h2>
+                <p>Real patients, real transformations, real hope</p>
+            </div>
+
+            <div class="stories-grid">
+                <div class="story-card">
+                    <div class="patient-info">
+                        <div class="patient-avatar">JS</div>
+                        <div class="patient-details">
+                            <h3>John Smith</h3>
+                            <p>Construction Worker, Age 42</p>
+                        </div>
+                    </div>
+                    <div class="story-content">
+                        "After losing my right hand in an accident, I thought my career was over. The bionic hand has given me back not just my ability to work, but my confidence. I can grip tools, feel textures, and even tie my shoes again. My life has been completely transformed."
+                    </div>
+                    <div class="story-metrics">
+                        <div class="metric">
+                            <div class="metric-value">18</div>
+                            <div class="metric-label">Months Using</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-value">92%</div>
+                            <div class="metric-label">Function Recovery</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-value">10/10</div>
+                            <div class="metric-label">Life Quality</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="story-card">
+                    <div class="patient-info">
+                        <div class="patient-avatar">MJ</div>
+                        <div class="patient-details">
+                            <h3>Maria Johnson</h3>
+                            <p>Artist & Teacher, Age 34</p>
+                        </div>
+                    </div>
+                    <div class="story-content">
+                        "As an artist, losing my dominant hand felt like losing my identity. The precision and sensitivity of my bionic hand amazes me daily. I'm painting again, teaching again, and living fully. The advanced sensors even let me feel the brush strokes!"
+                    </div>
+                    <div class="story-metrics">
+                        <div class="metric">
+                            <div class="metric-value">12</div>
+                            <div class="metric-label">Months Using</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-value">88%</div>
+                            <div class="metric-label">Function Recovery</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-value">9/10</div>
+                            <div class="metric-label">Life Quality</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="story-card">
+                    <div class="patient-info">
+                        <div class="patient-avatar">TW</div>
+                        <div class="patient-details">
+                            <h3>Tommy Williams</h3>
+                            <p>Student, Age 16</p>
+                        </div>
+                    </div>
+                    <div class="story-content">
+                        "Born without a left hand, I always felt different at school. My bionic hand has changed everything! I can play sports, write faster, and even play video games with my friends. I feel normal for the first time in my life."
+                    </div>
+                    <div class="story-metrics">
+                        <div class="metric">
+                            <div class="metric-value">8</div>
+                            <div class="metric-label">Months Using</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-value">94%</div>
+                            <div class="metric-label">Function Recovery</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-value">10/10</div>
+                            <div class="metric-label">Life Quality</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Before/After Comparison -->
+        <div class="comparison-section">
+            <div class="section-header">
+                <h2>Life Before & After</h2>
+                <p>The dramatic transformation our patients experience</p>
+            </div>
+
+            <div class="comparison-grid">
+                <div class="comparison-card before">
+                    <div class="comparison-icon">
+                        <i class="fas fa-times-circle"></i>
+                    </div>
+                    <div class="comparison-title">Before Bionic Hand</div>
+                    <ul class="comparison-items">
+                        <li>Limited daily activities</li>
+                        <li>Difficulty with fine motor tasks</li>
+                        <li>Reduced employment opportunities</li>
+                        <li>Social anxiety and isolation</li>
+                        <li>Dependence on others</li>
+                        <li>Chronic pain from prosthetics</li>
+                        <li>Limited grip strength</li>
+                        <li>No tactile feedback</li>
+                    </ul>
+                </div>
+
+                <div class="comparison-card after">
+                    <div class="comparison-icon">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="comparison-title">After Bionic Hand</div>
+                    <ul class="comparison-items">
+                        <li>Full independence in daily tasks</li>
+                        <li>Precise fine motor control</li>
+                        <li>Return to previous careers</li>
+                        <li>Increased social confidence</li>
+                        <li>Complete autonomy</li>
+                        <li>Comfortable all-day wear</li>
+                        <li>Variable grip strength</li>
+                        <li>Advanced tactile sensation</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Impact Metrics -->
+        <div class="impact-metrics">
+            <div class="section-header">
+                <h2>Measuring Our Impact</h2>
+                <p>Quantifying the positive changes in patients' lives</p>
+            </div>
+
+            <div class="metrics-grid">
+                <div class="impact-card">
+                    <div class="impact-value">78%</div>
+                    <div class="impact-description">Return to Previous Employment</div>
+                </div>
+
+                <div class="impact-card">
+                    <div class="impact-value">92%</div>
+                    <div class="impact-description">Improved Mental Health</div>
+                </div>
+
+                <div class="impact-card">
+                    <div class="impact-value">89%</div>
+                    <div class="impact-description">Increased Social Activity</div>
+                </div>
+
+                <div class="impact-card">
+                    <div class="impact-value">95%</div>
+                    <div class="impact-description">Daily Function Independence</div>
+                </div>
+
+                <div class="impact-card">
+                    <div class="impact-value">86%</div>
+                    <div class="impact-description">Reduction in Phantom Pain</div>
+                </div>
+
+                <div class="impact-card">
+                    <div class="impact-value">99%</div>
+                    <div class="impact-description">Would Recommend to Others</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Call to Action -->
+        <div class="cta-section">
+            <div class="cta-title">Be Part of the Transformation</div>
+            <div class="cta-description">
+                Join thousands of patients who have reclaimed their lives with bionic hand technology
+            </div>
+            <div class="cta-buttons">
+                <a href="{% url 'xray_upload' %}" class="btn btn-primary">
+                    <i class="fas fa-x-ray"></i> Start Your Journey
+                </a>
+                <a href="{% url 'doctor_panel' %}" class="btn btn-outline">
+                    <i class="fas fa-user-md"></i> Consult a Doctor
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Animate statistics counters
+        function animateCounter(element, start, end, duration) {
+            const increment = (end - start) / (duration / 50);
+            let current = start;
+
+            const timer = setInterval(() => {
+                current += increment;
+                if (current >= end) {
+                    current = end;
+                    clearInterval(timer);
+                }
+                
+                if (element.textContent.includes('%')) {
+                    element.textContent = Math.floor(current) + '%';
+                } else {
+                    element.textContent = Math.floor(current).toLocaleString();
+                }
+            }, 50);
+        }
+
+        // Intersection Observer for animations
+        const observerOptions = {
+            threshold: 0.3,
+            rootMargin: '0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const statNumber = entry.target.querySelector('.stat-number');
+                    if (statNumber && !statNumber.dataset.animated) {
+                        const value = parseInt(statNumber.textContent.replace(/[^\d]/g, ''));
+                        statNumber.textContent = '0';
+                        animateCounter(statNumber, 0, value, 2000);
+                        statNumber.dataset.animated = 'true';
+                    }
+
+                    const impactValue = entry.target.querySelector('.impact-value');
+                    if (impactValue && !impactValue.dataset.animated) {
+                        const value = parseInt(impactValue.textContent.replace(/[^\d]/g, ''));
+                        impactValue.textContent = '0%';
+                        animateCounter(impactValue, 0, value, 1500);
+                        impactValue.dataset.animated = 'true';
+                    }
+                }
+            });
+        }, observerOptions);
+
+        // Observe elements for animation
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.stat-card, .impact-card').forEach(card => {
+                observer.observe(card);
+            });
+
+            // Animate story cards on scroll
+            const storyCards = document.querySelectorAll('.story-card');
+            storyCards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(50px)';
+                card.style.transition = `all 0.6s ease ${index * 0.2}s`;
+                
+                const cardObserver = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.style.opacity = '1';
+                            entry.target.style.transform = 'translateY(0)';
+                        }
+                    });
+                }, { threshold: 0.1 });
+                
+                cardObserver.observe(card);
+            });
+        });
+    </script>
+</body>
+</html>

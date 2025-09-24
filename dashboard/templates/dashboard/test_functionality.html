@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medical API Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .test-section {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        button {
+            background: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #45a049;
+        }
+        .result {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            font-family: monospace;
+            min-height: 20px;
+        }
+        .success { border-left: 5px solid #4CAF50; }
+        .error { border-left: 5px solid #f44336; }
+        .nav-test {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 Medical API Functionality Test</h1>
+    
+    <div class="test-section">
+        <h2>🌐 Navigation Test</h2>
+        <p>Test all medical pages are accessible:</p>
+        <div class="nav-test">
+            <button onclick="testPage('/')">Dashboard</button>
+            <button onclick="testPage('/xray-upload/')">X-ray Upload</button>
+            <button onclick="testPage('/doctor-panel/')">Doctor Panel</button>
+            <button onclick="testPage('/medical-dashboard/')">Medical Dashboard</button>
+            <button onclick="testPage('/future-scope/')">Future Scope</button>
+            <button onclick="testPage('/impact/')">Impact Stories</button>
+        </div>
+        <div id="nav-result" class="result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>🔌 API Endpoints Test</h2>
+        <p>Test basic API functionality:</p>
+        <button onclick="testAPI('/api/sensor-data/', 'GET')">Sensor Data API</button>
+        <button onclick="testAPI('/api/emergency-stop/', 'POST', {action: 'stop'})">Emergency Stop API</button>
+        <div id="api-result" class="result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>🏥 Medical API Test</h2>
+        <p>Test medical-specific APIs:</p>
+        <button onclick="testMedicalAPI('/api/xray-analysis/', {patient_id: 'test123', image_path: '/test/xray.jpg'})">X-ray Analysis</button>
+        <button onclick="testMedicalAPI('/api/save-prescription/', {patient_id: 'test123', prescription: 'Test prescription', doctor_name: 'Dr. Test'})">Save Prescription</button>
+        <button onclick="testMedicalAPI('/api/generate-report/', {patient_id: 'test123', report_type: 'comprehensive'})">Generate Report</button>
+        <div id="medical-result" class="result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>📊 Test Summary</h2>
+        <div id="summary" class="result"></div>
+    </div>
+
+    <script>
+        let testResults = {
+            pages: 0,
+            apis: 0,
+            medical: 0,
+            total: 0,
+            passed: 0
+        };
+
+        async function testPage(url) {
+            const resultDiv = document.getElementById('nav-result');
+            try {
+                const response = await fetch(url, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'text/html',
+                    }
+                });
+                
+                if (response.ok) {
+                    resultDiv.innerHTML += `<div class="success">✅ ${url}: ${response.status} OK</div>`;
+                    testResults.passed++;
+                } else {
+                    resultDiv.innerHTML += `<div class="error">❌ ${url}: ${response.status} ${response.statusText}</div>`;
+                }
+                testResults.total++;
+                updateSummary();
+            } catch (error) {
+                resultDiv.innerHTML += `<div class="error">❌ ${url}: ${error.message}</div>`;
+                testResults.total++;
+                updateSummary();
+            }
+        }
+
+        async function testAPI(url, method = 'GET', data = null) {
+            const resultDiv = document.getElementById('api-result');
+            try {
+                const options = {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCSRFToken()
+                    }
+                };
+                
+                if (data && method === 'POST') {
+                    options.body = JSON.stringify(data);
+                }
+                
+                const response = await fetch(url, options);
+                const responseText = await response.text();
+                
+                if (response.ok) {
+                    resultDiv.innerHTML += `<div class="success">✅ ${method} ${url}: ${response.status} OK<br>Response: ${responseText.substring(0, 100)}...</div>`;
+                    testResults.passed++;
+                } else {
+                    resultDiv.innerHTML += `<div class="error">❌ ${method} ${url}: ${response.status} ${response.statusText}<br>Response: ${responseText.substring(0, 100)}...</div>`;
+                }
+                testResults.total++;
+                updateSummary();
+            } catch (error) {
+                resultDiv.innerHTML += `<div class="error">❌ ${method} ${url}: ${error.message}</div>`;
+                testResults.total++;
+                updateSummary();
+            }
+        }
+
+        async function testMedicalAPI(url, data) {
+            const resultDiv = document.getElementById('medical-result');
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCSRFToken()
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                const responseData = await response.json();
+                
+                if (response.ok) {
+                    resultDiv.innerHTML += `<div class="success">✅ ${url}: ${response.status} OK<br>Response: ${JSON.stringify(responseData, null, 2).substring(0, 200)}...</div>`;
+                    testResults.passed++;
+                } else {
+                    resultDiv.innerHTML += `<div class="error">❌ ${url}: ${response.status} ${response.statusText}<br>Response: ${JSON.stringify(responseData, null, 2).substring(0, 200)}...</div>`;
+                }
+                testResults.total++;
+                updateSummary();
+            } catch (error) {
+                resultDiv.innerHTML += `<div class="error">❌ ${url}: ${error.message}</div>`;
+                testResults.total++;
+                updateSummary();
+            }
+        }
+
+        function getCSRFToken() {
+            const cookies = document.cookie.split(';');
+            for (let cookie of cookies) {
+                const [name, value] = cookie.trim().split('=');
+                if (name === 'csrftoken') {
+                    return value;
+                }
+            }
+            return '';
+        }
+
+        function updateSummary() {
+            const summaryDiv = document.getElementById('summary');
+            const successRate = testResults.total > 0 ? (testResults.passed / testResults.total * 100).toFixed(1) : 0;
+            
+            summaryDiv.innerHTML = `
+                <h3>📈 Test Results</h3>
+                <p>✅ Passed: ${testResults.passed}/${testResults.total}</p>
+                <p>📊 Success Rate: ${successRate}%</p>
+                ${testResults.total > 0 ? (testResults.passed === testResults.total ? 
+                    '<p style="color: #4CAF50;">🎉 All tests passed! Medical features are working correctly.</p>' : 
+                    '<p style="color: #ff9800;">⚠️ Some tests failed. Check the results above.</p>') : 
+                    '<p>Click the buttons above to run tests...</p>'}
+            `;
+        }
+
+        // Auto-run a complete test
+        async function runCompleteTest() {
+            document.getElementById('nav-result').innerHTML = '<p>Testing pages...</p>';
+            document.getElementById('api-result').innerHTML = '<p>Testing APIs...</p>';
+            document.getElementById('medical-result').innerHTML = '<p>Testing medical APIs...</p>';
+            
+            // Test pages
+            const pages = ['/', '/xray-upload/', '/doctor-panel/', '/medical-dashboard/', '/future-scope/', '/impact/'];
+            for (const page of pages) {
+                await testPage(page);
+                await new Promise(resolve => setTimeout(resolve, 100));
+            }
+            
+            // Test APIs
+            await testAPI('/api/sensor-data/', 'GET');
+            await new Promise(resolve => setTimeout(resolve, 100));
+            
+            // Test medical APIs
+            await testMedicalAPI('/api/xray-analysis/', {patient_id: 'test123', image_path: '/test/xray.jpg'});
+            await new Promise(resolve => setTimeout(resolve, 100));
+            
+            await testMedicalAPI('/api/save-prescription/', {patient_id: 'test123', prescription: 'Test prescription', doctor_name: 'Dr. Test'});
+            await new Promise(resolve => setTimeout(resolve, 100));
+            
+            await testMedicalAPI('/api/generate-report/', {patient_id: 'test123', report_type: 'comprehensive'});
+        }
+
+        // Initialize summary
+        updateSummary();
+    </script>
+
+    <div style="text-align: center; margin-top: 30px;">
+        <button onclick="runCompleteTest()" style="background: #2196F3; padding: 15px 30px; font-size: 16px;">
+            🚀 Run Complete Test Suite
+        </button>
+    </div>
+</body>
+</html>
