@@ -1,6 +1,7 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,13 +13,13 @@
             padding: 0;
             box-sizing: border-box;
         }
-        
+
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
         }
-        
+
         /* Navigation Bar */
         .navbar {
             background: rgba(255, 255, 255, 0.95);
@@ -29,7 +30,7 @@
             top: 0;
             z-index: 1000;
         }
-        
+
         .nav-container {
             max-width: 1200px;
             margin: 0 auto;
@@ -38,7 +39,7 @@
             align-items: center;
             padding: 0 20px;
         }
-        
+
         .nav-brand {
             display: flex;
             align-items: center;
@@ -47,19 +48,19 @@
             color: #4a5568;
             text-decoration: none;
         }
-        
+
         .nav-brand i {
             margin-right: 10px;
             font-size: 1.2em;
             color: #667eea;
         }
-        
+
         .nav-menu {
             display: flex;
             list-style: none;
             gap: 30px;
         }
-        
+
         .nav-item a {
             text-decoration: none;
             color: #4a5568;
@@ -71,19 +72,20 @@
             align-items: center;
             gap: 8px;
         }
-        
-        .nav-item a:hover, .nav-item a.active {
+
+        .nav-item a:hover,
+        .nav-item a.active {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             transform: translateY(-2px);
         }
-        
+
         .nav-controls {
             display: flex;
             align-items: center;
             gap: 15px;
         }
-        
+
         .status-indicator {
             display: flex;
             align-items: center;
@@ -94,7 +96,7 @@
             border-radius: 20px;
             font-size: 0.9em;
         }
-        
+
         .online-indicator {
             display: inline-block;
             width: 12px;
@@ -103,13 +105,21 @@
             border-radius: 50%;
             animation: pulse 2s infinite;
         }
-        
+
         @keyframes pulse {
-            0% { opacity: 1; }
-            50% { opacity: 0.5; }
-            100% { opacity: 1; }
+            0% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+
+            100% {
+                opacity: 1;
+            }
         }
-        
+
         .emergency-btn {
             background: #e53e3e;
             color: white;
@@ -120,17 +130,17 @@
             cursor: pointer;
             transition: all 0.3s ease;
         }
-        
+
         .emergency-btn:hover {
             background: #c53030;
             transform: scale(1.05);
         }
-        
+
         /* Main Content */
         .main-content {
             padding: 30px 20px;
         }
-        
+
         .container {
             max-width: 1200px;
             margin: 0 auto;
@@ -139,27 +149,27 @@
             padding: 30px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
         }
-        
+
         .page-header {
             text-align: center;
             margin-bottom: 50px;
         }
-        
+
         .page-header h1 {
             font-size: 2.5em;
             margin-bottom: 10px;
             color: #4a5568;
         }
-        
+
         .page-header p {
             color: #718096;
             font-size: 1.1em;
         }
-        
+
         .about-section {
             margin-bottom: 40px;
         }
-        
+
         .about-section h2 {
             color: #4a5568;
             margin-bottom: 20px;
@@ -168,21 +178,21 @@
             gap: 10px;
             font-size: 1.8em;
         }
-        
+
         .about-section p {
             color: #718096;
             line-height: 1.6;
             font-size: 1.1em;
             margin-bottom: 15px;
         }
-        
+
         .features-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 25px;
             margin: 30px 0;
         }
-        
+
         .feature-card {
             background: white;
             padding: 25px;
@@ -190,11 +200,11 @@
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
             transition: transform 0.3s ease;
         }
-        
+
         .feature-card:hover {
             transform: translateY(-5px);
         }
-        
+
         .feature-card h3 {
             color: #667eea;
             margin-bottom: 15px;
@@ -202,37 +212,37 @@
             align-items: center;
             gap: 10px;
         }
-        
+
         .feature-card p {
             color: #718096;
             line-height: 1.5;
         }
-        
+
         .tech-stack {
             background: #f7fafc;
             padding: 20px;
             border-radius: 12px;
             margin: 30px 0;
         }
-        
+
         .tech-stack h3 {
             color: #4a5568;
             margin-bottom: 15px;
         }
-        
+
         .tech-list {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 15px;
         }
-        
+
         .tech-item {
             display: flex;
             align-items: center;
             gap: 10px;
             color: #718096;
         }
-        
+
         .version-info {
             background: #667eea;
             color: white;
@@ -241,40 +251,40 @@
             text-align: center;
             margin: 30px 0;
         }
-        
+
         .version-info h3 {
             margin-bottom: 10px;
         }
-        
+
         .team-section {
             text-align: center;
         }
-        
+
         .team-member {
             display: inline-block;
             margin: 10px 20px;
             text-align: center;
         }
-        
+
         .team-member img {
             width: 80px;
             height: 80px;
             border-radius: 50%;
             margin-bottom: 10px;
         }
-        
+
         .contact-info {
             background: #f7fafc;
             padding: 20px;
             border-radius: 12px;
             margin: 30px 0;
         }
-        
+
         .contact-info h3 {
             color: #4a5568;
             margin-bottom: 15px;
         }
-        
+
         .contact-item {
             display: flex;
             align-items: center;
@@ -282,7 +292,7 @@
             margin-bottom: 10px;
             color: #718096;
         }
-        
+
         .btn {
             display: inline-flex;
             align-items: center;
@@ -296,13 +306,14 @@
             transition: all 0.3s ease;
             margin: 5px;
         }
-        
+
         .btn:hover {
             background: #5a67d8;
             transform: translateY(-2px);
         }
     </style>
 </head>
+
 <body>
     <!-- Navigation Bar -->
     <nav class="navbar">
@@ -311,7 +322,7 @@
                 <i class="fas fa-hand-rock"></i>
                 Quantumix
             </a>
-            
+
             <ul class="nav-menu">
                 <li class="nav-item">
                     <a href="/">
@@ -344,7 +355,7 @@
                     </a>
                 </li>
             </ul>
-            
+
             <div class="nav-controls">
                 <div class="status-indicator">
                     <div class="online-indicator"></div>
@@ -365,57 +376,66 @@
                 <h1>ℹ️ About Quantumix</h1>
                 <p>Advanced Bionic Hand IoT Monitoring System</p>
             </div>
-            
+
             <!-- Project Overview -->
             <div class="about-section">
                 <h2><i class="fas fa-rocket"></i> Project Overview</h2>
                 <p>
-                    Quantumix is a cutting-edge IoT monitoring dashboard designed specifically for bionic hand prosthetics. 
-                    Our mission is to provide real-time insights, precise control, and comprehensive analytics to enhance 
+                    Quantumix is a cutting-edge IoT monitoring dashboard designed specifically for bionic hand
+                    prosthetics.
+                    Our mission is to provide real-time insights, precise control, and comprehensive analytics to
+                    enhance
                     the quality of life for prosthetic users.
                 </p>
                 <p>
-                    Built with modern web technologies and optimized for medical applications, this platform bridges the gap 
+                    Built with modern web technologies and optimized for medical applications, this platform bridges the
+                    gap
                     between advanced prosthetic hardware and user-friendly software interfaces.
                 </p>
             </div>
-            
+
             <!-- Key Features -->
             <div class="about-section">
                 <h2><i class="fas fa-star"></i> Key Features</h2>
                 <div class="features-grid">
                     <div class="feature-card">
                         <h3><i class="fas fa-tachometer-alt"></i> Real-time Monitoring</h3>
-                        <p>Live sensor data updates every 2 seconds, providing instant feedback on grip force, EMG signals, temperature, and finger movements.</p>
+                        <p>Live sensor data updates every 2 seconds, providing instant feedback on grip force, EMG
+                            signals, temperature, and finger movements.</p>
                     </div>
-                    
+
                     <div class="feature-card">
                         <h3><i class="fas fa-chart-line"></i> Advanced Analytics</h3>
-                        <p>Comprehensive data visualization with historical trends, usage patterns, and performance metrics to track progress over time.</p>
+                        <p>Comprehensive data visualization with historical trends, usage patterns, and performance
+                            metrics to track progress over time.</p>
                     </div>
-                    
+
                     <div class="feature-card">
                         <h3><i class="fas fa-sliders-h"></i> Precise Control</h3>
-                        <p>Manual control interface for calibration, grip force adjustment, individual finger positioning, and power management.</p>
+                        <p>Manual control interface for calibration, grip force adjustment, individual finger
+                            positioning, and power management.</p>
                     </div>
-                    
+
                     <div class="feature-card">
                         <h3><i class="fas fa-shield-alt"></i> Safety Features</h3>
-                        <p>Emergency stop functionality, temperature monitoring, battery management, and automated safety protocols.</p>
+                        <p>Emergency stop functionality, temperature monitoring, battery management, and automated
+                            safety protocols.</p>
                     </div>
-                    
+
                     <div class="feature-card">
                         <h3><i class="fas fa-mobile-alt"></i> Responsive Design</h3>
-                        <p>Fully responsive interface that works seamlessly across desktop, tablet, and mobile devices for monitoring on-the-go.</p>
+                        <p>Fully responsive interface that works seamlessly across desktop, tablet, and mobile devices
+                            for monitoring on-the-go.</p>
                     </div>
-                    
+
                     <div class="feature-card">
                         <h3><i class="fas fa-cog"></i> Customizable Settings</h3>
-                        <p>Personalized configuration options for display preferences, notifications, device parameters, and privacy controls.</p>
+                        <p>Personalized configuration options for display preferences, notifications, device parameters,
+                            and privacy controls.</p>
                     </div>
                 </div>
             </div>
-            
+
             <!-- Technology Stack -->
             <div class="about-section">
                 <h2><i class="fas fa-code"></i> Technology Stack</h2>
@@ -457,7 +477,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <!-- Version Information -->
             <div class="version-info">
                 <h3>Current Version</h3>
@@ -465,15 +485,16 @@
                 <p>Released: September 24, 2025</p>
                 <p>Next Update: October 2025 (Enhanced AI Features)</p>
             </div>
-            
+
             <!-- Developer Information -->
             <div class="about-section team-section">
                 <h2><i class="fas fa-users"></i> Development Team</h2>
                 <p>Quantumix is developed with passion and dedication to advancing prosthetic technology.</p>
-                
+
                 <div style="margin: 30px 0;">
                     <div class="team-member">
-                        <div style="width: 80px; height: 80px; background: #667eea; border-radius: 50%; margin: 0 auto 10px; display: flex; align-items: center; justify-content: center; color: white; font-size: 2em;">
+                        <div
+                            style="width: 80px; height: 80px; background: #667eea; border-radius: 50%; margin: 0 auto 10px; display: flex; align-items: center; justify-content: center; color: white; font-size: 2em;">
                             <i class="fas fa-user"></i>
                         </div>
                         <h4>Lead Developer</h4>
@@ -481,7 +502,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <!-- Contact Information -->
             <div class="about-section">
                 <h2><i class="fas fa-envelope"></i> Contact & Support</h2>
@@ -489,7 +510,8 @@
                     <h3>Get in Touch</h3>
                     <div class="contact-item">
                         <i class="fab fa-github"></i>
-                        <span>GitHub: <a href="https://github.com/Skand03/Quantumix" target="_blank">github.com/Skand03/Quantumix</a></span>
+                        <span>GitHub: <a href="https://github.com/Skand03/Quantumix"
+                                target="_blank">github.com/Skand03/Quantumix</a></span>
                     </div>
                     <div class="contact-item">
                         <i class="fas fa-envelope"></i>
@@ -505,7 +527,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <!-- Quick Actions -->
             <div style="text-align: center; margin-top: 40px;">
                 <h3 style="color: #4a5568; margin-bottom: 20px;">Quick Actions</h3>
@@ -526,9 +548,10 @@
                     View Source Code
                 </a>
             </div>
-            
+
             <!-- Footer -->
-            <div style="text-align: center; margin-top: 50px; padding-top: 30px; border-top: 2px solid #e2e8f0; color: #718096;">
+            <div
+                style="text-align: center; margin-top: 50px; padding-top: 30px; border-top: 2px solid #e2e8f0; color: #718096;">
                 <p>&copy; 2025 Quantumix. Built for advancing prosthetic technology.</p>
                 <p style="font-size: 0.9em; margin-top: 10px;">
                     This project is open source and available under the MIT License.
@@ -545,4 +568,5 @@
         }
     </script>
 </body>
+
 </html>

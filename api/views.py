@@ -7,7 +7,7 @@ import time
 
 # Global device state
 device_state = {
-    "is_running": True,
+    "is_running": False,  # Start with device stopped
     "power_level": 85,
     "calibrated": True,
     "emergency_stop": False,
@@ -25,8 +25,10 @@ def sensor_data(request):
             "emg_signal": 0,
             "grip_force": 0,
             "temperature": 25.0,
-            "hand_status": "Stopped",
-            "device_state": device_state
+            "hand_status": "Emergency Stop" if device_state["emergency_stop"] else "Stopped",
+            "device_state": device_state,
+            "is_running": device_state["is_running"],
+            "emergency_stop": device_state["emergency_stop"]
         }
         return JsonResponse(data)
     
@@ -37,7 +39,9 @@ def sensor_data(request):
         "grip_force": random.randint(0, 100),
         "temperature": random.uniform(25.0, 40.0),
         "hand_status": random.choice(["Open", "Closing", "Closed"]),
-        "device_state": device_state
+        "device_state": device_state,
+        "is_running": device_state["is_running"],
+        "emergency_stop": device_state["emergency_stop"]
     }
     return JsonResponse(data)
 

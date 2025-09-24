@@ -1,6 +1,7 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,13 +13,13 @@
             padding: 0;
             box-sizing: border-box;
         }
-        
+
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
         }
-        
+
         /* Navigation Bar */
         .navbar {
             background: rgba(255, 255, 255, 0.95);
@@ -29,7 +30,7 @@
             top: 0;
             z-index: 1000;
         }
-        
+
         .nav-container {
             max-width: 1200px;
             margin: 0 auto;
@@ -38,7 +39,7 @@
             align-items: center;
             padding: 0 20px;
         }
-        
+
         .nav-brand {
             display: flex;
             align-items: center;
@@ -47,19 +48,19 @@
             color: #4a5568;
             text-decoration: none;
         }
-        
+
         .nav-brand i {
             margin-right: 10px;
             font-size: 1.2em;
             color: #667eea;
         }
-        
+
         .nav-menu {
             display: flex;
             list-style: none;
             gap: 30px;
         }
-        
+
         .nav-item a {
             text-decoration: none;
             color: #4a5568;
@@ -71,19 +72,20 @@
             align-items: center;
             gap: 8px;
         }
-        
-        .nav-item a:hover, .nav-item a.active {
+
+        .nav-item a:hover,
+        .nav-item a.active {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             transform: translateY(-2px);
         }
-        
+
         .nav-controls {
             display: flex;
             align-items: center;
             gap: 15px;
         }
-        
+
         .status-indicator {
             display: flex;
             align-items: center;
@@ -94,7 +96,7 @@
             border-radius: 20px;
             font-size: 0.9em;
         }
-        
+
         .online-indicator {
             display: inline-block;
             width: 12px;
@@ -103,13 +105,21 @@
             border-radius: 50%;
             animation: pulse 2s infinite;
         }
-        
+
         @keyframes pulse {
-            0% { opacity: 1; }
-            50% { opacity: 0.5; }
-            100% { opacity: 1; }
+            0% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+
+            100% {
+                opacity: 1;
+            }
         }
-        
+
         .emergency-btn {
             background: #e53e3e;
             color: white;
@@ -120,17 +130,17 @@
             cursor: pointer;
             transition: all 0.3s ease;
         }
-        
+
         .emergency-btn:hover {
             background: #c53030;
             transform: scale(1.05);
         }
-        
+
         /* Main Content */
         .main-content {
             padding: 30px 20px;
         }
-        
+
         .container {
             max-width: 1200px;
             margin: 0 auto;
@@ -139,29 +149,29 @@
             padding: 30px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
         }
-        
+
         .page-header {
             text-align: center;
             margin-bottom: 30px;
         }
-        
+
         .page-header h1 {
             font-size: 2.5em;
             margin-bottom: 10px;
             color: #4a5568;
         }
-        
+
         .page-header p {
             color: #718096;
             font-size: 1.1em;
         }
-        
+
         .settings-container {
             display: grid;
             grid-template-columns: 250px 1fr;
             gap: 30px;
         }
-        
+
         .settings-sidebar {
             background: white;
             border-radius: 12px;
@@ -169,15 +179,15 @@
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
             height: fit-content;
         }
-        
+
         .settings-nav {
             list-style: none;
         }
-        
+
         .settings-nav li {
             margin-bottom: 10px;
         }
-        
+
         .settings-nav a {
             display: flex;
             align-items: center;
@@ -188,28 +198,29 @@
             border-radius: 8px;
             transition: all 0.3s ease;
         }
-        
-        .settings-nav a:hover, .settings-nav a.active {
+
+        .settings-nav a:hover,
+        .settings-nav a.active {
             background: #667eea;
             color: white;
         }
-        
+
         .settings-content {
             background: white;
             border-radius: 12px;
             padding: 30px;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         }
-        
+
         .setting-section {
             display: none;
             margin-bottom: 30px;
         }
-        
+
         .setting-section.active {
             display: block;
         }
-        
+
         .setting-section h3 {
             color: #4a5568;
             margin-bottom: 20px;
@@ -217,19 +228,21 @@
             align-items: center;
             gap: 10px;
         }
-        
+
         .form-group {
             margin-bottom: 20px;
         }
-        
+
         .form-group label {
             display: block;
             margin-bottom: 8px;
             color: #4a5568;
             font-weight: 500;
         }
-        
-        .form-group input, .form-group select, .form-group textarea {
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
             width: 100%;
             padding: 12px;
             border: 2px solid #e2e8f0;
@@ -237,31 +250,33 @@
             font-size: 1em;
             transition: border-color 0.3s ease;
         }
-        
-        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
             outline: none;
             border-color: #667eea;
         }
-        
+
         .form-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 20px;
         }
-        
+
         .toggle-switch {
             position: relative;
             display: inline-block;
             width: 60px;
             height: 30px;
         }
-        
+
         .toggle-switch input {
             opacity: 0;
             width: 0;
             height: 0;
         }
-        
+
         .toggle-slider {
             position: absolute;
             cursor: pointer;
@@ -273,7 +288,7 @@
             border-radius: 30px;
             transition: .4s;
         }
-        
+
         .toggle-slider:before {
             position: absolute;
             content: "";
@@ -285,15 +300,15 @@
             border-radius: 50%;
             transition: .4s;
         }
-        
-        input:checked + .toggle-slider {
+
+        input:checked+.toggle-slider {
             background-color: #667eea;
         }
-        
-        input:checked + .toggle-slider:before {
+
+        input:checked+.toggle-slider:before {
             transform: translateX(30px);
         }
-        
+
         .btn {
             padding: 12px 24px;
             border: none;
@@ -303,65 +318,146 @@
             transition: all 0.3s ease;
             margin-right: 10px;
         }
-        
+
         .btn-primary {
             background: #667eea;
             color: white;
         }
-        
+
         .btn-primary:hover {
             background: #5a67d8;
             transform: translateY(-2px);
         }
-        
+
         .btn-secondary {
             background: #718096;
             color: white;
         }
-        
+
         .btn-secondary:hover {
             background: #4a5568;
         }
-        
+
         .btn-danger {
             background: #e53e3e;
             color: white;
         }
-        
+
         .btn-danger:hover {
             background: #c53030;
         }
-        
+
         .alert {
             padding: 15px;
             margin-bottom: 20px;
             border-radius: 8px;
             border-left: 4px solid;
         }
-        
+
         .alert-success {
             background: #f0fff4;
             color: #276749;
             border-left-color: #48bb78;
         }
-        
+
         .alert-warning {
             background: #fffbeb;
             color: #744210;
             border-left-color: #ed8936;
         }
-        
+
+        /* Dark theme styles */
+        .dark-theme {
+            background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460) !important;
+            color: #ffffff !important;
+        }
+
+        .dark-theme .settings-container {
+            background: rgba(255, 255, 255, 0.1) !important;
+            border: 1px solid rgba(255, 255, 255, 0.2) !important;
+            backdrop-filter: blur(10px) !important;
+        }
+
+        .dark-theme .settings-nav {
+            background: rgba(255, 255, 255, 0.05) !important;
+            border-right: 1px solid rgba(255, 255, 255, 0.2) !important;
+        }
+
+        .dark-theme .settings-nav a {
+            color: #ffffff !important;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+        }
+
+        .dark-theme .settings-nav a:hover,
+        .dark-theme .settings-nav a.active {
+            background: rgba(255, 255, 255, 0.1) !important;
+            color: #00d4ff !important;
+        }
+
+        .dark-theme .setting-section {
+            background: rgba(255, 255, 255, 0.05) !important;
+        }
+
+        .dark-theme .setting-group {
+            background: rgba(255, 255, 255, 0.03) !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        }
+
+        .dark-theme .form-group label {
+            color: #ffffff !important;
+        }
+
+        .dark-theme input,
+        .dark-theme select,
+        .dark-theme textarea {
+            background: rgba(255, 255, 255, 0.1) !important;
+            color: #ffffff !important;
+            border: 2px solid rgba(255, 255, 255, 0.3) !important;
+        }
+
+        .dark-theme input:focus,
+        .dark-theme select:focus,
+        .dark-theme textarea:focus {
+            border-color: #00d4ff !important;
+            box-shadow: 0 0 0 2px rgba(0, 212, 255, 0.2) !important;
+        }
+
+        .dark-theme .btn-primary {
+            background: linear-gradient(135deg, #00d4ff, #0095cc) !important;
+        }
+
+        .dark-theme .btn-danger {
+            background: linear-gradient(135deg, #ff4757, #c44569) !important;
+        }
+
+        .dark-theme .alert {
+            background: rgba(255, 255, 255, 0.1) !important;
+            border: 2px solid rgba(255, 255, 255, 0.2) !important;
+            color: #ffffff !important;
+        }
+
+        .dark-theme .alert-success {
+            border-color: rgba(0, 255, 127, 0.3) !important;
+            background: rgba(0, 255, 127, 0.1) !important;
+        }
+
+        .dark-theme .alert-warning {
+            border-color: rgba(255, 193, 7, 0.3) !important;
+            background: rgba(255, 193, 7, 0.1) !important;
+        }
+
         @media (max-width: 768px) {
             .settings-container {
                 grid-template-columns: 1fr;
             }
-            
+
             .form-row {
                 grid-template-columns: 1fr;
             }
         }
     </style>
 </head>
+
 <body>
     <!-- Navigation Bar -->
     <nav class="navbar">
@@ -370,7 +466,7 @@
                 <i class="fas fa-hand-rock"></i>
                 Quantumix
             </a>
-            
+
             <ul class="nav-menu">
                 <li class="nav-item">
                     <a href="/">
@@ -403,7 +499,7 @@
                     </a>
                 </li>
             </ul>
-            
+
             <div class="nav-controls">
                 <div class="status-indicator">
                     <div class="online-indicator"></div>
@@ -423,146 +519,158 @@
             <div class="page-header">
                 <h1>⚙️ Settings</h1>
                 <p>Configure your bionic hand preferences</p>
+
+                <!-- Debug Test Button -->
+                <div
+                    style="margin: 15px 0; padding: 10px; background: rgba(255, 193, 7, 0.1); border: 1px solid #ffc107; border-radius: 8px;">
+                    <button onclick="testSettingsJS()" class="btn btn-secondary"
+                        style="background: #ffc107; color: #000; border: none;">
+                        <i class="fas fa-bug"></i> Test Settings JS
+                    </button>
+                    <small style="display: block; margin-top: 5px; color: #666;">
+                        Click to verify settings functionality is working
+                    </small>
+                </div>
             </div>
-            
             <div class="settings-container">
                 <!-- Settings Sidebar -->
                 <div class="settings-sidebar">
                     <ul class="settings-nav">
                         <li><a href="#" class="active" onclick="showSection('general')">
-                            <i class="fas fa-cog"></i> General
-                        </a></li>
+                                <i class="fas fa-cog"></i> General
+                            </a></li>
                         <li><a href="#" onclick="showSection('display')">
-                            <i class="fas fa-desktop"></i> Display
-                        </a></li>
+                                <i class="fas fa-desktop"></i> Display
+                            </a></li>
                         <li><a href="#" onclick="showSection('notifications')">
-                            <i class="fas fa-bell"></i> Notifications
-                        </a></li>
+                                <i class="fas fa-bell"></i> Notifications
+                            </a></li>
                         <li><a href="#" onclick="showSection('device')">
-                            <i class="fas fa-hand-rock"></i> Device
-                        </a></li>
+                                <i class="fas fa-hand-rock"></i> Device
+                            </a></li>
                         <li><a href="#" onclick="showSection('security')">
-                            <i class="fas fa-shield-alt"></i> Security
-                        </a></li>
+                                <i class="fas fa-shield-alt"></i> Security
+                            </a></li>
                         <li><a href="#" onclick="showSection('data')">
-                            <i class="fas fa-database"></i> Data & Privacy
-                        </a></li>
+                                <i class="fas fa-database"></i> Data & Privacy
+                            </a></li>
                     </ul>
                 </div>
-                
+
                 <!-- Settings Content -->
                 <div class="settings-content">
                     <!-- General Settings -->
                     <div id="general" class="setting-section active">
                         <h3><i class="fas fa-cog"></i> General Settings</h3>
-                        
+
                         <div class="form-group">
-                            <label>Device Name</label>
-                            <input type="text" value="My Bionic Hand" placeholder="Enter device name">
+                            <label for="device-name">Device Name</label>
+                            <input type="text" id="device-name" value="My Bionic Hand" placeholder="Enter device name">
                         </div>
-                        
+
                         <div class="form-row">
                             <div class="form-group">
-                                <label>Language</label>
-                                <select>
-                                    <option>English</option>
-                                    <option>Spanish</option>
-                                    <option>French</option>
-                                    <option>German</option>
+                                <label for="language">Language</label>
+                                <select id="language">
+                                    <option value="English">English</option>
+                                    <option value="Spanish">Spanish</option>
+                                    <option value="French">French</option>
+                                    <option value="German">German</option>
                                 </select>
                             </div>
                             <div class="form-group">
-                                <label>Time Zone</label>
-                                <select>
-                                    <option>UTC-05:00 (EST)</option>
-                                    <option>UTC+00:00 (GMT)</option>
-                                    <option>UTC+01:00 (CET)</option>
+                                <label for="time-zone">Time Zone</label>
+                                <select id="time-zone">
+                                    <option value="UTC-05:00 (EST)">UTC-05:00 (EST)</option>
+                                    <option value="UTC+00:00 (GMT)">UTC+00:00 (GMT)</option>
+                                    <option value="UTC+01:00 (CET)">UTC+01:00 (CET)</option>
                                 </select>
                             </div>
                         </div>
-                        
+
                         <div class="form-group">
                             <label>Auto-save Settings</label>
                             <div style="display: flex; align-items: center; gap: 10px;">
                                 <label class="toggle-switch">
-                                    <input type="checkbox" checked>
+                                    <input type="checkbox" id="auto-save" checked>
                                     <span class="toggle-slider"></span>
                                 </label>
                                 <span>Automatically save configuration changes</span>
                             </div>
                         </div>
-                        
-                        <button class="btn btn-primary">Save General Settings</button>
+
+                        <button class="btn btn-primary" onclick="saveGeneralSettings()">Save General Settings</button>
                     </div>
-                    
+
                     <!-- Display Settings -->
                     <div id="display" class="setting-section">
                         <h3><i class="fas fa-desktop"></i> Display Settings</h3>
-                        
+
                         <div class="form-group">
-                            <label>Dashboard Theme</label>
-                            <select>
-                                <option>Light Theme</option>
-                                <option>Dark Theme</option>
-                                <option>Auto (System)</option>
+                            <label for="theme">Dashboard Theme</label>
+                            <select id="theme">
+                                <option value="light">Light Theme</option>
+                                <option value="dark">Dark Theme</option>
+                                <option value="auto">Auto (System)</option>
                             </select>
                         </div>
-                        
+
                         <div class="form-group">
-                            <label>Chart Update Interval</label>
-                            <select>
-                                <option>1 second</option>
-                                <option selected>2 seconds</option>
-                                <option>5 seconds</option>
-                                <option>10 seconds</option>
+                            <label for="chart-interval">Chart Update Interval</label>
+                            <select id="chart-interval">
+                                <option value="1">1 second</option>
+                                <option value="2" selected>2 seconds</option>
+                                <option value="5">5 seconds</option>
+                                <option value="10">10 seconds</option>
                             </select>
                         </div>
-                        
+
                         <div class="form-group">
                             <label>Show Grid Lines</label>
                             <div style="display: flex; align-items: center; gap: 10px;">
                                 <label class="toggle-switch">
-                                    <input type="checkbox" checked>
+                                    <input type="checkbox" id="show-grid" checked>
                                     <span class="toggle-slider"></span>
                                 </label>
                                 <span>Display grid lines on charts</span>
                             </div>
                         </div>
-                        
+
                         <div class="form-group">
                             <label>Animated Transitions</label>
                             <div style="display: flex; align-items: center; gap: 10px;">
                                 <label class="toggle-switch">
-                                    <input type="checkbox" checked>
+                                    <input type="checkbox" id="animations" checked>
                                     <span class="toggle-slider"></span>
                                 </label>
                                 <span>Enable smooth animations</span>
                             </div>
                         </div>
-                        
-                        <button class="btn btn-primary">Save Display Settings</button>
+
+                        <button class="btn btn-primary" onclick="saveDisplaySettings()">Save Display Settings</button>
                     </div>
-                    
+
                     <!-- Notification Settings -->
                     <div id="notifications" class="setting-section">
                         <h3><i class="fas fa-bell"></i> Notification Settings</h3>
-                        
+
                         <div class="form-group">
                             <label>Email Notifications</label>
                             <div style="display: flex; align-items: center; gap: 10px;">
                                 <label class="toggle-switch">
-                                    <input type="checkbox" checked>
+                                    <input type="checkbox" id="email-notifications" checked>
                                     <span class="toggle-slider"></span>
                                 </label>
                                 <span>Receive email alerts</span>
                             </div>
                         </div>
-                        
+
                         <div class="form-group">
-                            <label>Email Address</label>
-                            <input type="email" value="user@example.com" placeholder="Enter your email">
+                            <label for="email-address">Email Address</label>
+                            <input type="email" id="email-address" value="user@example.com"
+                                placeholder="Enter your email">
                         </div>
-                        
+
                         <div class="form-group">
                             <label>Alert Conditions</label>
                             <div style="margin-top: 10px;">
@@ -584,57 +692,59 @@
                                 </div>
                             </div>
                         </div>
-                        
-                        <button class="btn btn-primary">Save Notification Settings</button>
+
+                        <button class="btn btn-primary" onclick="saveNotificationSettings()">Save Notification
+                            Settings</button>
                     </div>
-                    
+
                     <!-- Device Settings -->
                     <div id="device" class="setting-section">
                         <h3><i class="fas fa-hand-rock"></i> Device Settings</h3>
-                        
+
                         <div class="alert alert-warning">
-                            <strong>Warning:</strong> Changing device settings may affect performance. Please consult your healthcare provider before making significant changes.
+                            <strong>Warning:</strong> Changing device settings may affect performance. Please consult
+                            your healthcare provider before making significant changes.
                         </div>
-                        
+
                         <div class="form-row">
                             <div class="form-group">
-                                <label>Max Grip Force (%)</label>
-                                <input type="number" value="85" min="10" max="100">
+                                <label for="max-grip">Max Grip Force (%)</label>
+                                <input type="number" id="max-grip" value="85" min="10" max="100">
                             </div>
                             <div class="form-group">
-                                <label>Response Sensitivity</label>
-                                <select>
-                                    <option>Low</option>
-                                    <option selected>Medium</option>
-                                    <option>High</option>
+                                <label for="sensitivity">Response Sensitivity</label>
+                                <select id="sensitivity">
+                                    <option value="low">Low</option>
+                                    <option value="medium" selected>Medium</option>
+                                    <option value="high">High</option>
                                 </select>
                             </div>
                         </div>
-                        
+
                         <div class="form-group">
                             <label>Auto-calibration</label>
                             <div style="display: flex; align-items: center; gap: 10px;">
                                 <label class="toggle-switch">
-                                    <input type="checkbox" checked>
+                                    <input type="checkbox" id="auto-calibration" checked>
                                     <span class="toggle-slider"></span>
                                 </label>
                                 <span>Automatically calibrate sensors weekly</span>
                             </div>
                         </div>
-                        
+
                         <div class="form-group">
-                            <label>Sleep Mode Timer (minutes)</label>
-                            <input type="number" value="30" min="5" max="120">
+                            <label for="sleep-timer">Sleep Mode Timer (minutes)</label>
+                            <input type="number" id="sleep-timer" value="30" min="5" max="120">
                         </div>
-                        
-                        <button class="btn btn-primary">Save Device Settings</button>
+
+                        <button class="btn btn-primary" onclick="saveDeviceSettings()">Save Device Settings</button>
                         <button class="btn btn-secondary" onclick="factoryReset()">Factory Reset</button>
                     </div>
-                    
+
                     <!-- Security Settings -->
                     <div id="security" class="setting-section">
                         <h3><i class="fas fa-shield-alt"></i> Security Settings</h3>
-                        
+
                         <div class="form-group">
                             <label>Enable PIN Protection</label>
                             <div style="display: flex; align-items: center; gap: 10px;">
@@ -645,7 +755,7 @@
                                 <span>Require PIN to access dashboard</span>
                             </div>
                         </div>
-                        
+
                         <div class="form-group">
                             <label>Session Timeout (minutes)</label>
                             <select>
@@ -655,7 +765,7 @@
                                 <option>Never</option>
                             </select>
                         </div>
-                        
+
                         <div class="form-group">
                             <label>Two-Factor Authentication</label>
                             <div style="display: flex; align-items: center; gap: 10px;">
@@ -666,14 +776,14 @@
                                 <span>Enable 2FA for enhanced security</span>
                             </div>
                         </div>
-                        
+
                         <button class="btn btn-primary">Save Security Settings</button>
                     </div>
-                    
+
                     <!-- Data & Privacy Settings -->
                     <div id="data" class="setting-section">
                         <h3><i class="fas fa-database"></i> Data & Privacy</h3>
-                        
+
                         <div class="form-group">
                             <label>Data Collection</label>
                             <div style="display: flex; align-items: center; gap: 10px;">
@@ -684,7 +794,7 @@
                                 <span>Allow anonymous usage analytics</span>
                             </div>
                         </div>
-                        
+
                         <div class="form-group">
                             <label>Data Retention Period</label>
                             <select>
@@ -695,19 +805,21 @@
                                 <option>Forever</option>
                             </select>
                         </div>
-                        
+
                         <div class="form-group">
                             <label>Export Data</label>
-                            <p style="color: #718096; margin-bottom: 10px;">Download all your bionic hand data for personal records</p>
+                            <p style="color: #718096; margin-bottom: 10px;">Download all your bionic hand data for
+                                personal records</p>
                             <button class="btn btn-secondary">Export All Data</button>
                         </div>
-                        
+
                         <div class="form-group">
                             <label>Delete All Data</label>
-                            <p style="color: #718096; margin-bottom: 10px;">Permanently delete all stored sensor data</p>
+                            <p style="color: #718096; margin-bottom: 10px;">Permanently delete all stored sensor data
+                            </p>
                             <button class="btn btn-danger" onclick="deleteAllData()">Delete All Data</button>
                         </div>
-                        
+
                         <button class="btn btn-primary">Save Privacy Settings</button>
                     </div>
                 </div>
@@ -716,41 +828,269 @@
     </div>
 
     <script>
+        // Test function to verify settings functionality
+        function testSettingsJS() {
+            console.log('Settings JavaScript test:');
+            console.log('Current settings:', settings);
+            console.log('Theme element:', document.getElementById('theme'));
+            console.log('Device name element:', document.getElementById('device-name'));
+            showAlert('JavaScript is working! Check console for details.', 'success');
+            return true;
+        }
+
+        // Settings state management
+        let settings = {
+            theme: 'light',
+            deviceName: 'My Bionic Hand',
+            language: 'English',
+            autoSave: true,
+            chartInterval: 2,
+            showGrid: true,
+            animations: true,
+            emailNotifications: true,
+            maxGripForce: 85,
+            sensitivity: 'medium',
+            autoCalibration: true,
+            sleepTimer: 30
+        };
+
+        // Load settings from localStorage
+        function loadSettings() {
+            const saved = localStorage.getItem('bionicHandSettings');
+            if (saved) {
+                settings = { ...settings, ...JSON.parse(saved) };
+                applySettings();
+                updateUI();
+            }
+        }
+
+        // Save settings to localStorage
+        function saveSettings() {
+            localStorage.setItem('bionicHandSettings', JSON.stringify(settings));
+            showAlert('Settings saved successfully!', 'success');
+        }
+
+        // Apply settings to the page
+        function applySettings() {
+            // Apply theme
+            if (settings.theme === 'dark') {
+                document.body.classList.add('dark-theme');
+            } else {
+                document.body.classList.remove('dark-theme');
+            }
+        }
+
+        // Update UI elements with current settings
+        function updateUI() {
+            // Update form fields
+            const elements = {
+                'device-name': settings.deviceName,
+                'language': settings.language,
+                'auto-save': settings.autoSave,
+                'theme': settings.theme,
+                'chart-interval': settings.chartInterval,
+                'show-grid': settings.showGrid,
+                'animations': settings.animations,
+                'email-notifications': settings.emailNotifications,
+                'max-grip': settings.maxGripForce,
+                'sensitivity': settings.sensitivity,
+                'auto-calibration': settings.autoCalibration,
+                'sleep-timer': settings.sleepTimer
+            };
+
+            Object.entries(elements).forEach(([id, value]) => {
+                const element = document.getElementById(id);
+                if (element) {
+                    if (element.type === 'checkbox') {
+                        element.checked = value;
+                    } else {
+                        element.value = value;
+                    }
+                }
+            });
+        }
+
+        // Show alert message
+        function showAlert(message, type = 'success') {
+            // Remove existing alerts
+            document.querySelectorAll('.alert').forEach(alert => alert.remove());
+
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type}`;
+            alert.innerHTML = `<strong>${type === 'success' ? 'Success:' : 'Warning:'}</strong> ${message}`;
+
+            const container = document.querySelector('.settings-content');
+            container.insertBefore(alert, container.firstChild);
+
+            setTimeout(() => alert.remove(), 5000);
+        }
+
+        // Theme toggle function
+        function toggleTheme() {
+            const themeSelect = document.getElementById('theme');
+            settings.theme = themeSelect.value;
+            applySettings();
+
+            if (settings.autoSave) {
+                saveSettings();
+            }
+        }
+
+        // Generic setting change handler
+        function updateSetting(key, value, autoSave = true) {
+            settings[key] = value;
+            applySettings();
+
+            if (settings.autoSave && autoSave) {
+                saveSettings();
+            }
+        }
+
         function showSection(sectionId) {
             // Hide all sections
             document.querySelectorAll('.setting-section').forEach(section => {
                 section.classList.remove('active');
             });
-            
+
             // Show selected section
             document.getElementById(sectionId).classList.add('active');
-            
-            // Update navigation
+
+            // Update navigation - remove active from all links first
             document.querySelectorAll('.settings-nav a').forEach(link => {
                 link.classList.remove('active');
             });
-            event.target.classList.add('active');
-        }
-        
-        function factoryReset() {
-            if (confirm('Are you sure you want to reset all settings to factory defaults? This action cannot be undone.')) {
-                alert('Factory reset completed. Please recalibrate your device.');
+
+            // Add active class to the clicked link
+            const clickedLink = document.querySelector(`[onclick="showSection('${sectionId}')"]`);
+            if (clickedLink) {
+                clickedLink.classList.add('active');
             }
         }
-        
+
+        function saveGeneralSettings() {
+            settings.deviceName = document.getElementById('device-name').value;
+            settings.language = document.getElementById('language').value;
+            settings.autoSave = document.getElementById('auto-save').checked;
+            saveSettings();
+        }
+
+        function saveDisplaySettings() {
+            settings.theme = document.getElementById('theme').value;
+            settings.chartInterval = parseInt(document.getElementById('chart-interval').value);
+            settings.showGrid = document.getElementById('show-grid').checked;
+            settings.animations = document.getElementById('animations').checked;
+            applySettings();
+            saveSettings();
+        }
+
+        function saveNotificationSettings() {
+            settings.emailNotifications = document.getElementById('email-notifications').checked;
+            saveSettings();
+        }
+
+        function saveDeviceSettings() {
+            settings.maxGripForce = parseInt(document.getElementById('max-grip').value);
+            settings.sensitivity = document.getElementById('sensitivity').value;
+            settings.autoCalibration = document.getElementById('auto-calibration').checked;
+            settings.sleepTimer = parseInt(document.getElementById('sleep-timer').value);
+            saveSettings();
+        }
+
+        function factoryReset() {
+            if (confirm('Are you sure you want to reset all settings to factory defaults? This action cannot be undone.')) {
+                localStorage.removeItem('bionicHandSettings');
+                settings = {
+                    theme: 'light',
+                    deviceName: 'My Bionic Hand',
+                    language: 'English',
+                    autoSave: true,
+                    chartInterval: 2,
+                    showGrid: true,
+                    animations: true,
+                    emailNotifications: true,
+                    maxGripForce: 85,
+                    sensitivity: 'medium',
+                    autoCalibration: true,
+                    sleepTimer: 30
+                };
+                applySettings();
+                updateUI();
+                showAlert('Factory reset completed. Settings restored to defaults.', 'success');
+            }
+        }
+
         function deleteAllData() {
             if (confirm('Are you sure you want to delete all stored data? This action cannot be undone.')) {
                 if (confirm('This will permanently delete ALL your bionic hand data. Are you absolutely sure?')) {
-                    alert('All data has been deleted.');
+                    // Simulate data deletion
+                    setTimeout(() => {
+                        showAlert('All data has been deleted successfully.', 'success');
+                    }, 1000);
                 }
             }
         }
-        
-        function emergencyStop() {
+
+        async function emergencyStop() {
             if (confirm('Are you sure you want to emergency stop the bionic hand?')) {
-                alert('Emergency stop activated!');
+                try {
+                    const response = await fetch('/api/control/', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': getCookie('csrftoken')
+                        },
+                        body: JSON.stringify({ command: 'emergency_stop' })
+                    });
+
+                    const result = await response.json();
+
+                    if (result.success) {
+                        showAlert('Emergency stop activated!', 'warning');
+                    } else {
+                        showAlert(`Emergency stop failed: ${result.message}`, 'warning');
+                    }
+                } catch (error) {
+                    console.error('Emergency stop failed:', error);
+                    showAlert('Emergency stop failed. Please check connection.', 'warning');
+                }
             }
         }
+
+        // Get CSRF token for Django
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        // Initialize settings on page load
+        document.addEventListener('DOMContentLoaded', function () {
+            loadSettings();
+
+            // Add event listeners for real-time updates
+            document.getElementById('theme').addEventListener('change', toggleTheme);
+
+            // Auto-save for checkboxes and selects
+            document.querySelectorAll('input[type="checkbox"], select').forEach(element => {
+                element.addEventListener('change', function () {
+                    if (settings.autoSave) {
+                        const key = this.id.replace('-', '');
+                        const value = this.type === 'checkbox' ? this.checked : this.value;
+                        updateSetting(key, value);
+                    }
+                });
+            });
+        });
     </script>
 </body>
+
 </html>
