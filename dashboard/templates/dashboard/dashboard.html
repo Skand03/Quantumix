@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bionic Hand IoT Dashboard</title>
+    <title>Bionic Hand IoT Dashboard - Quantumix</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -16,7 +17,208 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
-            padding: 20px;
+        }
+        
+        /* Navigation Bar */
+        .navbar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 15px 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+        
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #4a5568;
+            text-decoration: none;
+        }
+        
+        .nav-brand i {
+            margin-right: 10px;
+            font-size: 1.2em;
+            color: #667eea;
+        }
+        
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 30px;
+        }
+        
+        .nav-item a {
+            text-decoration: none;
+            color: #4a5568;
+            font-weight: 500;
+            padding: 10px 15px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .nav-item a:hover, .nav-item a.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            transform: translateY(-2px);
+        }
+        
+        .nav-controls {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 15px;
+            background: #48bb78;
+            color: white;
+            border-radius: 20px;
+            font-size: 0.9em;
+        }
+        
+        .emergency-btn {
+            background: #e53e3e;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .emergency-btn:hover {
+            background: #c53030;
+            transform: scale(1.05);
+        }
+        
+        /* Control Panel Button Styles */
+        .control-btn {
+            border: none;
+            color: white;
+            font-weight: bold;
+            font-size: 14px;
+            padding: 15px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            min-width: 120px;
+            justify-content: center;
+        }
+
+        .start-btn {
+            background: linear-gradient(135deg, #38a169, #2f855a);
+        }
+
+        .start-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(56, 161, 105, 0.3);
+        }
+
+        .stop-btn {
+            background: linear-gradient(135deg, #e53e3e, #c53030);
+        }
+
+        .stop-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(229, 62, 62, 0.3);
+        }
+
+        .calibrate-btn {
+            background: linear-gradient(135deg, #3182ce, #2c5282);
+        }
+
+        .calibrate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(49, 130, 206, 0.3);
+        }
+
+        .emergency-btn-large {
+            background: linear-gradient(135deg, #e53e3e, #c53030);
+            border: 3px solid #fff;
+            animation: pulse 2s infinite;
+        }
+
+        .emergency-btn-large:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(229, 62, 62, 0.4);
+        }
+
+        .reset-btn {
+            background: linear-gradient(135deg, #805ad5, #6b46c1);
+        }
+
+        .reset-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(128, 90, 213, 0.3);
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(229, 62, 62, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(229, 62, 62, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(229, 62, 62, 0); }
+        }
+
+        .device-message {
+            text-align: center;
+            padding: 10px;
+            margin-top: 15px;
+            border-radius: 6px;
+            font-weight: bold;
+        }
+
+        .message-success {
+            background: #c6f6d5;
+            color: #22543d;
+            border: 1px solid #9ae6b4;
+        }
+
+        .message-error {
+            background: #fed7d7;
+            color: #742a2a;
+            border: 1px solid #fc8181;
+        }
+        
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+            padding: 5px;
+        }
+        
+        .hamburger span {
+            width: 25px;
+            height: 3px;
+            background: #4a5568;
+            margin: 3px 0;
+            transition: 0.3s;
+        }
+        
+        /* Main Content */
+        .main-content {
+            padding: 30px 20px;
         }
         
         .container {
@@ -28,16 +230,20 @@
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
         }
         
-        .header {
+        .page-header {
             text-align: center;
             margin-bottom: 30px;
-            color: #333;
         }
         
-        .header h1 {
+        .page-header h1 {
             font-size: 2.5em;
             margin-bottom: 10px;
             color: #4a5568;
+        }
+        
+        .page-header p {
+            color: #718096;
+            font-size: 1.1em;
         }
         
         .status-bar {
@@ -57,6 +263,11 @@
             min-width: 200px;
             text-align: center;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+        
+        .status-card:hover {
+            transform: translateY(-5px);
         }
         
         .status-card h3 {
@@ -81,6 +292,11 @@
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+        
+        .chart-card:hover {
+            transform: translateY(-5px);
         }
         
         .chart-card h3 {
@@ -114,6 +330,11 @@
             background: #f7fafc;
             border-radius: 8px;
             border: 2px solid #e2e8f0;
+            transition: all 0.3s ease;
+        }
+        
+        .finger:hover {
+            transform: scale(1.05);
         }
         
         .finger-name {
@@ -152,7 +373,55 @@
             display: none;
         }
         
+        /* Mobile Responsive */
         @media (max-width: 768px) {
+            .nav-menu {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background: rgba(255, 255, 255, 0.95);
+                flex-direction: column;
+                gap: 0;
+                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            }
+            
+            .nav-menu.active {
+                display: flex;
+            }
+            
+            .nav-item {
+                border-bottom: 1px solid #e2e8f0;
+            }
+            
+            .nav-item:last-child {
+                border-bottom: none;
+            }
+            
+            .nav-item a {
+                padding: 15px 20px;
+                border-radius: 0;
+            }
+            
+            .hamburger {
+                display: flex;
+            }
+            
+            .nav-controls {
+                gap: 10px;
+            }
+            
+            .emergency-btn {
+                padding: 8px 12px;
+                font-size: 0.9em;
+            }
+            
+            .status-indicator {
+                padding: 6px 10px;
+                font-size: 0.8em;
+            }
+            
             .charts-container {
                 grid-template-columns: 1fr;
             }
@@ -164,16 +433,84 @@
             .status-bar {
                 flex-direction: column;
             }
+            
+            .main-content {
+                padding: 20px 10px;
+            }
+            
+            .container {
+                padding: 20px;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>🦾 Bionic Hand IoT Dashboard</h1>
-            <p>Real-time monitoring and control system</p>
-            <div class="online-indicator"></div> Live Data Feed
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="/" class="nav-brand">
+                <i class="fas fa-hand-rock"></i>
+                Quantumix
+            </a>
+            
+            <ul class="nav-menu" id="navMenu">
+                <li class="nav-item">
+                    <a href="/" class="active">
+                        <i class="fas fa-tachometer-alt"></i>
+                        Dashboard
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/analytics/">
+                        <i class="fas fa-chart-line"></i>
+                        Analytics
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/control/">
+                        <i class="fas fa-sliders-h"></i>
+                        Device Control
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/settings/">
+                        <i class="fas fa-cog"></i>
+                        Settings
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/about/">
+                        <i class="fas fa-info-circle"></i>
+                        About
+                    </a>
+                </li>
+            </ul>
+            
+            <div class="nav-controls">
+                <div class="status-indicator">
+                    <div class="online-indicator"></div>
+                    Connected
+                </div>
+                <button class="emergency-btn" onclick="emergencyStop()">
+                    <i class="fas fa-stop"></i>
+                    STOP
+                </button>
+                <div class="hamburger" onclick="toggleMenu()">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
         </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="container">
+            <div class="page-header">
+                <h1>🦾 Bionic Hand Dashboard</h1>
+                <p>Real-time monitoring and control system</p>
+            </div>
         
         <div class="error-message" id="errorMessage">
             Connection error. Please check your network connection.
@@ -196,6 +533,32 @@
                 <h3>Grip Force</h3>
                 <div class="value" id="gripForce">0%</div>
             </div>
+        </div>
+
+        <!-- Device Control Panel -->
+        <div style="background: white; padding: 25px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1); margin-bottom: 30px;">
+            <h3 style="color: #4a5568; margin-bottom: 20px; text-align: center;">
+                <i class="fas fa-play-circle"></i> Device Control Panel
+            </h3>
+            <div style="display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;">
+                <button id="startStopBtn" class="control-btn start-btn" onclick="toggleDevice()">
+                    <i class="fas fa-play"></i>
+                    <span id="btnText">Start</span>
+                </button>
+                <button class="control-btn calibrate-btn" onclick="calibrateDevice()">
+                    <i class="fas fa-cogs"></i>
+                    Calibrate
+                </button>
+                <button class="control-btn emergency-btn-large" onclick="emergencyStop()">
+                    <i class="fas fa-stop"></i>
+                    Emergency Stop
+                </button>
+                <button class="control-btn reset-btn" onclick="resetDevice()">
+                    <i class="fas fa-undo"></i>
+                    Reset
+                </button>
+            </div>
+            <div id="deviceMessage" class="device-message" style="display: none;"></div>
         </div>
         
         <div class="charts-container">
@@ -233,10 +596,207 @@
                     <div class="finger-value" id="finger4">0°</div>
                 </div>
             </div>
+            </div>
         </div>
     </div>
 
     <script>
+        // Mobile menu toggle
+        function toggleMenu() {
+            const navMenu = document.getElementById('navMenu');
+            navMenu.classList.toggle('active');
+        }
+        
+        // Device control variables
+        let deviceRunning = false;
+        
+        // Toggle device start/stop
+        async function toggleDevice() {
+            const button = document.getElementById('startStopBtn');
+            const btnIcon = button.querySelector('i');
+            const btnText = document.getElementById('btnText');
+            const messageDiv = document.getElementById('deviceMessage');
+            
+            try {
+                const command = deviceRunning ? 'stop' : 'start';
+                const response = await fetch('/api/control/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCookie('csrftoken')
+                    },
+                    body: JSON.stringify({command: command})
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    deviceRunning = !deviceRunning;
+                    
+                    if (deviceRunning) {
+                        button.className = 'control-btn stop-btn';
+                        btnIcon.className = 'fas fa-stop';
+                        btnText.textContent = 'Stop';
+                        showMessage('Device started successfully', 'success');
+                    } else {
+                        button.className = 'control-btn start-btn';
+                        btnIcon.className = 'fas fa-play';
+                        btnText.textContent = 'Start';
+                        showMessage('Device stopped successfully', 'success');
+                    }
+                } else {
+                    showMessage(`Error: ${result.message}`, 'error');
+                }
+            } catch (error) {
+                console.error('Control command failed:', error);
+                showMessage('Connection error. Please try again.', 'error');
+            }
+        }
+        
+        // Calibrate device
+        async function calibrateDevice() {
+            if (!confirm('Start device calibration? This may take a few seconds.')) return;
+            
+            try {
+                const response = await fetch('/api/control/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCookie('csrftoken')
+                    },
+                    body: JSON.stringify({command: 'calibrate'})
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showMessage('Calibration completed successfully', 'success');
+                } else {
+                    showMessage(`Calibration failed: ${result.message}`, 'error');
+                }
+            } catch (error) {
+                console.error('Calibration failed:', error);
+                showMessage('Calibration error. Please try again.', 'error');
+            }
+        }
+        
+        // Emergency stop function (updated)
+        async function emergencyStop() {
+            if (confirm('Are you sure you want to emergency stop the bionic hand?')) {
+                try {
+                    const response = await fetch('/api/control/', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': getCookie('csrftoken')
+                        },
+                        body: JSON.stringify({command: 'emergency_stop'})
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        deviceRunning = false;
+                        const button = document.getElementById('startStopBtn');
+                        button.className = 'control-btn start-btn';
+                        button.querySelector('i').className = 'fas fa-play';
+                        document.getElementById('btnText').textContent = 'Start';
+                        showMessage('Emergency stop activated!', 'success');
+                    } else {
+                        showMessage(`Emergency stop failed: ${result.message}`, 'error');
+                    }
+                } catch (error) {
+                    console.error('Emergency stop failed:', error);
+                    showMessage('Emergency stop failed. Please check connection.', 'error');
+                }
+            }
+        }
+        
+        // Reset device
+        async function resetDevice() {
+            if (!confirm('Reset the device to default settings?')) return;
+            
+            try {
+                const response = await fetch('/api/control/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCookie('csrftoken')
+                    },
+                    body: JSON.stringify({command: 'reset'})
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    deviceRunning = false;
+                    const button = document.getElementById('startStopBtn');
+                    button.className = 'control-btn start-btn';
+                    button.querySelector('i').className = 'fas fa-play';
+                    document.getElementById('btnText').textContent = 'Start';
+                    showMessage('Device reset successfully', 'success');
+                } else {
+                    showMessage(`Reset failed: ${result.message}`, 'error');
+                }
+            } catch (error) {
+                console.error('Reset failed:', error);
+                showMessage('Reset error. Please try again.', 'error');
+            }
+        }
+        
+        // Show message to user
+        function showMessage(message, type) {
+            const messageDiv = document.getElementById('deviceMessage');
+            messageDiv.textContent = message;
+            messageDiv.className = `device-message message-${type}`;
+            messageDiv.style.display = 'block';
+            
+            // Hide message after 5 seconds
+            setTimeout(() => {
+                messageDiv.style.display = 'none';
+            }, 5000);
+        }
+        
+        // Get CSRF token for Django
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+        
+        // Emergency stop function
+        function emergencyStop() {
+            if (confirm('Are you sure you want to emergency stop the bionic hand?')) {
+                // Send emergency stop command to API
+                fetch('/api/emergency-stop/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({action: 'emergency_stop'})
+                }).then(response => {
+                    if (response.ok) {
+                        alert('Emergency stop activated!');
+                        // Update status indicator
+                        document.querySelector('.status-indicator').innerHTML = 
+                            '<div style="width: 12px; height: 12px; background: #e53e3e; border-radius: 50%;"></div> Emergency Stop';
+                        document.querySelector('.status-indicator').style.background = '#e53e3e';
+                    }
+                }).catch(error => {
+                    console.error('Emergency stop failed:', error);
+                    alert('Emergency stop failed. Please check connection.');
+                });
+            }
+        }
         // Initialize charts
         const gripCtx = document.getElementById('gripChart').getContext('2d');
         const emgCtx = document.getElementById('emgChart').getContext('2d');
@@ -304,10 +864,29 @@
         // Update display elements
         function updateDisplay(data) {
             // Update status cards
-            document.getElementById('handStatus').textContent = data.hand_status || 'Unknown';
+            const handStatus = data.is_running ? 'Running' : (data.emergency_stop ? 'Emergency Stop' : 'Stopped');
+            document.getElementById('handStatus').textContent = handStatus;
             document.getElementById('emgSignal').textContent = data.emg_signal || '0';
             document.getElementById('temperature').textContent = data.temperature ? data.temperature.toFixed(1) + '°C' : '0°C';
             document.getElementById('gripForce').textContent = (data.grip_force || 0) + '%';
+            
+            // Update device running state
+            deviceRunning = data.is_running || false;
+            const button = document.getElementById('startStopBtn');
+            if (button) {
+                const btnIcon = button.querySelector('i');
+                const btnText = document.getElementById('btnText');
+                
+                if (deviceRunning) {
+                    button.className = 'control-btn stop-btn';
+                    if (btnIcon) btnIcon.className = 'fas fa-stop';
+                    if (btnText) btnText.textContent = 'Stop';
+                } else {
+                    button.className = 'control-btn start-btn';
+                    if (btnIcon) btnIcon.className = 'fas fa-play';
+                    if (btnText) btnText.textContent = 'Start';
+                }
+            }
             
             // Update finger sensors
             if (data.flex_sensor && Array.isArray(data.flex_sensor)) {

@@ -1,0 +1,756 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings - Bionic Hand IoT Dashboard</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        /* Navigation Bar */
+        .navbar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 15px 0;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+        
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #4a5568;
+            text-decoration: none;
+        }
+        
+        .nav-brand i {
+            margin-right: 10px;
+            font-size: 1.2em;
+            color: #667eea;
+        }
+        
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 30px;
+        }
+        
+        .nav-item a {
+            text-decoration: none;
+            color: #4a5568;
+            font-weight: 500;
+            padding: 10px 15px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .nav-item a:hover, .nav-item a.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            transform: translateY(-2px);
+        }
+        
+        .nav-controls {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 15px;
+            background: #48bb78;
+            color: white;
+            border-radius: 20px;
+            font-size: 0.9em;
+        }
+        
+        .online-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            background: #48bb78;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        
+        .emergency-btn {
+            background: #e53e3e;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .emergency-btn:hover {
+            background: #c53030;
+            transform: scale(1.05);
+        }
+        
+        /* Main Content */
+        .main-content {
+            padding: 30px 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+        
+        .page-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .page-header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            color: #4a5568;
+        }
+        
+        .page-header p {
+            color: #718096;
+            font-size: 1.1em;
+        }
+        
+        .settings-container {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            gap: 30px;
+        }
+        
+        .settings-sidebar {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            height: fit-content;
+        }
+        
+        .settings-nav {
+            list-style: none;
+        }
+        
+        .settings-nav li {
+            margin-bottom: 10px;
+        }
+        
+        .settings-nav a {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 15px;
+            text-decoration: none;
+            color: #4a5568;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .settings-nav a:hover, .settings-nav a.active {
+            background: #667eea;
+            color: white;
+        }
+        
+        .settings-content {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .setting-section {
+            display: none;
+            margin-bottom: 30px;
+        }
+        
+        .setting-section.active {
+            display: block;
+        }
+        
+        .setting-section h3 {
+            color: #4a5568;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #4a5568;
+            font-weight: 500;
+        }
+        
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.3s ease;
+        }
+        
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 30px;
+        }
+        
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            border-radius: 30px;
+            transition: .4s;
+        }
+        
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 22px;
+            width: 22px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            border-radius: 50%;
+            transition: .4s;
+        }
+        
+        input:checked + .toggle-slider {
+            background-color: #667eea;
+        }
+        
+        input:checked + .toggle-slider:before {
+            transform: translateX(30px);
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-right: 10px;
+        }
+        
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #5a67d8;
+            transform: translateY(-2px);
+        }
+        
+        .btn-secondary {
+            background: #718096;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: #4a5568;
+        }
+        
+        .btn-danger {
+            background: #e53e3e;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background: #c53030;
+        }
+        
+        .alert {
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            border-left: 4px solid;
+        }
+        
+        .alert-success {
+            background: #f0fff4;
+            color: #276749;
+            border-left-color: #48bb78;
+        }
+        
+        .alert-warning {
+            background: #fffbeb;
+            color: #744210;
+            border-left-color: #ed8936;
+        }
+        
+        @media (max-width: 768px) {
+            .settings-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="/" class="nav-brand">
+                <i class="fas fa-hand-rock"></i>
+                Quantumix
+            </a>
+            
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="/">
+                        <i class="fas fa-tachometer-alt"></i>
+                        Dashboard
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/analytics/">
+                        <i class="fas fa-chart-line"></i>
+                        Analytics
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/control/">
+                        <i class="fas fa-sliders-h"></i>
+                        Device Control
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/settings/" class="active">
+                        <i class="fas fa-cog"></i>
+                        Settings
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/about/">
+                        <i class="fas fa-info-circle"></i>
+                        About
+                    </a>
+                </li>
+            </ul>
+            
+            <div class="nav-controls">
+                <div class="status-indicator">
+                    <div class="online-indicator"></div>
+                    Connected
+                </div>
+                <button class="emergency-btn" onclick="emergencyStop()">
+                    <i class="fas fa-stop"></i>
+                    STOP
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="container">
+            <div class="page-header">
+                <h1>⚙️ Settings</h1>
+                <p>Configure your bionic hand preferences</p>
+            </div>
+            
+            <div class="settings-container">
+                <!-- Settings Sidebar -->
+                <div class="settings-sidebar">
+                    <ul class="settings-nav">
+                        <li><a href="#" class="active" onclick="showSection('general')">
+                            <i class="fas fa-cog"></i> General
+                        </a></li>
+                        <li><a href="#" onclick="showSection('display')">
+                            <i class="fas fa-desktop"></i> Display
+                        </a></li>
+                        <li><a href="#" onclick="showSection('notifications')">
+                            <i class="fas fa-bell"></i> Notifications
+                        </a></li>
+                        <li><a href="#" onclick="showSection('device')">
+                            <i class="fas fa-hand-rock"></i> Device
+                        </a></li>
+                        <li><a href="#" onclick="showSection('security')">
+                            <i class="fas fa-shield-alt"></i> Security
+                        </a></li>
+                        <li><a href="#" onclick="showSection('data')">
+                            <i class="fas fa-database"></i> Data & Privacy
+                        </a></li>
+                    </ul>
+                </div>
+                
+                <!-- Settings Content -->
+                <div class="settings-content">
+                    <!-- General Settings -->
+                    <div id="general" class="setting-section active">
+                        <h3><i class="fas fa-cog"></i> General Settings</h3>
+                        
+                        <div class="form-group">
+                            <label>Device Name</label>
+                            <input type="text" value="My Bionic Hand" placeholder="Enter device name">
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Language</label>
+                                <select>
+                                    <option>English</option>
+                                    <option>Spanish</option>
+                                    <option>French</option>
+                                    <option>German</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Time Zone</label>
+                                <select>
+                                    <option>UTC-05:00 (EST)</option>
+                                    <option>UTC+00:00 (GMT)</option>
+                                    <option>UTC+01:00 (CET)</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Auto-save Settings</label>
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <label class="toggle-switch">
+                                    <input type="checkbox" checked>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                                <span>Automatically save configuration changes</span>
+                            </div>
+                        </div>
+                        
+                        <button class="btn btn-primary">Save General Settings</button>
+                    </div>
+                    
+                    <!-- Display Settings -->
+                    <div id="display" class="setting-section">
+                        <h3><i class="fas fa-desktop"></i> Display Settings</h3>
+                        
+                        <div class="form-group">
+                            <label>Dashboard Theme</label>
+                            <select>
+                                <option>Light Theme</option>
+                                <option>Dark Theme</option>
+                                <option>Auto (System)</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Chart Update Interval</label>
+                            <select>
+                                <option>1 second</option>
+                                <option selected>2 seconds</option>
+                                <option>5 seconds</option>
+                                <option>10 seconds</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Show Grid Lines</label>
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <label class="toggle-switch">
+                                    <input type="checkbox" checked>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                                <span>Display grid lines on charts</span>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Animated Transitions</label>
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <label class="toggle-switch">
+                                    <input type="checkbox" checked>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                                <span>Enable smooth animations</span>
+                            </div>
+                        </div>
+                        
+                        <button class="btn btn-primary">Save Display Settings</button>
+                    </div>
+                    
+                    <!-- Notification Settings -->
+                    <div id="notifications" class="setting-section">
+                        <h3><i class="fas fa-bell"></i> Notification Settings</h3>
+                        
+                        <div class="form-group">
+                            <label>Email Notifications</label>
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <label class="toggle-switch">
+                                    <input type="checkbox" checked>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                                <span>Receive email alerts</span>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Email Address</label>
+                            <input type="email" value="user@example.com" placeholder="Enter your email">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Alert Conditions</label>
+                            <div style="margin-top: 10px;">
+                                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+                                    <input type="checkbox" checked>
+                                    <label>Device disconnection</label>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+                                    <input type="checkbox" checked>
+                                    <label>Low battery (below 20%)</label>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+                                    <input type="checkbox">
+                                    <label>High temperature (above 40°C)</label>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <input type="checkbox" checked>
+                                    <label>System errors</label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <button class="btn btn-primary">Save Notification Settings</button>
+                    </div>
+                    
+                    <!-- Device Settings -->
+                    <div id="device" class="setting-section">
+                        <h3><i class="fas fa-hand-rock"></i> Device Settings</h3>
+                        
+                        <div class="alert alert-warning">
+                            <strong>Warning:</strong> Changing device settings may affect performance. Please consult your healthcare provider before making significant changes.
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Max Grip Force (%)</label>
+                                <input type="number" value="85" min="10" max="100">
+                            </div>
+                            <div class="form-group">
+                                <label>Response Sensitivity</label>
+                                <select>
+                                    <option>Low</option>
+                                    <option selected>Medium</option>
+                                    <option>High</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Auto-calibration</label>
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <label class="toggle-switch">
+                                    <input type="checkbox" checked>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                                <span>Automatically calibrate sensors weekly</span>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Sleep Mode Timer (minutes)</label>
+                            <input type="number" value="30" min="5" max="120">
+                        </div>
+                        
+                        <button class="btn btn-primary">Save Device Settings</button>
+                        <button class="btn btn-secondary" onclick="factoryReset()">Factory Reset</button>
+                    </div>
+                    
+                    <!-- Security Settings -->
+                    <div id="security" class="setting-section">
+                        <h3><i class="fas fa-shield-alt"></i> Security Settings</h3>
+                        
+                        <div class="form-group">
+                            <label>Enable PIN Protection</label>
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <label class="toggle-switch">
+                                    <input type="checkbox">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                                <span>Require PIN to access dashboard</span>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Session Timeout (minutes)</label>
+                            <select>
+                                <option>15</option>
+                                <option selected>30</option>
+                                <option>60</option>
+                                <option>Never</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Two-Factor Authentication</label>
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <label class="toggle-switch">
+                                    <input type="checkbox">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                                <span>Enable 2FA for enhanced security</span>
+                            </div>
+                        </div>
+                        
+                        <button class="btn btn-primary">Save Security Settings</button>
+                    </div>
+                    
+                    <!-- Data & Privacy Settings -->
+                    <div id="data" class="setting-section">
+                        <h3><i class="fas fa-database"></i> Data & Privacy</h3>
+                        
+                        <div class="form-group">
+                            <label>Data Collection</label>
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <label class="toggle-switch">
+                                    <input type="checkbox" checked>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                                <span>Allow anonymous usage analytics</span>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Data Retention Period</label>
+                            <select>
+                                <option>1 month</option>
+                                <option>3 months</option>
+                                <option selected>6 months</option>
+                                <option>1 year</option>
+                                <option>Forever</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Export Data</label>
+                            <p style="color: #718096; margin-bottom: 10px;">Download all your bionic hand data for personal records</p>
+                            <button class="btn btn-secondary">Export All Data</button>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Delete All Data</label>
+                            <p style="color: #718096; margin-bottom: 10px;">Permanently delete all stored sensor data</p>
+                            <button class="btn btn-danger" onclick="deleteAllData()">Delete All Data</button>
+                        </div>
+                        
+                        <button class="btn btn-primary">Save Privacy Settings</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showSection(sectionId) {
+            // Hide all sections
+            document.querySelectorAll('.setting-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Show selected section
+            document.getElementById(sectionId).classList.add('active');
+            
+            // Update navigation
+            document.querySelectorAll('.settings-nav a').forEach(link => {
+                link.classList.remove('active');
+            });
+            event.target.classList.add('active');
+        }
+        
+        function factoryReset() {
+            if (confirm('Are you sure you want to reset all settings to factory defaults? This action cannot be undone.')) {
+                alert('Factory reset completed. Please recalibrate your device.');
+            }
+        }
+        
+        function deleteAllData() {
+            if (confirm('Are you sure you want to delete all stored data? This action cannot be undone.')) {
+                if (confirm('This will permanently delete ALL your bionic hand data. Are you absolutely sure?')) {
+                    alert('All data has been deleted.');
+                }
+            }
+        }
+        
+        function emergencyStop() {
+            if (confirm('Are you sure you want to emergency stop the bionic hand?')) {
+                alert('Emergency stop activated!');
+            }
+        }
+    </script>
+</body>
+</html>

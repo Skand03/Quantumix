@@ -1,0 +1,548 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About - Bionic Hand IoT Dashboard</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        /* Navigation Bar */
+        .navbar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 15px 0;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+        
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #4a5568;
+            text-decoration: none;
+        }
+        
+        .nav-brand i {
+            margin-right: 10px;
+            font-size: 1.2em;
+            color: #667eea;
+        }
+        
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 30px;
+        }
+        
+        .nav-item a {
+            text-decoration: none;
+            color: #4a5568;
+            font-weight: 500;
+            padding: 10px 15px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .nav-item a:hover, .nav-item a.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            transform: translateY(-2px);
+        }
+        
+        .nav-controls {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 15px;
+            background: #48bb78;
+            color: white;
+            border-radius: 20px;
+            font-size: 0.9em;
+        }
+        
+        .online-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            background: #48bb78;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        
+        .emergency-btn {
+            background: #e53e3e;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .emergency-btn:hover {
+            background: #c53030;
+            transform: scale(1.05);
+        }
+        
+        /* Main Content */
+        .main-content {
+            padding: 30px 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+        
+        .page-header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+        
+        .page-header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            color: #4a5568;
+        }
+        
+        .page-header p {
+            color: #718096;
+            font-size: 1.1em;
+        }
+        
+        .about-section {
+            margin-bottom: 40px;
+        }
+        
+        .about-section h2 {
+            color: #4a5568;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.8em;
+        }
+        
+        .about-section p {
+            color: #718096;
+            line-height: 1.6;
+            font-size: 1.1em;
+            margin-bottom: 15px;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin: 30px 0;
+        }
+        
+        .feature-card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .feature-card h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .feature-card p {
+            color: #718096;
+            line-height: 1.5;
+        }
+        
+        .tech-stack {
+            background: #f7fafc;
+            padding: 20px;
+            border-radius: 12px;
+            margin: 30px 0;
+        }
+        
+        .tech-stack h3 {
+            color: #4a5568;
+            margin-bottom: 15px;
+        }
+        
+        .tech-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        
+        .tech-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #718096;
+        }
+        
+        .version-info {
+            background: #667eea;
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            margin: 30px 0;
+        }
+        
+        .version-info h3 {
+            margin-bottom: 10px;
+        }
+        
+        .team-section {
+            text-align: center;
+        }
+        
+        .team-member {
+            display: inline-block;
+            margin: 10px 20px;
+            text-align: center;
+        }
+        
+        .team-member img {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            margin-bottom: 10px;
+        }
+        
+        .contact-info {
+            background: #f7fafc;
+            padding: 20px;
+            border-radius: 12px;
+            margin: 30px 0;
+        }
+        
+        .contact-info h3 {
+            color: #4a5568;
+            margin-bottom: 15px;
+        }
+        
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+            color: #718096;
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 24px;
+            background: #667eea;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            margin: 5px;
+        }
+        
+        .btn:hover {
+            background: #5a67d8;
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="/" class="nav-brand">
+                <i class="fas fa-hand-rock"></i>
+                Quantumix
+            </a>
+            
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="/">
+                        <i class="fas fa-tachometer-alt"></i>
+                        Dashboard
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/analytics/">
+                        <i class="fas fa-chart-line"></i>
+                        Analytics
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/control/">
+                        <i class="fas fa-sliders-h"></i>
+                        Device Control
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/settings/">
+                        <i class="fas fa-cog"></i>
+                        Settings
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/about/" class="active">
+                        <i class="fas fa-info-circle"></i>
+                        About
+                    </a>
+                </li>
+            </ul>
+            
+            <div class="nav-controls">
+                <div class="status-indicator">
+                    <div class="online-indicator"></div>
+                    Connected
+                </div>
+                <button class="emergency-btn" onclick="emergencyStop()">
+                    <i class="fas fa-stop"></i>
+                    STOP
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="container">
+            <div class="page-header">
+                <h1>ℹ️ About Quantumix</h1>
+                <p>Advanced Bionic Hand IoT Monitoring System</p>
+            </div>
+            
+            <!-- Project Overview -->
+            <div class="about-section">
+                <h2><i class="fas fa-rocket"></i> Project Overview</h2>
+                <p>
+                    Quantumix is a cutting-edge IoT monitoring dashboard designed specifically for bionic hand prosthetics. 
+                    Our mission is to provide real-time insights, precise control, and comprehensive analytics to enhance 
+                    the quality of life for prosthetic users.
+                </p>
+                <p>
+                    Built with modern web technologies and optimized for medical applications, this platform bridges the gap 
+                    between advanced prosthetic hardware and user-friendly software interfaces.
+                </p>
+            </div>
+            
+            <!-- Key Features -->
+            <div class="about-section">
+                <h2><i class="fas fa-star"></i> Key Features</h2>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <h3><i class="fas fa-tachometer-alt"></i> Real-time Monitoring</h3>
+                        <p>Live sensor data updates every 2 seconds, providing instant feedback on grip force, EMG signals, temperature, and finger movements.</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <h3><i class="fas fa-chart-line"></i> Advanced Analytics</h3>
+                        <p>Comprehensive data visualization with historical trends, usage patterns, and performance metrics to track progress over time.</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <h3><i class="fas fa-sliders-h"></i> Precise Control</h3>
+                        <p>Manual control interface for calibration, grip force adjustment, individual finger positioning, and power management.</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <h3><i class="fas fa-shield-alt"></i> Safety Features</h3>
+                        <p>Emergency stop functionality, temperature monitoring, battery management, and automated safety protocols.</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <h3><i class="fas fa-mobile-alt"></i> Responsive Design</h3>
+                        <p>Fully responsive interface that works seamlessly across desktop, tablet, and mobile devices for monitoring on-the-go.</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <h3><i class="fas fa-cog"></i> Customizable Settings</h3>
+                        <p>Personalized configuration options for display preferences, notifications, device parameters, and privacy controls.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Technology Stack -->
+            <div class="about-section">
+                <h2><i class="fas fa-code"></i> Technology Stack</h2>
+                <div class="tech-stack">
+                    <h3>Built with Modern Technologies</h3>
+                    <div class="tech-list">
+                        <div class="tech-item">
+                            <i class="fab fa-python"></i>
+                            <span>Django 5.2.6 (Backend)</span>
+                        </div>
+                        <div class="tech-item">
+                            <i class="fab fa-js-square"></i>
+                            <span>JavaScript (Frontend)</span>
+                        </div>
+                        <div class="tech-item">
+                            <i class="fas fa-chart-bar"></i>
+                            <span>Chart.js (Visualizations)</span>
+                        </div>
+                        <div class="tech-item">
+                            <i class="fab fa-html5"></i>
+                            <span>HTML5 & CSS3</span>
+                        </div>
+                        <div class="tech-item">
+                            <i class="fas fa-database"></i>
+                            <span>SQLite Database</span>
+                        </div>
+                        <div class="tech-item">
+                            <i class="fas fa-wifi"></i>
+                            <span>AJAX Real-time Updates</span>
+                        </div>
+                        <div class="tech-item">
+                            <i class="fab fa-font-awesome"></i>
+                            <span>Font Awesome Icons</span>
+                        </div>
+                        <div class="tech-item">
+                            <i class="fas fa-cloud"></i>
+                            <span>RESTful API Design</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Version Information -->
+            <div class="version-info">
+                <h3>Current Version</h3>
+                <p><strong>v1.0.0</strong> - Initial Release</p>
+                <p>Released: September 24, 2025</p>
+                <p>Next Update: October 2025 (Enhanced AI Features)</p>
+            </div>
+            
+            <!-- Developer Information -->
+            <div class="about-section team-section">
+                <h2><i class="fas fa-users"></i> Development Team</h2>
+                <p>Quantumix is developed with passion and dedication to advancing prosthetic technology.</p>
+                
+                <div style="margin: 30px 0;">
+                    <div class="team-member">
+                        <div style="width: 80px; height: 80px; background: #667eea; border-radius: 50%; margin: 0 auto 10px; display: flex; align-items: center; justify-content: center; color: white; font-size: 2em;">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <h4>Lead Developer</h4>
+                        <p style="color: #718096;">Full-stack Development</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Contact Information -->
+            <div class="about-section">
+                <h2><i class="fas fa-envelope"></i> Contact & Support</h2>
+                <div class="contact-info">
+                    <h3>Get in Touch</h3>
+                    <div class="contact-item">
+                        <i class="fab fa-github"></i>
+                        <span>GitHub: <a href="https://github.com/Skand03/Quantumix" target="_blank">github.com/Skand03/Quantumix</a></span>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-envelope"></i>
+                        <span>Email: support@quantumix.com</span>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-globe"></i>
+                        <span>Website: www.quantumix.com</span>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-phone"></i>
+                        <span>Support: +1 (555) 123-4567</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Quick Actions -->
+            <div style="text-align: center; margin-top: 40px;">
+                <h3 style="color: #4a5568; margin-bottom: 20px;">Quick Actions</h3>
+                <a href="/" class="btn">
+                    <i class="fas fa-home"></i>
+                    Back to Dashboard
+                </a>
+                <a href="/analytics/" class="btn">
+                    <i class="fas fa-chart-line"></i>
+                    View Analytics
+                </a>
+                <a href="/settings/" class="btn">
+                    <i class="fas fa-cog"></i>
+                    Open Settings
+                </a>
+                <a href="https://github.com/Skand03/Quantumix" target="_blank" class="btn">
+                    <i class="fab fa-github"></i>
+                    View Source Code
+                </a>
+            </div>
+            
+            <!-- Footer -->
+            <div style="text-align: center; margin-top: 50px; padding-top: 30px; border-top: 2px solid #e2e8f0; color: #718096;">
+                <p>&copy; 2025 Quantumix. Built for advancing prosthetic technology.</p>
+                <p style="font-size: 0.9em; margin-top: 10px;">
+                    This project is open source and available under the MIT License.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function emergencyStop() {
+            if (confirm('Are you sure you want to emergency stop the bionic hand?')) {
+                alert('Emergency stop activated!');
+            }
+        }
+    </script>
+</body>
+</html>
