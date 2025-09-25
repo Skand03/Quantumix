@@ -18,6 +18,10 @@ import io
 import numpy as np
 from datetime import datetime, timedelta
 
+def offline_view(request):
+    """Offline page for PWA functionality"""
+    return render(request, 'dashboard/offline.html')
+
 def test_functionality_view(request):
     """Test page for medical functionality"""
     return render(request, 'dashboard/test_functionality.html')
@@ -108,37 +112,35 @@ def device_control_api(request):
 def xray_analysis_api(request):
     if request.method == 'POST':
         try:
-            # Simulate ML analysis with dummy results
-            detection_results = {
-                'fracture': {
-                    'detected': random.choice([True, False]),
-                    'confidence': round(random.uniform(75, 95), 1),
-                    'location': random.choice(['Metacarpal', 'Phalanx', 'Radius', 'Ulna']) if random.choice([True, False]) else None
-                },
-                'bone_density': {
-                    'status': random.choice(['Normal', 'Low', 'Very Low']),
-                    'confidence': round(random.uniform(80, 98), 1),
-                    'recommendation': 'Regular monitoring advised'
-                },
-                'arthritis': {
-                    'detected': random.choice([True, False]),
-                    'severity': random.choice(['Mild', 'Moderate', 'Severe']) if random.choice([True, False]) else 'None',
-                    'confidence': round(random.uniform(70, 92), 1)
-                },
-                'overall_score': round(random.uniform(85, 95), 1),
-                'analysis_timestamp': datetime.now().isoformat()
-            }
+            from .bionic_hand_detector import analyze_bionic_hand_image
             
-            # Generate recommendations based on results
-            recommendations = generate_bionic_hand_recommendation(detection_results)
+            # Get image data from request
+            if 'image' in request.FILES:
+                # Handle file upload
+                image_file = request.FILES['image']
+                image_data = image_file.read()
+                filename = image_file.name
+            elif 'image_data' in request.POST:
+                # Handle base64 image data
+                image_data = request.POST['image_data']
+                filename = None
+            else:
+                return JsonResponse({
+                    'status': 'error', 
+                    'message': 'No image data provided. Please upload an image.'
+                })
             
-            return JsonResponse({
-                'status': 'success',
-                'results': detection_results,
-                'recommendations': recommendations
-            })
+            # Analyze the image using the bionic hand detector
+            analysis_result = analyze_bionic_hand_image(image_data, filename)
+            
+            return JsonResponse(analysis_result)
+            
         except Exception as e:
-            return JsonResponse({'status': 'error', 'message': str(e)})
+            return JsonResponse({
+                'status': 'error', 
+                'error_type': 'system_error',
+                'message': f'Analysis failed: {str(e)}'
+            })
     return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
 
 def generate_bionic_hand_recommendation(results):

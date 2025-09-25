@@ -429,89 +429,225 @@
             document.getElementById('loadingSection').style.display = 'block';
             document.getElementById('resultsSection').style.display = 'none';
 
-            // Simulate AI processing
-            setTimeout(() => {
-                const mockResults = generateMockAnalysis();
-                displayResults(mockResults);
+            try {
+                // Prepare form data
+                const formData = new FormData();
+                formData.append('image', currentFile);
+
+                // Get CSRF token
+                const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+                // Send to backend API
+                const response = await fetch('/api/xray-analysis/', {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-CSRFToken': csrfToken,
+                    }
+                });
+
+                const result = await response.json();
+
+                // Hide loading
                 document.getElementById('loadingSection').style.display = 'none';
+
+                if (result.status === 'success') {
+                    displaySuccessResults(result);
+                    document.getElementById('resultsSection').style.display = 'block';
+                } else {
+                    displayErrorResults(result);
+                    document.getElementById('resultsSection').style.display = 'block';
+                }
+
+            } catch (error) {
+                document.getElementById('loadingSection').style.display = 'none';
+                displayErrorResults({
+                    status: 'error',
+                    error_type: 'network_error',
+                    message: 'Network error occurred. Please try again.',
+                    suggestions: ['Check your internet connection', 'Try uploading again']
+                });
                 document.getElementById('resultsSection').style.display = 'block';
-            }, 3000);
+            }
         }
 
-        function generateMockAnalysis() {
-            const confidence = Math.random() * 30 + 70; // 70-100% confidence
-            const isDetected = confidence > 75;
+        function displaySuccessResults(result) {
+            const detection = result.detection;
+            const analysis = result.analysis;
 
-            return {
-                detected: isDetected,
-                confidence: confidence,
-                details: {
-                    'Hand Type': isDetected ? 'Bionic Prosthetic' : 'Natural Hand',
-                    'Classification': isDetected ? 'Advanced Bionic Hand' : 'Biological Hand',
-                    'Finger Count': '5 Fingers Detected',
-                    'Sensor Status': isDetected ? 'EMG Sensors Active' : 'No Sensors Detected',
-                    'Battery Level': isDetected ? Math.floor(Math.random() * 40 + 60) + '%' : 'N/A',
-                    'Control System': isDetected ? 'Neural Interface' : 'N/A',
-                    'Material': isDetected ? 'Carbon Fiber Composite' : 'Biological Tissue',
-                    'Grip Force': isDetected ? Math.floor(Math.random() * 50 + 30) + 'N' : 'N/A'
-                },
-                recommendations: isDetected ? [
-                    'Regular maintenance recommended',
-                    'Check sensor calibration',
-                    'Update firmware if needed',
-                    'Monitor battery levels'
-                ] : [
-                    'No bionic components detected',
-                    'Consider bionic hand upgrade',
-                    'Consult with medical professional'
-                ]
-            };
-        }
-
-        function displayResults(results) {
             // Update confidence bar
             const confidenceBar = document.getElementById('confidenceBar');
             const confidenceText = document.getElementById('confidenceText');
 
-            confidenceBar.style.width = results.confidence + '%';
-            confidenceText.textContent = `Confidence: ${results.confidence.toFixed(1)}%`;
+            confidenceBar.style.width = detection.confidence_percentage + '%';
+            confidenceText.textContent = `Confidence: ${detection.confidence_percentage}% (${detection.confidence_level})`;
 
-            if (results.confidence > 85) {
-                confidenceBar.style.background = 'linear-gradient(90deg, #666, #999)';
-            } else if (results.confidence > 70) {
-                confidenceBar.style.background = 'linear-gradient(90deg, #444, #777)';
+            // Set color based on confidence level
+            if (detection.confidence_percentage > 85) {
+                confidenceBar.style.background = 'linear-gradient(90deg, #4a90e2, #357abd)';
+            } else if (detection.confidence_percentage > 70) {
+                confidenceBar.style.background = 'linear-gradient(90deg, #666, #888)';
             } else {
-                confidenceBar.style.background = 'linear-gradient(90deg, #333, #555)';
+                confidenceBar.style.background = 'linear-gradient(90deg, #444, #666)';
             }
 
-            // Update details grid
+            // Update detection result text
+            const detectionResult = document.getElementById('detectionResult');
+            detectionResult.innerHTML = `
+                <div class="confidence-bar">
+                    <div class="confidence-fill" id="confidenceBar" style="width: ${detection.confidence_percentage}%"></div>
+                </div>
+                <p style="color: #c0c0c0; margin: 10px 0;">${detection.description}</p>
+                <p id="confidenceText" style="color: #888;">Confidence: ${detection.confidence_percentage}% (${detection.confidence_level})</p>
+            `;
+
+            // Update details grid with analysis results
             const detailsGrid = document.getElementById('detailsGrid');
             detailsGrid.innerHTML = '';
 
-            Object.entries(results.details).forEach(([key, value]) => {
-                const detailItem = document.createElement('div');
-                detailItem.className = 'detail-item';
-                detailItem.innerHTML = `
-                    <div class="detail-label">${key}</div>
-                    <div class="detail-value">${value}</div>
-                `;
+            // Add main characteristics
+            if (analysis.characteristics && analysis.characteristics.length > 0) {
+                const characteristicsCard = createDetailCard('Key Characteristics', analysis.characteristics.join(', '));
+                detailsGrid.appendChild(characteristicsCard);
+            }
+
+            // Add feature scores
+            Object.entries(analysis.feature_scores).forEach(([feature, score]) => {
+                const featureName = feature.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+                const percentage = Math.round(score * 100);
+                const detailItem = createDetailCard(featureName, `${percentage}% detected`);
+                detailsGrid.appendChild(detailItem);
+            });
+
+            // Add detailed analysis
+            Object.entries(analysis.detailed_analysis).forEach(([aspect, description]) => {
+                const aspectName = aspect.replace(/\b\w/g, l => l.toUpperCase());
+                const detailItem = createDetailCard(aspectName, description);
                 detailsGrid.appendChild(detailItem);
             });
 
             // Add recommendations
-            const recommendationsCard = document.createElement('div');
-            recommendationsCard.className = 'result-card';
-            recommendationsCard.innerHTML = `
-                <div class="result-title">
-                    <i class="fas fa-lightbulb"></i>
-                    Recommendations
+            if (result.recommendations && result.recommendations.length > 0) {
+                const recommendationsCard = document.createElement('div');
+                recommendationsCard.className = 'result-card';
+                recommendationsCard.style.marginTop = '20px';
+                recommendationsCard.innerHTML = `
+                    <div class="result-title">
+                        <i class="fas fa-lightbulb"></i>
+                        Bionic Hand Recommendations
+                    </div>
+                    <div style="margin-top: 15px;">
+                        ${result.recommendations.map(rec => `
+                            <div style="background: rgba(0,0,0,0.3); padding: 15px; margin: 10px 0; border-radius: 10px; border-left: 3px solid #4a90e2;">
+                                <h4 style="color: #c0c0c0; margin-bottom: 8px;">${rec.model}</h4>
+                                <p style="color: #888; margin-bottom: 10px;">${rec.reason}</p>
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <span style="color: #4a90e2;">Compatibility: ${rec.compatibility}%</span>
+                                    <div style="font-size: 0.9em; color: #666;">
+                                        ${rec.features.join(' • ')}
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+                document.getElementById('resultsSection').appendChild(recommendationsCard);
+            }
+
+            // Add quality metrics
+            if (result.quality_metrics) {
+                const qualityCard = document.createElement('div');
+                qualityCard.className = 'result-card';
+                qualityCard.style.marginTop = '20px';
+                qualityCard.innerHTML = `
+                    <div class="result-title">
+                        <i class="fas fa-chart-bar"></i>
+                        Quality Metrics
+                    </div>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-top: 15px;">
+                        <div class="detail-item">
+                            <div class="detail-label">Image Quality</div>
+                            <div class="detail-value">${result.quality_metrics.image_quality}</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Detection Reliability</div>
+                            <div class="detail-value">${result.quality_metrics.detection_reliability}</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Overall Score</div>
+                            <div class="detail-value">${result.quality_metrics.overall_score}%</div>
+                        </div>
+                    </div>
+                `;
+                document.getElementById('resultsSection').appendChild(qualityCard);
+            }
+        }
+
+        function displayErrorResults(result) {
+            // Update confidence bar to show error
+            const confidenceBar = document.getElementById('confidenceBar');
+            const confidenceText = document.getElementById('confidenceText');
+
+            confidenceBar.style.width = '0%';
+            confidenceBar.style.background = 'linear-gradient(90deg, #666, #444)';
+            confidenceText.textContent = 'Analysis Failed';
+
+            // Clear previous results
+            const detailsGrid = document.getElementById('detailsGrid');
+            detailsGrid.innerHTML = '';
+
+            // Show error message
+            const errorCard = document.createElement('div');
+            errorCard.className = 'result-card';
+            errorCard.style.borderLeft = '4px solid #cc4444';
+            errorCard.innerHTML = `
+                <div class="result-title" style="color: #cc4444;">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    ${result.error_type ? result.error_type.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) : 'Analysis Error'}
                 </div>
-                <ul style="color: #c0c0c0; padding-left: 20px;">
-                    ${results.recommendations.map(rec => `<li style="margin-bottom: 8px;">${rec}</li>`).join('')}
-                </ul>
+                <p style="color: #c0c0c0; margin: 15px 0;">${result.message}</p>
+                ${result.suggestions ? `
+                    <div style="margin-top: 15px;">
+                        <h4 style="color: #888; margin-bottom: 10px;">Suggestions:</h4>
+                        <ul style="color: #c0c0c0; padding-left: 20px;">
+                            ${result.suggestions.map(suggestion => `<li style="margin-bottom: 5px;">${suggestion}</li>`).join('')}
+                        </ul>
+                    </div>
+                ` : ''}
             `;
 
-            document.getElementById('resultsSection').appendChild(recommendationsCard);
+            document.getElementById('resultsSection').appendChild(errorCard);
+
+            // Show try again button
+            if (result.error_type !== 'system_error') {
+                const retryCard = document.createElement('div');
+                retryCard.className = 'result-card';
+                retryCard.style.textAlign = 'center';
+                retryCard.innerHTML = `
+                    <button class="analyze-btn" onclick="resetAndTryAgain()" style="background: linear-gradient(135deg, #4a90e2, #357abd);">
+                        <i class="fas fa-redo"></i> Try Different Image
+                    </button>
+                `;
+                document.getElementById('resultsSection').appendChild(retryCard);
+            }
+        }
+
+        function createDetailCard(label, value) {
+            const detailItem = document.createElement('div');
+            detailItem.className = 'detail-item';
+            detailItem.innerHTML = `
+                <div class="detail-label">${label}</div>
+                <div class="detail-value">${value}</div>
+            `;
+            return detailItem;
+        }
+
+        function resetAndTryAgain() {
+            // Reset interface
+            document.getElementById('previewSection').style.display = 'none';
+            document.getElementById('resultsSection').style.display = 'none';
+            document.getElementById('fileInput').value = '';
+            currentFile = null;
         }
 
         // Get CSRF token

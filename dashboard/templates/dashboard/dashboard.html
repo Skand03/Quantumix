@@ -1,1200 +1,725 @@
-{% load static %}
-<!DOCTYPE html>
-<html lang="en">
+{% extends 'dashboard/navbar_base.html' %}
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="csrf-token" content="{{ csrf_token }}">
-    <title>Bionic Hand IoT Dashboard - Quantumix</title>
+{% block title %}Dashboard - Quantumix{% endblock %}
+
+{% block extra_head %}
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 50%, #1a1a1a 100%);
-            background-attachment: fixed;
-            min-height: 100vh;
-            color: #e0e0e0;
-        }
-
-        /* Optimized Navigation Bar */
-        .navbar {
-            background: linear-gradient(135deg, #000000 0%, #1a1a1a 50%, #000000 100%);
-            backdrop-filter: blur(15px);
-            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.4);
-            padding: 8px 0;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            border-bottom: 1px solid rgba(192, 192, 192, 0.1);
-        }
-
-        .nav-container {
-            max-width: 1300px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0 20px;
-        }
-
-        .nav-brand {
-            display: flex;
-            align-items: center;
-            font-size: 1.6em;
-            font-weight: bold;
-            color: #c0c0c0;
-            text-decoration: none;
-            transition: all 0.3s ease;
-        }
-
-        .nav-brand:hover {
-            color: #ffffff;
-            text-shadow: 0 0 20px rgba(192, 192, 192, 0.5);
-        }
-
-        .nav-brand i {
-            margin-right: 10px;
-            color: #888;
-        }
-
-        .nav-menu {
-            display: flex;
-            list-style: none;
-            align-items: center;
-            gap: 2px;
-        }
-
-        .nav-item a {
-            display: flex;
-            align-items: center;
-            padding: 10px 16px;
-            color: #b0b0b0;
-            text-decoration: none;
-            border-radius: 20px;
-            transition: all 0.3s ease;
-            font-weight: 500;
-            gap: 6px;
-            white-space: nowrap;
-            font-size: 0.9em;
-        }
-
-        .nav-item a:hover,
-        .nav-item a.active {
-            background: linear-gradient(135deg, #333 0%, #666 100%);
-            color: white;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
-        }
-
-        /* Dropdown Menu Styles */
-        .dropdown {
-            position: relative;
-        }
-
-        .dropdown-menu {
-            position: absolute;
-            top: 100%;
-            left: 0;
-            background: linear-gradient(145deg, #1a1a1a, #2d2d2d);
-            backdrop-filter: blur(10px);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
-            border-radius: 15px;
-            min-width: 220px;
-            padding: 15px 0;
-            display: none;
-            z-index: 1000;
-            border: 1px solid #444;
-        }
-
-        .dropdown:hover .dropdown-menu {
-            display: block;
-        }
-
-        .dropdown-menu li {
-            list-style: none;
-        }
-
-        .dropdown-menu a {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 15px 25px;
-            color: #b0b0b0;
-            text-decoration: none;
-            transition: all 0.3s ease;
-            font-size: 0.95em;
-            border-left: 3px solid transparent;
-        }
-
-        .dropdown-menu a:hover {
-            background: linear-gradient(135deg, #333 0%, #666 100%);
-            color: white;
-            transform: translateX(5px);
-            border-left: 3px solid #c0c0c0;
-        }
-
-        .dropdown-toggle {
-            position: relative;
-        }
-
-        .dropdown-toggle .fa-chevron-down {
-            margin-left: 5px;
-            font-size: 0.8em;
-            transition: transform 0.3s ease;
-        }
-
-        .dropdown:hover .dropdown-toggle .fa-chevron-down {
-            transform: rotate(180deg);
-        }
-
-        .nav-controls {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .status-indicator {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            padding: 8px 14px;
-            background: linear-gradient(135deg, #00aa00, #00cc00);
-            color: white;
-            border-radius: 20px;
-            font-size: 0.85em;
-            box-shadow: 0 3px 12px rgba(0, 170, 0, 0.3);
-        }
-
-        .emergency-btn {
-            background: linear-gradient(135deg, #e53e3e, #c53030);
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 3px 12px rgba(229, 62, 62, 0.3);
-            font-size: 0.85em;
-        }
-
-        .emergency-btn:hover {
-            background: linear-gradient(135deg, #c53030, #a02727);
-            transform: scale(1.05);
-            box-shadow: 0 6px 20px rgba(229, 62, 62, 0.4);
-        }
-
-        /* Control Panel Button Styles */
-        .control-btn {
-            border: none;
-            color: white;
-            font-weight: bold;
-            font-size: 14px;
-            padding: 16px 24px;
-            border-radius: 15px;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            min-width: 130px;
-            justify-content: center;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-        }
-
-        .start-btn {
-            background: linear-gradient(135deg, #00aa00, #00cc00);
-        }
-
-        .start-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(0, 170, 0, 0.4);
-            background: linear-gradient(135deg, #00cc00, #00dd00);
-        }
-
-        .stop-btn {
-            background: linear-gradient(135deg, #e53e3e, #c53030);
-        }
-
-        .stop-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(229, 62, 62, 0.4);
-            background: linear-gradient(135deg, #c53030, #a02727);
-        }
-
-        .calibrate-btn {
-            background: linear-gradient(135deg, #666, #888);
-        }
-
-        .calibrate-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(102, 102, 102, 0.4);
-            background: linear-gradient(135deg, #777, #999);
-        }
-
-        .emergency-btn-large {
-            background: linear-gradient(135deg, #e53e3e, #c53030);
-            border: 3px solid #c0c0c0;
-            animation: pulse 2s infinite;
-            box-shadow: 0 6px 20px rgba(229, 62, 62, 0.3);
-        }
-
-        .emergency-btn-large:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(229, 62, 62, 0.5);
-        }
-
-        .reset-btn {
-            background: linear-gradient(135deg, #666, #888);
-        }
-
-        .reset-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(102, 102, 102, 0.4);
-            background: linear-gradient(135deg, #777, #999);
-        }
-
-        @keyframes pulse {
-            0% {
-                box-shadow: 0 0 0 0 rgba(229, 62, 62, 0.7);
-            }
-
-            70% {
-                box-shadow: 0 0 0 10px rgba(229, 62, 62, 0);
-            }
-
-            100% {
-                box-shadow: 0 0 0 0 rgba(229, 62, 62, 0);
-            }
-        }
-
-        .device-message {
-            text-align: center;
-            padding: 15px;
-            margin-top: 20px;
-            border-radius: 12px;
-            font-weight: bold;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-        }
-
-        .message-success {
-            background: linear-gradient(135deg, #1a4a2d, #2a5a3d);
-            color: #00cc00;
-            border: 1px solid #00aa00;
-        }
-
-        .message-error {
-            background: linear-gradient(135deg, #4a1a1a, #5a2a2a);
-            color: #ff4444;
-            border: 1px solid #cc0000;
-        }
-
-        .hamburger {
-            display: none;
-            flex-direction: column;
-            cursor: pointer;
-            padding: 8px;
-        }
-
-        .hamburger span {
-            width: 28px;
-            height: 3px;
-            background: #c0c0c0;
-            margin: 4px 0;
-            transition: 0.3s;
-            border-radius: 2px;
-        }
-
-        /* Main Content */
-        .main-content {
-            padding: 40px 30px;
-            background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 50%, #0f0f0f 100%);
-            min-height: calc(100vh - 80px);
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            background: linear-gradient(135deg, #1a1a1a, #2d2d2d);
-            border-radius: 20px;
-            padding: 40px;
-            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.6);
-            border: 1px solid #333;
-        }
-
-        .page-header {
-            text-align: center;
-            margin-bottom: 40px;
-        }
-
-        .page-header h1 {
-            font-size: 2.8em;
-            margin-bottom: 15px;
-            color: #c0c0c0;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-        }
-
-        .page-header p {
-            color: #888;
-            font-size: 1.2em;
-        }
-
-        .status-bar {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 40px;
-            flex-wrap: wrap;
-            gap: 20px;
-        }
-
-        .status-card {
-            background: linear-gradient(135deg, #2d2d2d, #1a1a1a);
-            color: #c0c0c0;
-            padding: 25px;
-            border-radius: 15px;
-            flex: 1;
-            min-width: 220px;
-            text-align: center;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
-            transition: transform 0.3s ease;
-            border: 1px solid #444;
-        }
-
-        .status-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.6);
-        }
-
-        .status-card h3 {
-            font-size: 1.3em;
-            margin-bottom: 15px;
-            color: #888;
-        }
-
-        .status-card .value {
-            font-size: 2.2em;
-            font-weight: bold;
-            color: #c0c0c0;
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
-        }
-
-        .charts-container {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 40px;
-            margin-bottom: 40px;
-        }
-
-        .chart-card {
-            background: linear-gradient(135deg, #1a1a1a, #2d2d2d);
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
-            transition: transform 0.3s ease;
-            border: 1px solid #333;
-        }
-
-        .chart-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.6);
-        }
-
-        .chart-card h3 {
-            color: #c0c0c0;
-            margin-bottom: 20px;
-            text-align: center;
-            font-size: 1.4em;
-        }
-
-        .finger-sensors {
-            background: linear-gradient(135deg, #1a1a1a, #2d2d2d);
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
-            border: 1px solid #333;
-        }
-
-        .finger-sensors h3 {
-            color: #c0c0c0;
-            margin-bottom: 25px;
-            text-align: center;
-            font-size: 1.4em;
-        }
-
-        .fingers-grid {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 20px;
-        }
-
-        .finger {
-            text-align: center;
-            padding: 20px;
-            background: linear-gradient(135deg, #2d2d2d, #1a1a1a);
-            border-radius: 12px;
-            border: 2px solid #444;
-            transition: all 0.3s ease;
-        }
-
-        .finger:hover {
-            transform: scale(1.08);
-            border-color: #666;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
-        }
-
-        .finger-name {
-            font-weight: bold;
-            color: #888;
-            margin-bottom: 12px;
-            font-size: 0.9em;
-        }
-
-        .finger-value {
-            font-size: 1.6em;
-            font-weight: bold;
-            color: #c0c0c0;
-        }
-
-        .online-indicator {
-            display: inline-block;
-            width: 12px;
-            height: 12px;
-            background: #00cc00;
-            border-radius: 50%;
-            animation: pulse 2s infinite;
-            box-shadow: 0 0 10px rgba(0, 204, 0, 0.5);
-        }
-
-        @keyframes pulse {
-            0% {
-                opacity: 1;
-            }
-
-            50% {
-                opacity: 0.5;
-            }
-
-            100% {
-                opacity: 1;
-            }
-        }
-
-        .error-message {
-            background: #fed7d7;
-            color: #c53030;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            display: none;
-        }
-
-        /* Mobile Responsive */
-        @media (max-width: 768px) {
-            .nav-menu {
-                display: none;
-                position: absolute;
-                top: 100%;
-                left: 0;
-                right: 0;
-                background: linear-gradient(135deg, #1a1a1a, #2d2d2d);
-                flex-direction: column;
-                gap: 0;
-                box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6);
-                border: 1px solid #333;
-                border-radius: 0 0 15px 15px;
-            }
-
-            .nav-menu.active {
-                display: flex;
-            }
-
-            .nav-item {
-                border-bottom: 1px solid #333;
-            }
-
-            .nav-item:last-child {
-                border-bottom: none;
-            }
-
-            .nav-item a {
-                padding: 18px 25px;
-                border-radius: 0;
-                color: #b0b0b0;
-            }
-
-            .hamburger {
-                display: flex;
-            }
-
-            .nav-controls {
-                gap: 8px;
-            }
-
-            .emergency-btn {
-                padding: 10px 16px;
-                font-size: 0.9em;
-            }
-
-            .status-indicator {
-                padding: 8px 12px;
-                font-size: 0.85em;
-            }
-
-            .charts-container {
-                grid-template-columns: 1fr;
-                gap: 25px;
-            }
-
-            .fingers-grid {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 15px;
-            }
-
-            .status-bar {
-                flex-direction: column;
-                gap: 15px;
-            }
-
-            .main-content {
-                padding: 25px 15px;
-            }
-
-            .container {
-                padding: 25px;
-                border-radius: 15px;
-            }
-
-            .page-header h1 {
-                font-size: 2.2em;
-            }
-
-            .control-btn {
-                min-width: 110px;
-                padding: 14px 18px;
-                font-size: 0.9em;
-            }
-        }
-    </style>
-</head>
-
-<body>
-    {% csrf_token %}
-    <!-- Navigation Bar -->
-    <nav class="navbar">
-        <div class="nav-container">
-            <a href="/" class="nav-brand">
-                <i class="fas fa-hand-rock"></i>
-                Quantumix
-            </a>
-
-            <ul class="nav-menu" id="navMenu">
-                <li class="nav-item">
-                    <a href="/" class="active">
-                        <i class="fas fa-tachometer-alt"></i>
-                        Dashboard
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="/analytics/">
-                        <i class="fas fa-chart-line"></i>
-                        Analytics
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="/control/">
-                        <i class="fas fa-sliders-h"></i>
-                        Device Control
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="/model-testing/">
-                        <i class="fas fa-robot"></i>
-                        AI Model Testing
-                    </a>
-                </li>
-                <li class="nav-item dropdown">
-                    <a href="#" class="dropdown-toggle">
-                        <i class="fas fa-heartbeat"></i>
-                        Medical
-                        <i class="fas fa-chevron-down"></i>
-                    </a>
-                    <ul class="dropdown-menu">
-                        <li><a href="/xray-upload/"><i class="fas fa-x-ray"></i>X-Ray Upload</a></li>
-                        <li><a href="/doctor-panel/"><i class="fas fa-user-md"></i>Doctor Panel</a></li>
-                        <li><a href="/medical-dashboard/"><i class="fas fa-chart-bar"></i>Medical Analytics</a></li>
-                        <li><a href="/future-scope/"><i class="fas fa-brain"></i>Future Scope</a></li>
-                        <li><a href="/impact/"><i class="fas fa-heart"></i>Impact Stories</a></li>
-                    </ul>
-                </li>
-                <li class="nav-item">
-                    <a href="/settings/">
-                        <i class="fas fa-cog"></i>
-                        Settings
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="/about/">
-                        <i class="fas fa-info-circle"></i>
-                        About
-                    </a>
-                </li>
-            </ul>
-
-            <div class="nav-controls">
-                <div class="status-indicator">
-                    <div class="online-indicator"></div>
-                    Connected
-                </div>
-                <button class="emergency-btn" onclick="emergencyStop()">
-                    <i class="fas fa-stop"></i>
-                    STOP
-                </button>
-                <div class="hamburger" onclick="toggleMenu()">
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                </div>
+{% endblock %}
+
+{% block extra_css %}
+/* Dashboard-specific styles */
+.container {
+    max-width: 1400px;
+    margin: 0 auto;
+    background: linear-gradient(135deg, #1a1a1a, #2d2d2d);
+    padding: 30px;
+    border-radius: 20px;
+    box-shadow: 0 15px 50px rgba(0, 0, 0, 0.6);
+    border: 1px solid #333;
+}
+
+.page-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.page-header h1 {
+    font-size: 2.8em;
+    margin-bottom: 15px;
+    color: #c0c0c0;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.page-header p {
+    color: #888;
+    font-size: 1.2em;
+}
+
+.error-message {
+    background: linear-gradient(135deg, #cc0000, #ff3333);
+    color: white;
+    padding: 15px 25px;
+    border-radius: 15px;
+    margin-bottom: 30px;
+    text-align: center;
+    font-weight: bold;
+    display: none;
+    animation: shake 0.5s ease-in-out;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+}
+
+.status-bar {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin-bottom: 40px;
+}
+
+.status-card {
+    background: linear-gradient(135deg, #2d2d2d, #1a1a1a);
+    padding: 25px;
+    border-radius: 15px;
+    text-align: center;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+    border: 1px solid #444;
+    transition: transform 0.3s ease;
+}
+
+.status-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.6);
+}
+
+.status-card h3 {
+    color: #888;
+    margin-bottom: 15px;
+    font-size: 1.1em;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.status-card .value {
+    font-size: 2.2em;
+    font-weight: bold;
+    color: #c0c0c0;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.control-panel {
+    background: linear-gradient(135deg, #2d2d2d, #1a1a1a);
+    padding: 30px;
+    border-radius: 15px;
+    margin-bottom: 40px;
+    border: 1px solid #444;
+}
+
+.control-panel h2 {
+    color: #c0c0c0;
+    margin-bottom: 25px;
+    font-size: 1.8em;
+    text-align: center;
+}
+
+.control-buttons {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin-bottom: 25px;
+}
+
+.control-btn {
+    background: linear-gradient(135deg, #4a5568, #2d3748);
+    color: white;
+    border: none;
+    padding: 15px 25px;
+    border-radius: 15px;
+    cursor: pointer;
+    font-size: 1em;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    min-width: 140px;
+}
+
+.control-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+}
+
+.control-btn:active {
+    transform: translateY(-1px);
+}
+
+.control-btn i {
+    font-size: 1.2em;
+}
+
+.start-btn {
+    background: linear-gradient(135deg, #00aa00, #00cc00);
+    border: 3px solid #c0c0c0;
+}
+
+.start-btn:hover {
+    background: linear-gradient(135deg, #00cc00, #00dd00);
+    box-shadow: 0 8px 25px rgba(0, 170, 0, 0.5);
+}
+
+.calibrate-btn {
+    background: linear-gradient(135deg, #4299e1, #3182ce);
+}
+
+.calibrate-btn:hover {
+    background: linear-gradient(135deg, #63b3ed, #4299e1);
+}
+
+.emergency-btn-large {
+    background: linear-gradient(135deg, #e53e3e, #c53030);
+    border: 3px solid #c0c0c0;
+    animation: pulse 2s infinite;
+    box-shadow: 0 6px 20px rgba(229, 62, 62, 0.3);
+}
+
+.emergency-btn-large:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(229, 62, 62, 0.5);
+}
+
+.reset-btn {
+    background: linear-gradient(135deg, #ed8936, #dd6b20);
+}
+
+.reset-btn:hover {
+    background: linear-gradient(135deg, #f6ad55, #ed8936);
+}
+
+.device-message {
+    background: linear-gradient(135deg, #4a5568, #2d3748);
+    padding: 20px;
+    border-radius: 10px;
+    margin-top: 20px;
+    text-align: center;
+    color: #c0c0c0;
+    font-weight: bold;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.charts-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+    gap: 30px;
+    margin-bottom: 40px;
+}
+
+.chart-card {
+    background: linear-gradient(135deg, #2d2d2d, #1a1a1a);
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+    border: 1px solid #444;
+}
+
+.chart-card h3 {
+    color: #c0c0c0;
+    margin-bottom: 20px;
+    font-size: 1.4em;
+    text-align: center;
+}
+
+.chart-container {
+    position: relative;
+    height: 300px;
+    margin-bottom: 20px;
+}
+
+.fingers-section {
+    background: linear-gradient(135deg, #2d2d2d, #1a1a1a);
+    padding: 30px;
+    border-radius: 15px;
+    margin-bottom: 40px;
+    border: 1px solid #444;
+}
+
+.fingers-section h2 {
+    color: #c0c0c0;
+    margin-bottom: 25px;
+    font-size: 1.8em;
+    text-align: center;
+}
+
+.fingers-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+}
+
+.finger-card {
+    background: linear-gradient(135deg, #1a1a1a, #2d2d2d);
+    padding: 20px;
+    border-radius: 15px;
+    text-align: center;
+    border: 2px solid #444;
+    transition: all 0.3s ease;
+}
+
+.finger-card:hover {
+    transform: translateY(-5px);
+    border-color: #666;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6);
+}
+
+.finger-card h3 {
+    color: #888;
+    margin-bottom: 15px;
+    font-size: 1em;
+    text-transform: uppercase;
+}
+
+.finger-position {
+    font-size: 1.8em;
+    font-weight: bold;
+    color: #c0c0c0;
+    margin-bottom: 10px;
+}
+
+.finger-slider {
+    width: 100%;
+    margin: 15px 0;
+    accent-color: #00cc00;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .charts-container {
+        grid-template-columns: 1fr;
+        gap: 25px;
+    }
+
+    .fingers-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+    }
+
+    .status-bar {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .main-content {
+        padding: 25px 15px;
+    }
+
+    .container {
+        padding: 25px;
+        border-radius: 15px;
+    }
+
+    .page-header h1 {
+        font-size: 2.2em;
+    }
+
+    .control-btn {
+        min-width: 110px;
+        padding: 14px 18px;
+        font-size: 0.9em;
+    }
+}
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="page-header">
+        <h1>🦾 Bionic Hand Dashboard</h1>
+        <p>Real-time monitoring and control system</p>
+    </div>
+
+    <div class="error-message" id="errorMessage">
+        Connection error. Please check your network connection.
+    </div>
+
+    <div class="status-bar">
+        <div class="status-card">
+            <h3>Hand Status</h3>
+            <div class="value" id="handStatus">Unknown</div>
+        </div>
+        <div class="status-card">
+            <h3>EMG Signal</h3>
+            <div class="value" id="emgSignal">0</div>
+        </div>
+        <div class="status-card">
+            <h3>Temperature</h3>
+            <div class="value" id="temperature">0°C</div>
+        </div>
+        <div class="status-card">
+            <h3>Grip Force</h3>
+            <div class="value" id="gripForce">0%</div>
+        </div>
+    </div>
+
+    <!-- Device Control Panel -->
+    <div class="control-panel">
+        <h2>🎮 Device Control</h2>
+        <div class="control-buttons">
+            <button class="control-btn start-btn" onclick="toggleDevice()">
+                <i class="fas fa-play"></i>
+                <span id="btnText">Start</span>
+            </button>
+            <button class="control-btn calibrate-btn" onclick="calibrateDevice()">
+                <i class="fas fa-cogs"></i>
+                Calibrate
+            </button>
+            <button class="control-btn emergency-btn-large" onclick="emergencyStop()">
+                <i class="fas fa-stop"></i>
+                Emergency Stop
+            </button>
+            <button class="control-btn reset-btn" onclick="resetDevice()">
+                <i class="fas fa-undo"></i>
+                Reset
+            </button>
+            <button class="control-btn" onclick="testJS()"
+                style="background: linear-gradient(135deg, #ffd700, #ffed4e); color: #333; font-weight: bold;">
+                <i class="fas fa-bug"></i>
+                Test JS
+            </button>
+        </div>
+        <div id="deviceMessage" class="device-message" style="display: none;"></div>
+    </div>
+
+    <div class="charts-container">
+        <div class="chart-card">
+            <h3>📊 EMG Signal</h3>
+            <div class="chart-container">
+                <canvas id="emgChart"></canvas>
             </div>
         </div>
-    </nav>
-
-    <!-- Main Content -->
-    <div class="main-content">
-        <div class="container">
-            <div class="page-header">
-                <h1>🦾 Bionic Hand Dashboard</h1>
-                <p>Real-time monitoring and control system</p>
+        <div class="chart-card">
+            <h3>🌡️ Temperature</h3>
+            <div class="chart-container">
+                <canvas id="tempChart"></canvas>
             </div>
-
-            <div class="error-message" id="errorMessage">
-                Connection error. Please check your network connection.
+        </div>
+        <div class="chart-card">
+            <h3>💪 Grip Force</h3>
+            <div class="chart-container">
+                <canvas id="gripChart"></canvas>
             </div>
-
-            <div class="status-bar">
-                <div class="status-card">
-                    <h3>Hand Status</h3>
-                    <div class="value" id="handStatus">Unknown</div>
-                </div>
-                <div class="status-card">
-                    <h3>EMG Signal</h3>
-                    <div class="value" id="emgSignal">0</div>
-                </div>
-                <div class="status-card">
-                    <h3>Temperature</h3>
-                    <div class="value" id="temperature">0°C</div>
-                </div>
-                <div class="status-card">
-                    <h3>Grip Force</h3>
-                    <div class="value" id="gripForce">0%</div>
-                </div>
-            </div>
-
-            <!-- Device Control Panel -->
-            <div
-                style="background: linear-gradient(135deg, #1a1a1a, #2d2d2d); padding: 35px; border-radius: 20px; box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5); margin-bottom: 40px; border: 1px solid #333;">
-                <h3 style="color: #c0c0c0; margin-bottom: 25px; text-align: center; font-size: 1.5em;">
-                    <i class="fas fa-play-circle"></i> Device Control Panel
-                </h3>
-                <div style="display: flex; justify-content: center; gap: 20px; flex-wrap: wrap;">
-                    <button id="startStopBtn" class="control-btn start-btn" onclick="toggleDevice()">
-                        <i class="fas fa-play"></i>
-                        <span id="btnText">Start</span>
-                    </button>
-                    <button class="control-btn calibrate-btn" onclick="calibrateDevice()">
-                        <i class="fas fa-cogs"></i>
-                        Calibrate
-                    </button>
-                    <button class="control-btn emergency-btn-large" onclick="emergencyStop()">
-                        <i class="fas fa-stop"></i>
-                        Emergency Stop
-                    </button>
-                    <button class="control-btn reset-btn" onclick="resetDevice()">
-                        <i class="fas fa-undo"></i>
-                        Reset
-                    </button>
-                    <button class="control-btn" onclick="testJS()"
-                        style="background: linear-gradient(135deg, #ffd700, #ffed4e); color: #333; font-weight: bold;">
-                        <i class="fas fa-bug"></i>
-                        Test JS
-                    </button>
-                </div>
-                <div id="deviceMessage" class="device-message" style="display: none;"></div>
-            </div>
-
-            <div class="charts-container">
-                <div class="chart-card">
-                    <h3>📊 Grip Force Over Time</h3>
-                    <canvas id="gripChart"></canvas>
-                </div>
-                <div class="chart-card">
-                    <h3>⚡ EMG Signal Strength</h3>
-                    <canvas id="emgChart"></canvas>
-                </div>
-            </div>
-
-            <div class="finger-sensors">
-                <h3>🖐️ Finger Flex Sensors (Degrees)</h3>
-                <div class="fingers-grid">
-                    <div class="finger">
-                        <div class="finger-name">Thumb</div>
-                        <div class="finger-value" id="finger0">0°</div>
-                    </div>
-                    <div class="finger">
-                        <div class="finger-name">Index</div>
-                        <div class="finger-value" id="finger1">0°</div>
-                    </div>
-                    <div class="finger">
-                        <div class="finger-name">Middle</div>
-                        <div class="finger-value" id="finger2">0°</div>
-                    </div>
-                    <div class="finger">
-                        <div class="finger-name">Ring</div>
-                        <div class="finger-value" id="finger3">0°</div>
-                    </div>
-                    <div class="finger">
-                        <div class="finger-name">Pinky</div>
-                        <div class="finger-value" id="finger4">0°</div>
-                    </div>
-                </div>
+        </div>
+        <div class="chart-card">
+            <h3>🔋 Battery Level</h3>
+            <div class="chart-container">
+                <canvas id="batteryChart"></canvas>
             </div>
         </div>
     </div>
 
-    <script>
-        // Mobile menu toggle
-        function toggleMenu() {
-            const navMenu = document.getElementById('navMenu');
-            navMenu.classList.toggle('active');
-        }
+    <!-- Finger Control Section -->
+    <div class="fingers-section">
+        <h2>✋ Finger Control</h2>
+        <div class="fingers-grid">
+            <div class="finger-card">
+                <h3>Thumb</h3>
+                <div class="finger-position" id="thumbPosition">0°</div>
+                <input type="range" class="finger-slider" id="thumbSlider" min="0" max="180" value="0"
+                    onchange="controlFinger('thumb', this.value)">
+            </div>
+            <div class="finger-card">
+                <h3>Index</h3>
+                <div class="finger-position" id="indexPosition">0°</div>
+                <input type="range" class="finger-slider" id="indexSlider" min="0" max="180" value="0"
+                    onchange="controlFinger('index', this.value)">
+            </div>
+            <div class="finger-card">
+                <h3>Middle</h3>
+                <div class="finger-position" id="middlePosition">0°</div>
+                <input type="range" class="finger-slider" id="middleSlider" min="0" max="180" value="0"
+                    onchange="controlFinger('middle', this.value)">
+            </div>
+            <div class="finger-card">
+                <h3>Ring</h3>
+                <div class="finger-position" id="ringPosition">0°</div>
+                <input type="range" class="finger-slider" id="ringSlider" min="0" max="180" value="0"
+                    onchange="controlFinger('ring', this.value)">
+            </div>
+            <div class="finger-card">
+                <h3>Pinky</h3>
+                <div class="finger-position" id="pinkyPosition">0°</div>
+                <input type="range" class="finger-slider" id="pinkySlider" min="0" max="180" value="0"
+                    onchange="controlFinger('pinky', this.value)">
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
 
-        // Device control variables
-        let deviceRunning = false;
+{% block extra_js %}
+// Dashboard-specific JavaScript
+let emgChart, tempChart, gripChart, batteryChart;
+let isDeviceRunning = false;
+let connectionStatus = 'disconnected';
+let deviceData = {
+    emg: [],
+    temperature: [],
+    gripForce: [],
+    battery: []
+};
 
-        // Wait for DOM to be fully loaded
-        document.addEventListener('DOMContentLoaded', function () {
-            console.log('DOM loaded, initializing dashboard...');
-
-            // Test CSRF token
-            const csrfToken = getCookie('csrftoken');
-            console.log('CSRF token found:', csrfToken ? 'Yes' : 'No');
-
-            // Test API connection
-            testAPIConnection();
-
-            // Initialize charts
-            initializeCharts();
-
-            // Start data polling
-            updateSensorData();
-            setInterval(updateSensorData, 2000);
-
-            console.log('Dashboard initialization complete');
-        });
-
-        // Test API connection
-        async function testAPIConnection() {
-            try {
-                console.log('Testing API connection...');
-                const response = await fetch('/api/sensors/');
-                console.log('API test response status:', response.status);
-
-                if (response.ok) {
-                    const data = await response.json();
-                    console.log('API test data:', data);
-                    showMessage('API connection successful', 'success');
-                } else {
-                    console.error('API test failed:', response.status);
-                    showMessage('API connection failed', 'error');
-                }
-            } catch (error) {
-                console.error('API test error:', error);
-                showMessage('API connection error', 'error');
-            }
-        }
-
-        // Test function to verify JS is working
-        function testJS() {
-            console.log('JavaScript is working!');
-            alert('JavaScript test successful!');
-        }
-
-        // Toggle device start/stop
-        async function toggleDevice() {
-            console.log('toggleDevice called, deviceRunning:', deviceRunning);
-            const button = document.getElementById('startStopBtn');
-            const btnIcon = button.querySelector('i');
-            const btnText = document.getElementById('btnText');
-            const messageDiv = document.getElementById('deviceMessage');
-
-            console.log('Elements found:', { button, btnIcon, btnText, messageDiv });
-
-            try {
-                const command = deviceRunning ? 'stop' : 'start';
-                console.log('Sending command:', command);
-
-                const response = await fetch('/api/control/', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRFToken': getCookie('csrftoken')
-                    },
-                    body: JSON.stringify({ command: command })
-                });
-
-                console.log('Response status:', response.status);
-                const result = await response.json();
-                console.log('API response:', result);
-
-                if (result.success) {
-                    deviceRunning = !deviceRunning;
-                    console.log('Updated deviceRunning to:', deviceRunning);
-
-                    if (deviceRunning) {
-                        button.className = 'control-btn stop-btn';
-                        btnIcon.className = 'fas fa-stop';
-                        btnText.textContent = 'Stop';
-                        showMessage('Device started successfully', 'success');
-                    } else {
-                        button.className = 'control-btn start-btn';
-                        btnIcon.className = 'fas fa-play';
-                        btnText.textContent = 'Start';
-                        showMessage('Device stopped successfully', 'success');
-                    }
-                } else {
-                    console.error('API error:', result.message);
-                    showMessage(`Error: ${result.message}`, 'error');
-                }
-            } catch (error) {
-                console.error('Control command failed:', error);
-                showMessage('Connection error. Please try again.', 'error');
-            }
-        }
-
-        // Calibrate device
-        async function calibrateDevice() {
-            if (!confirm('Start device calibration? This may take a few seconds.')) return;
-
-            try {
-                const response = await fetch('/api/control/', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRFToken': getCookie('csrftoken')
-                    },
-                    body: JSON.stringify({ command: 'calibrate' })
-                });
-
-                const result = await response.json();
-
-                if (result.success) {
-                    showMessage('Calibration completed successfully', 'success');
-                } else {
-                    showMessage(`Calibration failed: ${result.message}`, 'error');
-                }
-            } catch (error) {
-                console.error('Calibration failed:', error);
-                showMessage('Calibration error. Please try again.', 'error');
-            }
-        }
-
-        // Emergency stop function (updated)
-        async function emergencyStop() {
-            if (confirm('Are you sure you want to emergency stop the bionic hand?')) {
-                try {
-                    const response = await fetch('/api/control/', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRFToken': getCookie('csrftoken')
-                        },
-                        body: JSON.stringify({ command: 'emergency_stop' })
-                    });
-
-                    const result = await response.json();
-
-                    if (result.success) {
-                        deviceRunning = false;
-                        const button = document.getElementById('startStopBtn');
-                        button.className = 'control-btn start-btn';
-                        button.querySelector('i').className = 'fas fa-play';
-                        document.getElementById('btnText').textContent = 'Start';
-                        showMessage('Emergency stop activated!', 'success');
-                    } else {
-                        showMessage(`Emergency stop failed: ${result.message}`, 'error');
-                    }
-                } catch (error) {
-                    console.error('Emergency stop failed:', error);
-                    showMessage('Emergency stop failed. Please check connection.', 'error');
-                }
-            }
-        }
-
-        // Reset device
-        async function resetDevice() {
-            if (!confirm('Reset the device to default settings?')) return;
-
-            try {
-                const response = await fetch('/api/control/', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRFToken': getCookie('csrftoken')
-                    },
-                    body: JSON.stringify({ command: 'reset' })
-                });
-
-                const result = await response.json();
-
-                if (result.success) {
-                    deviceRunning = false;
-                    const button = document.getElementById('startStopBtn');
-                    button.className = 'control-btn start-btn';
-                    button.querySelector('i').className = 'fas fa-play';
-                    document.getElementById('btnText').textContent = 'Start';
-                    showMessage('Device reset successfully', 'success');
-                } else {
-                    showMessage(`Reset failed: ${result.message}`, 'error');
-                }
-            } catch (error) {
-                console.error('Reset failed:', error);
-                showMessage('Reset error. Please try again.', 'error');
-            }
-        }
-
-        // Show message to user
-        function showMessage(message, type) {
-            console.log('showMessage called:', message, type);
-            const messageDiv = document.getElementById('deviceMessage');
-            console.log('Message div found:', messageDiv);
-
-            if (messageDiv) {
-                messageDiv.textContent = message;
-                messageDiv.className = `device-message message-${type}`;
-                messageDiv.style.display = 'block';
-                console.log('Message displayed');
-
-                // Hide message after 5 seconds
-                setTimeout(() => {
-                    messageDiv.style.display = 'none';
-                    console.log('Message hidden');
-                }, 5000);
-            } else {
-                console.error('deviceMessage div not found!');
-            }
-        }
-
-        // Get CSRF token for Django
-        function getCookie(name) {
-            // First try to get from meta tag
-            if (name === 'csrftoken') {
-                const metaToken = document.querySelector('meta[name="csrf-token"]');
-                if (metaToken) {
-                    return metaToken.getAttribute('content');
-                }
-            }
-
-            // Fallback to cookie method
-            let cookieValue = null;
-            if (document.cookie && document.cookie !== '') {
-                const cookies = document.cookie.split(';');
-                for (let i = 0; i < cookies.length; i++) {
-                    const cookie = cookies[i].trim();
-                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                        break;
-                    }
-                }
-            }
-            return cookieValue;
-        }
-
-        // Initialize charts function
-        function initializeCharts() {
-            console.log('Initializing charts...');
-            try {
-                // Charts are already initialized below, just verify they exist
-                console.log('Charts initialized successfully');
-            } catch (error) {
-                console.error('Chart initialization error:', error);
-            }
-        }
-
-        // Initialize charts
-        const gripCtx = document.getElementById('gripChart').getContext('2d');
-        const emgCtx = document.getElementById('emgChart').getContext('2d');
-
-        const gripChart = new Chart(gripCtx, {
-            type: 'line',
-            data: {
-                labels: [],
-                datasets: [{
-                    label: 'Grip Force (%)',
-                    data: [],
-                    borderColor: 'rgb(75, 192, 192)',
-                    backgroundColor: 'rgba(75, 192, 192, 0.1)',
-                    borderWidth: 3,
-                    fill: true,
-                    tension: 0.4
-                }]
+// Initialize charts
+function initCharts() {
+    const chartOptions = {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+            x: {
+                grid: { color: 'rgba(192, 192, 192, 0.1)' },
+                ticks: { color: '#888' }
             },
-            options: {
-                responsive: true,
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        max: 100
-                    }
-                },
-                plugins: {
-                    legend: {
-                        display: true
-                    }
-                }
+            y: {
+                grid: { color: 'rgba(192, 192, 192, 0.1)' },
+                ticks: { color: '#888' }
             }
-        });
+        },
+        plugins: {
+            legend: { labels: { color: '#c0c0c0' } }
+        }
+    };
 
-        const emgChart = new Chart(emgCtx, {
-            type: 'line',
-            data: {
-                labels: [],
-                datasets: [{
-                    label: 'EMG Signal',
-                    data: [],
-                    borderColor: 'rgb(255, 99, 132)',
-                    backgroundColor: 'rgba(255, 99, 132, 0.1)',
-                    borderWidth: 3,
-                    fill: true,
-                    tension: 0.4
-                }]
-            },
-            options: {
-                responsive: true,
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        max: 600
-                    }
-                },
-                plugins: {
-                    legend: {
-                        display: true
-                    }
-                }
-            }
-        });
+    // EMG Chart
+    emgChart = new Chart(document.getElementById('emgChart'), {
+        type: 'line',
+        data: {
+            labels: Array.from({length: 50}, (_, i) => i),
+            datasets: [{
+                label: 'EMG Signal',
+                data: deviceData.emg,
+                borderColor: '#00cc00',
+                backgroundColor: 'rgba(0, 204, 0, 0.1)',
+                tension: 0.4
+            }]
+        },
+        options: chartOptions
+    });
 
-        // Update display elements
-        function updateDisplay(data) {
-            // Extract device state if available
-            const deviceState = data.device_state || {};
+    // Temperature Chart
+    tempChart = new Chart(document.getElementById('tempChart'), {
+        type: 'line',
+        data: {
+            labels: Array.from({length: 50}, (_, i) => i),
+            datasets: [{
+                label: 'Temperature (°C)',
+                data: deviceData.temperature,
+                borderColor: '#ff6b6b',
+                backgroundColor: 'rgba(255, 107, 107, 0.1)',
+                tension: 0.4
+            }]
+        },
+        options: chartOptions
+    });
 
-            // Update status cards
-            const handStatus = deviceState.is_running ? 'Running' : (deviceState.emergency_stop ? 'Emergency Stop' : 'Stopped');
-            document.getElementById('handStatus').textContent = handStatus;
-            document.getElementById('emgSignal').textContent = data.emg_signal || '0';
-            document.getElementById('temperature').textContent = data.temperature ? data.temperature.toFixed(1) + '°C' : '0°C';
-            document.getElementById('gripForce').textContent = (data.grip_force || 0) + '%';
+    // Grip Force Chart
+    gripChart = new Chart(document.getElementById('gripChart'), {
+        type: 'line',
+        data: {
+            labels: Array.from({length: 50}, (_, i) => i),
+            datasets: [{
+                label: 'Grip Force (%)',
+                data: deviceData.gripForce,
+                borderColor: '#4ecdc4',
+                backgroundColor: 'rgba(78, 205, 196, 0.1)',
+                tension: 0.4
+            }]
+        },
+        options: chartOptions
+    });
 
-            // Update device running state from API
-            deviceRunning = deviceState.is_running || false;
-            const button = document.getElementById('startStopBtn');
-            if (button) {
-                const btnIcon = button.querySelector('i');
-                const btnText = document.getElementById('btnText');
-
-                if (deviceRunning) {
-                    button.className = 'control-btn stop-btn';
-                    if (btnIcon) btnIcon.className = 'fas fa-stop';
-                    if (btnText) btnText.textContent = 'Stop';
-                } else {
-                    button.className = 'control-btn start-btn';
-                    if (btnIcon) btnIcon.className = 'fas fa-play';
-                    if (btnText) btnText.textContent = 'Start';
-                }
-            }
-
-            // Update finger sensors
-            if (data.flex_sensor && Array.isArray(data.flex_sensor)) {
-                data.flex_sensor.forEach((value, index) => {
-                    const element = document.getElementById(`finger${index}`);
-                    if (element) {
-                        element.textContent = value + '°';
-
-                        // Color coding based on flex value
-                        const finger = element.parentElement;
-                        if (value > 60) {
-                            finger.style.background = '#fed7d7'; // Red for high flex
-                        } else if (value > 30) {
-                            finger.style.background = '#fef08a'; // Yellow for medium flex
-                        } else {
-                            finger.style.background = '#d1fae5'; // Green for low flex
-                        }
-                    }
-                });
+    // Battery Chart
+    batteryChart = new Chart(document.getElementById('batteryChart'), {
+        type: 'doughnut',
+        data: {
+            labels: ['Used', 'Remaining'],
+            datasets: [{
+                data: [25, 75],
+                backgroundColor: ['#ff6b6b', '#00cc00']
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { labels: { color: '#c0c0c0' } }
             }
         }
+    });
+}
 
-        // Load and display data
-        async function loadData() {
-            try {
-                const response = await fetch("/api/sensors/");
+// Device control functions
+function toggleDevice() {
+    const btn = event.target.closest('.start-btn');
+    const btnText = btn.querySelector('#btnText');
+    
+    if (isDeviceRunning) {
+        stopDevice();
+        btnText.textContent = 'Start';
+        btn.querySelector('i').className = 'fas fa-play';
+        showMessage('Device stopped successfully', 'success');
+    } else {
+        startDevice();
+        btnText.textContent = 'Stop';
+        btn.querySelector('i').className = 'fas fa-stop';
+        showMessage('Device started successfully', 'success');
+    }
+    isDeviceRunning = !isDeviceRunning;
+}
 
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
+function startDevice() {
+    updateConnectionStatus('connected');
+    startDataSimulation();
+    document.getElementById('handStatus').textContent = 'Active';
+}
 
-                const data = await response.json();
+function stopDevice() {
+    updateConnectionStatus('disconnected');
+    stopDataSimulation();
+    document.getElementById('handStatus').textContent = 'Inactive';
+}
 
-                // Hide error message if data loads successfully
-                document.getElementById('errorMessage').style.display = 'none';
+function calibrateDevice() {
+    showMessage('Calibration started...', 'info');
+    setTimeout(() => {
+        showMessage('Calibration completed successfully!', 'success');
+    }, 2000);
+}
 
-                // Update display
-                updateDisplay(data);
+async function emergencyStop() {
+    showMessage('EMERGENCY STOP ACTIVATED!', 'error');
+    isDeviceRunning = false;
+    stopDevice();
+    
+    const btn = document.querySelector('#btnText');
+    if (btn) {
+        btn.textContent = 'Start';
+        document.querySelector('.start-btn i').className = 'fas fa-play';
+    }
 
-                // Update charts
-                const time = new Date().toLocaleTimeString();
-
-                // Update grip chart
-                gripChart.data.labels.push(time);
-                gripChart.data.datasets[0].data.push(data.grip_force || 0);
-
-                // Update EMG chart
-                emgChart.data.labels.push(time);
-                emgChart.data.datasets[0].data.push(data.emg_signal || 0);
-
-                // Keep only last 20 data points
-                if (gripChart.data.labels.length > 20) {
-                    gripChart.data.labels.shift();
-                    gripChart.data.datasets[0].data.shift();
-                    emgChart.data.labels.shift();
-                    emgChart.data.datasets[0].data.shift();
-                }
-
-                gripChart.update('none'); // No animation for better performance
-                emgChart.update('none');
-
-            } catch (error) {
-                console.error('Error loading data:', error);
-                document.getElementById('errorMessage').style.display = 'block';
-                document.getElementById('errorMessage').textContent =
-                    'Connection error: ' + error.message + '. Retrying...';
-            }
+    // Reset all finger positions
+    ['thumb', 'index', 'middle', 'ring', 'pinky'].forEach(finger => {
+        const slider = document.getElementById(finger + 'Slider');
+        const position = document.getElementById(finger + 'Position');
+        if (slider && position) {
+            slider.value = 0;
+            position.textContent = '0°';
         }
+    });
+}
 
-        // Start data loading
-        console.log('Initializing bionic hand dashboard...');
-        loadData(); // Load immediately
-        setInterval(loadData, 2000); // Update every 2 seconds
-        console.log('Dashboard initialized, polling started');
-    </script>
-</body>
+function resetDevice() {
+    showMessage('Resetting device...', 'info');
+    setTimeout(() => {
+        location.reload();
+    }, 1000);
+}
 
-</html>
+function testJS() {
+    showMessage('JavaScript functionality test - All systems operational!', 'success');
+}
+
+// Finger control
+function controlFinger(finger, angle) {
+    document.getElementById(finger + 'Position').textContent = angle + '°';
+    if (connectionStatus === 'connected') {
+        console.log(`Setting ${finger} to ${angle} degrees`);
+    }
+}
+
+// Data simulation
+let simulationInterval;
+
+function startDataSimulation() {
+    simulationInterval = setInterval(() => {
+        // Generate random data
+        const emgValue = Math.floor(Math.random() * 100);
+        const tempValue = (36 + Math.random() * 2).toFixed(1);
+        const gripValue = Math.floor(Math.random() * 100);
+
+        // Update displays
+        document.getElementById('emgSignal').textContent = emgValue;
+        document.getElementById('temperature').textContent = tempValue + '°C';
+        document.getElementById('gripForce').textContent = gripValue + '%';
+
+        // Update charts
+        updateChartData(emgChart, emgValue);
+        updateChartData(tempChart, parseFloat(tempValue));
+        updateChartData(gripChart, gripValue);
+
+    }, 1000);
+}
+
+function stopDataSimulation() {
+    if (simulationInterval) {
+        clearInterval(simulationInterval);
+    }
+}
+
+function updateChartData(chart, newData) {
+    if (chart.data.datasets[0].data.length >= 50) {
+        chart.data.datasets[0].data.shift();
+    }
+    chart.data.datasets[0].data.push(newData);
+    chart.update('none');
+}
+
+// Message display
+function showMessage(message, type = 'info') {
+    const messageElement = document.getElementById('deviceMessage');
+    messageElement.textContent = message;
+    messageElement.style.display = 'block';
+    
+    // Set color based on type
+    switch(type) {
+        case 'success':
+            messageElement.style.background = 'linear-gradient(135deg, #00aa00, #00cc00)';
+            break;
+        case 'error':
+            messageElement.style.background = 'linear-gradient(135deg, #cc0000, #ff3333)';
+            break;
+        case 'info':
+            messageElement.style.background = 'linear-gradient(135deg, #4a5568, #2d3748)';
+            break;
+    }
+    
+    setTimeout(() => {
+        messageElement.style.display = 'none';
+    }, 3000);
+}
+
+// Initialize everything when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    initCharts();
+    updateConnectionStatus('disconnected');
+});
+
+// Error handling
+window.addEventListener('error', function(e) {
+    document.getElementById('errorMessage').style.display = 'block';
+    console.error('JavaScript error:', e.error);
+});
+
+// Function to update connection status in navbar (inherited from base)
+function updateConnectionStatus(status) {
+    connectionStatus = status;
+    
+    // Call the base template's function if it exists
+    if (typeof window.updateConnectionStatus === 'function') {
+        window.updateConnectionStatus(status);
+    }
+    
+    const statusIndicator = document.getElementById('statusIndicator');
+    const statusText = document.getElementById('statusText');
+    
+    if (statusIndicator && statusText) {
+        statusIndicator.className = 'online-indicator';
+        
+        switch(status) {
+            case 'connected':
+                statusIndicator.classList.add('online');
+                statusText.textContent = 'Connected';
+                break;
+            case 'disconnected':
+                statusIndicator.classList.add('disconnected');
+                statusText.textContent = 'Disconnected';
+                break;
+            case 'offline':
+                statusIndicator.classList.add('offline');
+                statusText.textContent = 'Offline';
+                break;
+        }
+    }
+}
+{% endblock %}

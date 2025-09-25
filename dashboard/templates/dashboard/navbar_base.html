@@ -1,0 +1,481 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Quantumix - Bionic Hand IoT Dashboard{% endblock %}</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    {% block extra_head %}{% endblock %}
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 50%, #1a1a1a 100%);
+            background-attachment: fixed;
+            min-height: 100vh;
+            color: #e0e0e0;
+        }
+
+        /* Unified Navigation Bar */
+        .navbar {
+            background: linear-gradient(135deg, #000000 0%, #1a1a1a 50%, #000000 100%);
+            backdrop-filter: blur(15px);
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.4);
+            padding: 8px 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(192, 192, 192, 0.1);
+        }
+
+        .nav-container {
+            max-width: 1300px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            font-size: 1.6em;
+            font-weight: bold;
+            color: #c0c0c0;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .nav-brand:hover {
+            color: #ffffff;
+            text-shadow: 0 0 20px rgba(192, 192, 192, 0.5);
+        }
+
+        .nav-brand i {
+            margin-right: 10px;
+            color: #888;
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            align-items: center;
+            gap: 2px;
+        }
+
+        .nav-item a {
+            display: flex;
+            align-items: center;
+            padding: 10px 16px;
+            color: #b0b0b0;
+            text-decoration: none;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            gap: 6px;
+            white-space: nowrap;
+            font-size: 0.9em;
+        }
+
+        .nav-item a:hover,
+        .nav-item a.active {
+            background: linear-gradient(135deg, #333 0%, #666 100%);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Dropdown Menu Styles */
+        .dropdown {
+            position: relative;
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: linear-gradient(145deg, #1a1a1a, #2d2d2d);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+            border-radius: 15px;
+            min-width: 220px;
+            padding: 15px 0;
+            display: none;
+            z-index: 1000;
+            border: 1px solid #444;
+        }
+
+        .dropdown:hover .dropdown-menu {
+            display: block;
+        }
+
+        .dropdown-menu li {
+            list-style: none;
+        }
+
+        .dropdown-menu a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 15px 25px;
+            color: #b0b0b0;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-size: 0.95em;
+            border-left: 3px solid transparent;
+        }
+
+        .dropdown-menu a:hover {
+            background: linear-gradient(135deg, #333 0%, #666 100%);
+            color: white;
+            transform: translateX(5px);
+            border-left-color: #c0c0c0;
+        }
+
+        .nav-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 14px;
+            background: linear-gradient(135deg, #00aa00, #00cc00);
+            color: white;
+            border-radius: 20px;
+            font-size: 0.85em;
+            box-shadow: 0 3px 12px rgba(0, 170, 0, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .online-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            background: #00cc00;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+            box-shadow: 0 0 10px rgba(0, 204, 0, 0.5);
+        }
+
+        /* Disconnected indicator */
+        .online-indicator.disconnected {
+            background: #ff5500;
+            box-shadow: 0 0 10px rgba(255, 85, 0, 0.5);
+            animation: pulse-red 2s infinite;
+        }
+
+        /* Offline indicator */
+        .online-indicator.offline {
+            background: #888888;
+            box-shadow: 0 0 10px rgba(136, 136, 136, 0.5);
+            animation: none;
+        }
+
+        @keyframes pulse {
+            0% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.5;
+            }
+            100% {
+                opacity: 1;
+            }
+        }
+
+        @keyframes pulse-red {
+            0% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.5;
+            }
+            100% {
+                opacity: 1;
+            }
+        }
+
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+            padding: 8px;
+        }
+
+        .hamburger span {
+            width: 28px;
+            height: 3px;
+            background: #c0c0c0;
+            margin: 4px 0;
+            transition: 0.3s;
+            border-radius: 2px;
+        }
+
+        .dropdown-toggle {
+            position: relative;
+        }
+
+        .dropdown-toggle .fa-chevron-down {
+            font-size: 0.8em;
+            transition: transform 0.3s ease;
+        }
+
+        .dropdown:hover .dropdown-toggle .fa-chevron-down {
+            transform: rotate(180deg);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .nav-menu {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background: linear-gradient(135deg, #1a1a1a, #2d2d2d);
+                flex-direction: column;
+                gap: 0;
+                box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6);
+                border: 1px solid #333;
+                border-radius: 0 0 15px 15px;
+            }
+
+            .nav-menu.active {
+                display: flex;
+            }
+
+            .nav-item {
+                border-bottom: 1px solid #333;
+            }
+
+            .nav-item:last-child {
+                border-bottom: none;
+            }
+
+            .nav-item a {
+                padding: 18px 25px;
+                border-radius: 0;
+                color: #b0b0b0;
+            }
+
+            .hamburger {
+                display: flex;
+            }
+
+            .nav-controls {
+                gap: 8px;
+            }
+
+            .status-indicator {
+                padding: 8px 12px;
+                font-size: 0.85em;
+            }
+        }
+
+        /* Desktop media query fixes */
+        @media screen and (min-width: 769px) {
+            .nav-controls {
+                gap: 10px;
+            }
+
+            .status-indicator {
+                font-size: 0.9em;
+                padding: 8px 16px;
+            }
+
+            .hamburger {
+                display: none !important;
+            }
+
+            .nav-menu {
+                position: static !important;
+                display: flex !important;
+                flex-direction: row !important;
+                width: auto !important;
+                height: auto !important;
+                background: transparent !important;
+                backdrop-filter: none !important;
+                justify-content: flex-start !important;
+                align-items: center !important;
+                transition: none !important;
+                z-index: auto !important;
+                left: auto !important;
+                top: auto !important;
+                list-style: none;
+                gap: 2px;
+                padding: 0;
+                margin: 0;
+            }
+
+            .nav-menu li {
+                margin: 0 !important;
+                list-style: none;
+            }
+
+            .nav-container {
+                display: flex !important;
+                justify-content: space-between !important;
+                align-items: center !important;
+                flex-direction: row !important;
+                padding: 0 20px !important;
+            }
+
+            .navbar {
+                padding: 8px 0 !important;
+            }
+        }
+
+        /* Main content styling */
+        .main-content {
+            padding: 30px;
+            min-height: calc(100vh - 70px);
+        }
+
+        {% block extra_css %}{% endblock %}
+    </style>
+</head>
+
+<body>
+    {% csrf_token %}
+    <!-- Unified Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="/" class="nav-brand">
+                <i class="fas fa-hand-rock"></i>
+                Quantumix
+            </a>
+
+            <ul class="nav-menu" id="navMenu">
+                <li class="nav-item">
+                    <a href="/" {% if request.resolver_match.url_name == 'dashboard' %}class="active"{% endif %}>
+                        <i class="fas fa-tachometer-alt"></i>
+                        Dashboard
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/analytics/" {% if request.resolver_match.url_name == 'analytics' %}class="active"{% endif %}>
+                        <i class="fas fa-chart-line"></i>
+                        Analytics
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/control/" {% if request.resolver_match.url_name == 'control' %}class="active"{% endif %}>
+                        <i class="fas fa-sliders-h"></i>
+                        Device Control
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/model-testing/" {% if request.resolver_match.url_name == 'model_testing' %}class="active"{% endif %}>
+                        <i class="fas fa-robot"></i>
+                        AI Model Testing
+                    </a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a href="#" class="dropdown-toggle">
+                        <i class="fas fa-heartbeat"></i>
+                        Medical
+                        <i class="fas fa-chevron-down"></i>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a href="/xray-upload/"><i class="fas fa-x-ray"></i>X-Ray Upload</a></li>
+                        <li><a href="/doctor-panel/"><i class="fas fa-user-md"></i>Doctor Panel</a></li>
+                        <li><a href="/medical-dashboard/"><i class="fas fa-chart-bar"></i>Medical Analytics</a></li>
+                        <li><a href="/future-scope/"><i class="fas fa-brain"></i>Future Scope</a></li>
+                        <li><a href="/impact/"><i class="fas fa-heart"></i>Impact Stories</a></li>
+                    </ul>
+                </li>
+                <li class="nav-item">
+                    <a href="/settings/" {% if request.resolver_match.url_name == 'settings' %}class="active"{% endif %}>
+                        <i class="fas fa-cog"></i>
+                        Settings
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/about/" {% if request.resolver_match.url_name == 'about' %}class="active"{% endif %}>
+                        <i class="fas fa-info-circle"></i>
+                        About
+                    </a>
+                </li>
+            </ul>
+
+            <div class="nav-controls">
+                <div class="status-indicator" id="deviceStatus">
+                    <div class="online-indicator" id="statusIndicator"></div>
+                    <span id="statusText">Connected</span>
+                </div>
+                <div class="hamburger" onclick="toggleMenu()">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        {% block content %}{% endblock %}
+    </div>
+
+    <!-- Base JavaScript for navbar functionality -->
+    <script>
+        function toggleMenu() {
+            const navMenu = document.getElementById('navMenu');
+            navMenu.classList.toggle('active');
+        }
+
+        // Update connection status
+        function updateConnectionStatus(status) {
+            const statusIndicator = document.getElementById('statusIndicator');
+            const statusText = document.getElementById('statusText');
+            
+            if (statusIndicator && statusText) {
+                statusIndicator.className = 'online-indicator';
+                
+                switch(status) {
+                    case 'connected':
+                        statusIndicator.classList.add('online');
+                        statusText.textContent = 'Connected';
+                        break;
+                    case 'disconnected':
+                        statusIndicator.classList.add('disconnected');
+                        statusText.textContent = 'Disconnected';
+                        break;
+                    case 'offline':
+                        statusIndicator.classList.add('offline');
+                        statusText.textContent = 'Offline';
+                        break;
+                }
+            }
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            const dropdowns = document.querySelectorAll('.dropdown');
+            dropdowns.forEach(dropdown => {
+                if (!dropdown.contains(event.target)) {
+                    const dropdownMenu = dropdown.querySelector('.dropdown-menu');
+                    if (dropdownMenu) {
+                        dropdownMenu.style.display = 'none';
+                    }
+                }
+            });
+        });
+
+        {% block extra_js %}{% endblock %}
+    </script>
+</body>
+</html>

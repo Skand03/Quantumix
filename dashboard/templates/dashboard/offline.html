@@ -1,0 +1,421 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Offline - Bionic Hand Dashboard</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="{% static 'dashboard/css/mobile-responsive.css' %}" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 50%, #1a1a1a 100%);
+            color: #e0e0e0;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        .offline-container {
+            max-width: 600px;
+            padding: 40px 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            border: 1px solid rgba(192, 192, 192, 0.1);
+            backdrop-filter: blur(20px);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+        }
+
+        .offline-icon {
+            font-size: 4em;
+            color: #4a90e2;
+            margin-bottom: 20px;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        .offline-title {
+            font-size: 2.5em;
+            font-weight: 700;
+            margin-bottom: 15px;
+            background: linear-gradient(135deg, #4a90e2, #74b9ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .offline-subtitle {
+            font-size: 1.2em;
+            margin-bottom: 30px;
+            opacity: 0.9;
+            line-height: 1.6;
+        }
+
+        .offline-features {
+            text-align: left;
+            margin: 30px 0;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            margin: 15px 0;
+            font-size: 1em;
+        }
+
+        .feature-item i {
+            font-size: 1.2em;
+            color: #48bb78;
+            margin-right: 15px;
+            width: 20px;
+        }
+
+        .retry-button {
+            background: linear-gradient(135deg, #4a90e2, #357abd);
+            border: none;
+            color: white;
+            padding: 15px 30px;
+            font-size: 1.1em;
+            font-weight: 600;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 20px 10px;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+        }
+
+        .retry-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(74, 144, 226, 0.3);
+        }
+
+        .retry-button:active {
+            transform: translateY(0);
+        }
+
+        .cache-status {
+            margin-top: 30px;
+            padding: 15px;
+            background: rgba(74, 144, 226, 0.1);
+            border-radius: 10px;
+            border: 1px solid rgba(74, 144, 226, 0.2);
+        }
+
+        .cache-status h3 {
+            margin: 0 0 10px 0;
+            color: #4a90e2;
+            font-size: 1.1em;
+        }
+
+        .cache-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 8px 0;
+            font-size: 0.9em;
+        }
+
+        .cache-available {
+            color: #48bb78;
+        }
+
+        .cache-unavailable {
+            color: #e53e3e;
+        }
+
+        .network-status {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 10px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .status-offline {
+            background: rgba(229, 62, 62, 0.2);
+            color: #e53e3e;
+            border: 1px solid rgba(229, 62, 62, 0.3);
+        }
+
+        .status-online {
+            background: rgba(72, 187, 120, 0.2);
+            color: #48bb78;
+            border: 1px solid rgba(72, 187, 120, 0.3);
+        }
+
+        .reconnection-timer {
+            margin-top: 20px;
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
+
+        @media (max-width: 768px) {
+            .offline-container {
+                margin: 20px;
+                padding: 30px 20px;
+            }
+
+            .offline-title {
+                font-size: 2em;
+            }
+
+            .offline-subtitle {
+                font-size: 1em;
+            }
+
+            .retry-button {
+                padding: 12px 25px;
+                font-size: 1em;
+                margin: 15px 5px;
+            }
+
+            .network-status {
+                position: relative;
+                top: auto;
+                right: auto;
+                margin: 20px auto 0;
+                width: fit-content;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="network-status" id="networkStatus">
+        <i class="fas fa-wifi-slash"></i>
+        <span>Offline</span>
+    </div>
+
+    <div class="offline-container">
+        <div class="offline-icon">
+            <i class="fas fa-cloud-offline"></i>
+        </div>
+
+        <h1 class="offline-title">You're Offline</h1>
+        <p class="offline-subtitle">
+            Don't worry! The Bionic Hand Dashboard works offline with cached data.
+            Some features are still available even without an internet connection.
+        </p>
+
+        <div class="offline-features">
+            <h3 style="margin-top: 0; color: #4a90e2;">
+                <i class="fas fa-check-circle" style="margin-right: 10px;"></i>
+                Available Offline:
+            </h3>
+
+            <div class="feature-item">
+                <i class="fas fa-chart-line"></i>
+                <span>View cached sensor data and charts</span>
+            </div>
+
+            <div class="feature-item">
+                <i class="fas fa-cog"></i>
+                <span>Access device control panel</span>
+            </div>
+
+            <div class="feature-item">
+                <i class="fas fa-bell"></i>
+                <span>Receive local notifications</span>
+            </div>
+
+            <div class="feature-item">
+                <i class="fas fa-database"></i>
+                <span>Browse cached analytics</span>
+            </div>
+
+            <div class="feature-item">
+                <i class="fas fa-sync"></i>
+                <span>Actions will sync when back online</span>
+            </div>
+        </div>
+
+        <button class="retry-button" onclick="checkConnection()">
+            <i class="fas fa-sync-alt"></i>
+            Try Again
+        </button>
+
+        <a href="/dashboard/" class="retry-button" style="background: linear-gradient(135deg, #48bb78, #38a169);">
+            <i class="fas fa-home"></i>
+            Go to Dashboard
+        </a>
+
+        <div class="cache-status">
+            <h3>Cached Resources Status</h3>
+            <div class="cache-item">
+                <span>Dashboard Pages</span>
+                <span class="cache-available" id="cachePages">
+                    <i class="fas fa-check"></i> Available
+                </span>
+            </div>
+            <div class="cache-item">
+                <span>Sensor Data</span>
+                <span class="cache-available" id="cacheSensorData">
+                    <i class="fas fa-check"></i> Last sync: 2 min ago
+                </span>
+            </div>
+            <div class="cache-item">
+                <span>Device Settings</span>
+                <span class="cache-available" id="cacheSettings">
+                    <i class="fas fa-check"></i> Available
+                </span>
+            </div>
+            <div class="cache-item">
+                <span>Real-time Updates</span>
+                <span class="cache-unavailable" id="cacheUpdates">
+                    <i class="fas fa-times"></i> Requires connection
+                </span>
+            </div>
+        </div>
+
+        <div class="reconnection-timer">
+            <div id="reconnectionStatus">
+                <i class="fas fa-spinner fa-spin"></i>
+                Checking connection...
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let reconnectionAttempts = 0;
+        let maxAttempts = 10;
+        let baseDelay = 2000; // 2 seconds
+
+        // Check network status
+        function updateNetworkStatus() {
+            const isOnline = navigator.onLine;
+            const statusElement = document.getElementById('networkStatus');
+            const statusText = statusElement.querySelector('span');
+            const statusIcon = statusElement.querySelector('i');
+
+            if (isOnline) {
+                statusElement.className = 'network-status status-online';
+                statusText.textContent = 'Online';
+                statusIcon.className = 'fas fa-wifi';
+
+                // Redirect to dashboard when back online
+                setTimeout(() => {
+                    window.location.href = '/dashboard/';
+                }, 1000);
+            } else {
+                statusElement.className = 'network-status status-offline';
+                statusText.textContent = 'Offline';
+                statusIcon.className = 'fas fa-wifi-slash';
+            }
+        }
+
+        // Check connection with retry logic
+        async function checkConnection() {
+            const statusElement = document.getElementById('reconnectionStatus');
+            const retryButton = document.querySelector('.retry-button');
+
+            retryButton.disabled = true;
+            retryButton.style.opacity = '0.5';
+
+            try {
+                statusElement.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Checking connection...';
+
+                // Try to fetch a small resource to test connectivity
+                const response = await fetch('/dashboard/manifest.json', {
+                    method: 'HEAD',
+                    cache: 'no-cache'
+                });
+
+                if (response.ok) {
+                    statusElement.innerHTML = '<i class="fas fa-check" style="color: #48bb78;"></i> Connection restored!';
+                    setTimeout(() => {
+                        window.location.href = '/dashboard/';
+                    }, 1000);
+                } else {
+                    throw new Error('Network response was not ok');
+                }
+            } catch (error) {
+                reconnectionAttempts++;
+
+                if (reconnectionAttempts < maxAttempts) {
+                    const delay = Math.min(baseDelay * Math.pow(2, reconnectionAttempts), 30000);
+                    const seconds = Math.ceil(delay / 1000);
+
+                    statusElement.innerHTML = `<i class="fas fa-clock" style="color: #ed8936;"></i> Still offline. Retrying in ${seconds} seconds...`;
+
+                    setTimeout(() => {
+                        checkConnection();
+                    }, delay);
+                } else {
+                    statusElement.innerHTML = '<i class="fas fa-exclamation-triangle" style="color: #e53e3e;"></i> Connection failed. Please check your internet.';
+                    retryButton.disabled = false;
+                    retryButton.style.opacity = '1';
+                    reconnectionAttempts = 0; // Reset for manual retry
+                }
+            }
+        }
+
+        // Listen for online/offline events
+        window.addEventListener('online', updateNetworkStatus);
+        window.addEventListener('offline', updateNetworkStatus);
+
+        // Initial status check
+        updateNetworkStatus();
+
+        // Start automatic reconnection attempts
+        if (!navigator.onLine) {
+            setTimeout(checkConnection, 5000);
+        }
+
+        // Check service worker cache status
+        if ('serviceWorker' in navigator && 'caches' in window) {
+            caches.has('bionic-hand-dashboard-v1.0.0').then((hasCache) => {
+                if (hasCache) {
+                    document.getElementById('cachePages').innerHTML = '<i class="fas fa-check"></i> Available';
+                    document.getElementById('cacheSensorData').innerHTML = '<i class="fas fa-check"></i> Available';
+                    document.getElementById('cacheSettings').innerHTML = '<i class="fas fa-check"></i> Available';
+                } else {
+                    document.querySelectorAll('.cache-available').forEach(el => {
+                        el.className = 'cache-unavailable';
+                        el.innerHTML = '<i class="fas fa-times"></i> Not cached';
+                    });
+                }
+            });
+        }
+
+        // Add keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                if (e.target.classList.contains('retry-button')) {
+                    e.target.click();
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>

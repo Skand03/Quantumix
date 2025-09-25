@@ -1,732 +1,359 @@
+{% extends 'dashboard/navbar_base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Analytics - Bionic Hand IoT Dashboard</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+{% block title %}Analytics - Bionic Hand IoT Dashboard{% endblock %}
+
+{% block extra_css %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+    /* Main Content */
+    .main-content {
+        padding: 40px 30px;
+        background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 50%, #0f0f0f 100%);
+        min-height: calc(100vh - 60px);
+    }
+
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        background: linear-gradient(135deg, #1a1a1a, #2d2d2d);
+        border-radius: 20px;
+        padding: 40px;
+        box-shadow: 0 15px 50px rgba(0, 0, 0, 0.6);
+        border: 1px solid #333;
+    }
+
+    .page-header {
+        text-align: center;
+        margin-bottom: 40px;
+    }
+
+    .page-header h1 {
+        font-size: 2.8em;
+        margin-bottom: 15px;
+        color: #c0c0c0;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    }
+
+    .page-header p {
+        color: #888;
+        font-size: 1.2em;
+    }
+
+    .analytics-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 25px;
+        margin-bottom: 40px;
+    }
+
+    .stat-card {
+        background: linear-gradient(135deg, #2d2d2d, #1a1a1a);
+        padding: 30px;
+        border-radius: 15px;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+        text-align: center;
+        transition: transform 0.3s ease;
+        border: 1px solid #444;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 12px 35px rgba(0, 0, 0, 0.6);
+    }
+
+    .stat-number {
+        font-size: 3.2em;
+        font-weight: bold;
+        color: #c0c0c0;
+        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+        margin-bottom: 10px;
+    }
+
+    .stat-label {
+        color: #888;
+        font-size: 1.2em;
+    }
+
+    .chart-section {
+        background: linear-gradient(135deg, #1a1a1a, #2d2d2d);
+        padding: 30px;
+        border-radius: 15px;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+        margin-bottom: 40px;
+        border: 1px solid #333;
+    }
+
+    .chart-section h3 {
+        color: #c0c0c0;
+        margin-bottom: 20px;
+        font-size: 1.4em;
+    }
+
+    .date-picker {
+        display: flex;
+        gap: 15px;
+        margin-bottom: 25px;
+        align-items: center;
+    }
+
+    .date-picker input,
+    .date-picker select {
+        padding: 10px 15px;
+        border: 2px solid #444;
+        border-radius: 10px;
+        font-size: 1em;
+        background: #2d2d2d;
+        color: #c0c0c0;
+    }
+
+    .date-picker input:focus,
+    .date-picker select:focus {
+        border-color: #666;
+        outline: none;
+    }
+
+    .export-btn {
+        background: linear-gradient(135deg, #00aa00, #00cc00);
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: bold;
+        transition: background 0.3s ease;
+    }
+
+    .export-btn:hover {
+        background: linear-gradient(135deg, #00cc00, #00dd00);
+        box-shadow: 0 6px 20px rgba(0, 170, 0, 0.4);
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .analytics-grid {
+            grid-template-columns: 1fr;
+            gap: 20px;
         }
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 50%, #1a1a1a 100%);
-            background-attachment: fixed;
-            min-height: 100vh;
-            color: #e0e0e0;
-        }
-
-        /* Optimized Navigation Bar */
-        .navbar {
-            background: linear-gradient(135deg, #000000 0%, #1a1a1a 50%, #000000 100%);
-            backdrop-filter: blur(15px);
-            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.4);
-            padding: 8px 0;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            border-bottom: 1px solid rgba(192, 192, 192, 0.1);
-        }
-
-        .nav-container {
-            max-width: 1300px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0 20px;
-        }
-
-        .nav-brand {
-            display: flex;
-            align-items: center;
-            font-size: 1.6em;
-            font-weight: bold;
-            color: #c0c0c0;
-            text-decoration: none;
-            transition: all 0.3s ease;
-        }
-
-        .nav-brand:hover {
-            color: #ffffff;
-            text-shadow: 0 0 20px rgba(192, 192, 192, 0.5);
-        }
-
-        .nav-brand i {
-            margin-right: 10px;
-            color: #888;
-        }
-
-        .nav-menu {
-            display: flex;
-            list-style: none;
-            align-items: center;
-            gap: 2px;
-        }
-
-        .nav-item a {
-            display: flex;
-            align-items: center;
-            padding: 10px 16px;
-            color: #b0b0b0;
-            text-decoration: none;
-            border-radius: 20px;
-            transition: all 0.3s ease;
-            font-weight: 500;
-            gap: 6px;
-            white-space: nowrap;
-            font-size: 0.9em;
-        }
-
-        .nav-item a:hover,
-        .nav-item a.active {
-            background: linear-gradient(135deg, #333 0%, #666 100%);
-            color: white;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
-        }
-
-        /* Dropdown Menu Styles */
-        .dropdown {
-            position: relative;
-        }
-
-        .dropdown-menu {
-            position: absolute;
-            top: 100%;
-            left: 0;
-            background: linear-gradient(145deg, #1a1a1a, #2d2d2d);
-            backdrop-filter: blur(10px);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
-            border-radius: 15px;
-            min-width: 220px;
-            padding: 15px 0;
-            display: none;
-            z-index: 1000;
-            border: 1px solid #444;
-        }
-
-        .dropdown:hover .dropdown-menu {
-            display: block;
-        }
-
-        .dropdown-menu li {
-            list-style: none;
-        }
-
-        .dropdown-menu a {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 15px 25px;
-            color: #b0b0b0;
-            text-decoration: none;
-            transition: all 0.3s ease;
-            font-size: 0.95em;
-            border-left: 3px solid transparent;
-        }
-
-        .dropdown-menu a:hover {
-            background: linear-gradient(135deg, #333 0%, #666 100%);
-            color: white;
-            transform: translateX(5px);
-            border-left-color: #c0c0c0;
-        }
-
-        .nav-controls {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .status-indicator {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            padding: 8px 14px;
-            background: linear-gradient(135deg, #00aa00, #00cc00);
-            color: white;
-            border-radius: 20px;
-            font-size: 0.85em;
-            box-shadow: 0 3px 12px rgba(0, 170, 0, 0.3);
-        }
-
-        .online-indicator {
-            display: inline-block;
-            width: 12px;
-            height: 12px;
-            background: #00cc00;
-            border-radius: 50%;
-            animation: pulse 2s infinite;
-            box-shadow: 0 0 10px rgba(0, 204, 0, 0.5);
-        }
-
-        @keyframes pulse {
-            0% {
-                opacity: 1;
-            }
-
-            50% {
-                opacity: 0.5;
-            }
-
-            100% {
-                opacity: 1;
-            }
-        }
-
-        .emergency-btn {
-            background: linear-gradient(135deg, #e53e3e, #c53030);
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 3px 12px rgba(229, 62, 62, 0.3);
-            font-size: 0.85em;
-        }
-
-        .emergency-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(229, 62, 62, 0.4);
-            background: linear-gradient(135deg, #c53030, #a02727);
-        }
-
-        /* Main Content */
         .main-content {
-            padding: 40px 30px;
-            background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 50%, #0f0f0f 100%);
-            min-height: calc(100vh - 60px);
+            padding: 25px 15px;
         }
 
         .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            background: linear-gradient(135deg, #1a1a1a, #2d2d2d);
-            border-radius: 20px;
-            padding: 40px;
-            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.6);
-            border: 1px solid #333;
-        }
-
-        .page-header {
-            text-align: center;
-            margin-bottom: 40px;
+            padding: 25px;
+            border-radius: 15px;
         }
 
         .page-header h1 {
-            font-size: 2.8em;
-            margin-bottom: 15px;
-            color: #c0c0c0;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            font-size: 2.2em;
         }
+    }
 
-        .page-header p {
-            color: #888;
-            font-size: 1.2em;
-        }
-
-        .analytics-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 25px;
-            margin-bottom: 40px;
+    @media (max-width: 480px) {
+        .container {
+            margin-top: 10px;
         }
 
         .stat-card {
-            background: linear-gradient(135deg, #2d2d2d, #1a1a1a);
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
-            text-align: center;
-            transition: transform 0.3s ease;
-            border: 1px solid #444;
-        }
-
-        .stat-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.6);
+            padding: 15px;
         }
 
         .stat-number {
-            font-size: 3.2em;
-            font-weight: bold;
-            color: #c0c0c0;
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
-            margin-bottom: 10px;
-        }
-
-        .stat-label {
-            color: #888;
-            font-size: 1.2em;
+            font-size: 2em;
         }
 
         .chart-section {
-            background: linear-gradient(135deg, #1a1a1a, #2d2d2d);
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
-            margin-bottom: 40px;
-            border: 1px solid #333;
+            padding: 15px;
         }
+    }
+</style>
+{% endblock %}
 
-        .chart-section h3 {
-            color: #c0c0c0;
-            margin-bottom: 20px;
-            font-size: 1.4em;
-        }
+{% block content %}
+<!-- Main Content -->
+<div class="main-content">
+    <div class="container">
+        <div class="page-header">
+            <h1>📊 Analytics Dashboard</h1>
+            <p>Historical data and performance insights</p>
+        </div>
 
-        .date-picker {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 25px;
-            align-items: center;
-        }
-
-        .date-picker input,
-        .date-picker select {
-            padding: 10px 15px;
-            border: 2px solid #444;
-            border-radius: 10px;
-            font-size: 1em;
-            background: #2d2d2d;
-            color: #c0c0c0;
-        }
-
-        .date-picker input:focus,
-        .date-picker select:focus {
-            border-color: #666;
-            outline: none;
-        }
-
-        .export-btn {
-            background: linear-gradient(135deg, #00aa00, #00cc00);
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: background 0.3s ease;
-        }
-
-        .export-btn:hover {
-            background: linear-gradient(135deg, #00cc00, #00dd00);
-            box-shadow: 0 6px 20px rgba(0, 170, 0, 0.4);
-        }
-
-        .hamburger {
-            display: none;
-            flex-direction: column;
-            cursor: pointer;
-            padding: 8px;
-        }
-
-        .hamburger span {
-            width: 28px;
-            height: 3px;
-            background: #c0c0c0;
-            margin: 4px 0;
-            transition: 0.3s;
-            border-radius: 2px;
-        }
-
-        .dropdown-toggle {
-            position: relative;
-        }
-
-        .dropdown-toggle .fa-chevron-down {
-            font-size: 0.8em;
-            transition: transform 0.3s ease;
-        }
-
-        .dropdown:hover .dropdown-toggle .fa-chevron-down {
-            transform: rotate(180deg);
-        }
-
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            .nav-menu {
-                display: none;
-                position: absolute;
-                top: 100%;
-                left: 0;
-                right: 0;
-                background: linear-gradient(135deg, #1a1a1a, #2d2d2d);
-                flex-direction: column;
-                gap: 0;
-                box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6);
-                border: 1px solid #333;
-                border-radius: 0 0 15px 15px;
-            }
-
-            .nav-menu.active {
-                display: flex;
-            }
-
-            .nav-item {
-                border-bottom: 1px solid #333;
-                padding: 18px 25px;
-            }
-
-            .nav-item a {
-                color: #b0b0b0;
-            }
-
-            .hamburger {
-                display: flex;
-            }
-
-            .nav-controls {
-                gap: 8px;
-            }
-
-            .emergency-btn {
-                padding: 8px 12px;
-                font-size: 0.8em;
-            }
-
-            .status-indicator {
-                padding: 6px 10px;
-                font-size: 0.8em;
-            }
-
-            .analytics-grid {
-                grid-template-columns: 1fr;
-                gap: 20px;
-            }
-
-            .main-content {
-                padding: 25px 15px;
-            }
-
-            .container {
-                padding: 25px;
-                border-radius: 15px;
-            }
-
-            .page-header h1 {
-                font-size: 2.2em;
-            }
-        }
-
-        @media (max-width: 480px) {
-            body {
-                padding: 10px;
-            }
-
-            .container {
-                margin-top: 10px;
-            }
-
-            .nav-brand {
-                font-size: 1.3em;
-            }
-
-            .stats-grid {
-                margin: 15px 0;
-            }
-
-            .stat-card {
-                padding: 15px;
-            }
-
-            .stat-value {
-                font-size: 2em;
-            }
-
-            .chart-container {
-                padding: 15px;
-            }
-        }
-    </style>
-</head>
-
-<body>
-    <!-- Navigation Bar -->
-    <nav class="navbar">
-        <div class="nav-container">
-            <a href="/" class="nav-brand">
-                <i class="fas fa-hand-rock"></i>
-                Quantumix
-            </a>
-
-            <ul class="nav-menu" id="navMenu">
-                <li class="nav-item">
-                    <a href="/">
-                        <i class="fas fa-tachometer-alt"></i>
-                        Dashboard
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="/analytics/" class="active">
-                        <i class="fas fa-chart-line"></i>
-                        Analytics
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="/control/">
-                        <i class="fas fa-sliders-h"></i>
-                        Device Control
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="/model-testing/">
-                        <i class="fas fa-robot"></i>
-                        AI Model Testing
-                    </a>
-                </li>
-                <li class="nav-item dropdown">
-                    <a href="#" class="dropdown-toggle">
-                        <i class="fas fa-heartbeat"></i>
-                        Medical
-                        <i class="fas fa-chevron-down"></i>
-                    </a>
-                    <ul class="dropdown-menu">
-                        <li><a href="/xray-upload/"><i class="fas fa-x-ray"></i>X-Ray Upload</a></li>
-                        <li><a href="/doctor-panel/"><i class="fas fa-user-md"></i>Doctor Panel</a></li>
-                        <li><a href="/medical-dashboard/"><i class="fas fa-chart-bar"></i>Medical Analytics</a></li>
-                        <li><a href="/future-scope/"><i class="fas fa-brain"></i>Future Scope</a></li>
-                        <li><a href="/impact/"><i class="fas fa-heart"></i>Impact Stories</a></li>
-                    </ul>
-                </li>
-                <li class="nav-item">
-                    <a href="/settings/">
-                        <i class="fas fa-cog"></i>
-                        Settings
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="/about/">
-                        <i class="fas fa-info-circle"></i>
-                        About
-                    </a>
-                </li>
-            </ul>
-
-            <div class="nav-controls">
-                <div class="status-indicator">
-                    <div class="online-indicator"></div>
-                    Connected
-                </div>
-                <button class="emergency-btn" onclick="emergencyStop()">
-                    <i class="fas fa-stop"></i>
-                    STOP
-                </button>
-                <div class="hamburger" onclick="toggleMenu()">
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                </div>
+        <!-- Statistics Cards -->
+        <div class="analytics-grid">
+            <div class="stat-card">
+                <div class="stat-number" id="totalSessions">1,247</div>
+                <div class="stat-label">Total Sessions</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="avgGripForce">68%</div>
+                <div class="stat-label">Average Grip Force</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="uptime">99.2%</div>
+                <div class="stat-label">System Uptime</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="batteryHealth">87%</div>
+                <div class="stat-label">Battery Health</div>
             </div>
         </div>
-    </nav>
 
-    <!-- Main Content -->
-    <div class="main-content">
-        <div class="container">
-            <div class="page-header">
-                <h1>📊 Analytics Dashboard</h1>
-                <p>Historical data and performance insights</p>
+        <!-- Date Range Selector -->
+        <div class="chart-section">
+            <h3>📈 Historical Performance</h3>
+            <div class="date-picker">
+                <label>From:</label>
+                <input type="date" id="startDate" value="2025-09-17">
+                <label>To:</label>
+                <input type="date" id="endDate" value="2025-09-24">
+                <select id="dataType">
+                    <option value="grip">Grip Force</option>
+                    <option value="emg">EMG Signal</option>
+                    <option value="temperature">Temperature</option>
+                </select>
+                <button class="export-btn" onclick="exportData()">
+                    <i class="fas fa-download"></i>
+                    Export Data
+                </button>
             </div>
+            <canvas id="historicalChart"></canvas>
+        </div>
 
-            <!-- Statistics Cards -->
-            <div class="analytics-grid">
-                <div class="stat-card">
-                    <div class="stat-number" id="totalSessions">1,247</div>
-                    <div class="stat-label">Total Sessions</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number" id="avgGripForce">68%</div>
-                    <div class="stat-label">Average Grip Force</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number" id="uptime">99.2%</div>
-                    <div class="stat-label">System Uptime</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number" id="batteryHealth">87%</div>
-                    <div class="stat-label">Battery Health</div>
-                </div>
-            </div>
+        <!-- Usage Patterns -->
+        <div class="chart-section">
+            <h3>🕐 Usage Patterns</h3>
+            <canvas id="usageChart"></canvas>
+        </div>
 
-            <!-- Date Range Selector -->
-            <div class="chart-section">
-                <h3>📈 Historical Performance</h3>
-                <div class="date-picker">
-                    <label>From:</label>
-                    <input type="date" id="startDate" value="2025-09-17">
-                    <label>To:</label>
-                    <input type="date" id="endDate" value="2025-09-24">
-                    <select id="dataType">
-                        <option value="grip">Grip Force</option>
-                        <option value="emg">EMG Signal</option>
-                        <option value="temperature">Temperature</option>
-                    </select>
-                    <button class="export-btn" onclick="exportData()">
-                        <i class="fas fa-download"></i>
-                        Export Data
-                    </button>
-                </div>
-                <canvas id="historicalChart"></canvas>
-            </div>
-
-            <!-- Usage Patterns -->
-            <div class="chart-section">
-                <h3>🕐 Usage Patterns</h3>
-                <canvas id="usageChart"></canvas>
-            </div>
-
-            <!-- Performance Metrics -->
-            <div class="chart-section">
-                <h3>⚡ Performance Metrics</h3>
-                <canvas id="performanceChart"></canvas>
-            </div>
+        <!-- Performance Metrics -->
+        <div class="chart-section">
+            <h3>⚡ Performance Metrics</h3>
+            <canvas id="performanceChart"></canvas>
         </div>
     </div>
+</div>
+{% endblock %}
 
-    <script>
-        // Initialize charts
-        const historicalCtx = document.getElementById('historicalChart').getContext('2d');
-        const usageCtx = document.getElementById('usageChart').getContext('2d');
-        const performanceCtx = document.getElementById('performanceChart').getContext('2d');
+{% block extra_js %}
+<script>
+    // Initialize charts
+    const historicalCtx = document.getElementById('historicalChart').getContext('2d');
+    const usageCtx = document.getElementById('usageChart').getContext('2d');
+    const performanceCtx = document.getElementById('performanceChart').getContext('2d');
 
-        // Historical Chart
-        const historicalChart = new Chart(historicalCtx, {
-            type: 'line',
-            data: {
-                labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-                datasets: [{
-                    label: 'Grip Force (%)',
-                    data: [65, 70, 68, 72, 69, 74, 71],
-                    borderColor: '#667eea',
-                    backgroundColor: 'rgba(102, 126, 234, 0.1)',
-                    fill: true,
-                    tension: 0.4
-                }]
-            },
-            options: {
-                responsive: true,
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        max: 100
-                    }
+    // Historical Chart
+    const historicalChart = new Chart(historicalCtx, {
+        type: 'line',
+        data: {
+            labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+            datasets: [{
+                label: 'Grip Force (%)',
+                data: [65, 70, 68, 72, 69, 74, 71],
+                borderColor: '#667eea',
+                backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                fill: true,
+                tension: 0.4
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 100
                 }
             }
-        });
+        }
+    });
 
-        // Usage Patterns Chart
-        const usageChart = new Chart(usageCtx, {
-            type: 'bar',
-            data: {
-                labels: ['6-9 AM', '9-12 PM', '12-3 PM', '3-6 PM', '6-9 PM', '9-12 AM'],
-                datasets: [{
-                    label: 'Usage Hours',
-                    data: [2.5, 4.2, 3.8, 5.1, 3.2, 1.1],
-                    backgroundColor: 'rgba(72, 187, 120, 0.8)',
-                    borderColor: '#48bb78',
-                    borderWidth: 2
-                }]
-            },
-            options: {
-                responsive: true,
-                scales: {
-                    y: {
-                        beginAtZero: true
-                    }
+    // Usage Patterns Chart
+    const usageChart = new Chart(usageCtx, {
+        type: 'bar',
+        data: {
+            labels: ['6-9 AM', '9-12 PM', '12-3 PM', '3-6 PM', '6-9 PM', '9-12 AM'],
+            datasets: [{
+                label: 'Usage Hours',
+                data: [2.5, 4.2, 3.8, 5.1, 3.2, 1.1],
+                backgroundColor: 'rgba(72, 187, 120, 0.8)',
+                borderColor: '#48bb78',
+                borderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true
                 }
             }
-        });
+        }
+    });
 
-        // Performance Metrics Chart
-        const performanceChart = new Chart(performanceCtx, {
-            type: 'doughnut',
-            data: {
-                labels: ['Grip Actions', 'Finger Movements', 'Wrist Rotation', 'Rest Time'],
-                datasets: [{
-                    data: [35, 28, 15, 22],
-                    backgroundColor: [
-                        '#667eea',
-                        '#48bb78',
-                        '#ed8936',
-                        '#9f7aea'
-                    ]
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: {
-                        position: 'bottom'
-                    }
+    // Performance Metrics Chart
+    const performanceChart = new Chart(performanceCtx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Grip Actions', 'Finger Movements', 'Wrist Rotation', 'Rest Time'],
+            datasets: [{
+                data: [35, 28, 15, 22],
+                backgroundColor: [
+                    '#667eea',
+                    '#48bb78',
+                    '#ed8936',
+                    '#9f7aea'
+                ]
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'bottom'
                 }
             }
-        });
+        }
+    });
 
-        // Export data function
-        function exportData() {
-            const startDate = document.getElementById('startDate').value;
-            const endDate = document.getElementById('endDate').value;
-            const dataType = document.getElementById('dataType').value;
+    // Export data function
+    function exportData() {
+        const startDate = document.getElementById('startDate').value;
+        const endDate = document.getElementById('endDate').value;
+        const dataType = document.getElementById('dataType').value;
 
-            // Create CSV data
-            const csvData = generateCSVData(startDate, endDate, dataType);
-            downloadCSV(csvData, `bionic_hand_${dataType}_${startDate}_to_${endDate}.csv`);
+        // Create CSV data
+        const csvData = generateCSVData(startDate, endDate, dataType);
+        downloadCSV(csvData, `bionic_hand_${dataType}_${startDate}_to_${endDate}.csv`);
+    }
+
+    function generateCSVData(startDate, endDate, dataType) {
+        // Generate sample data for the selected date range
+        const headers = ['Date', 'Time', dataType.charAt(0).toUpperCase() + dataType.slice(1)];
+        let csvContent = headers.join(',') + '\n';
+
+        // Add sample data rows
+        for (let i = 0; i < 100; i++) {
+            const date = new Date(startDate);
+            date.setDate(date.getDate() + Math.floor(i / 10));
+            const time = `${Math.floor(Math.random() * 24).toString().padStart(2, '0')}:${Math.floor(Math.random() * 60).toString().padStart(2, '0')}`;
+            const value = Math.floor(Math.random() * 100);
+
+            csvContent += `${date.toISOString().split('T')[0]},${time},${value}\n`;
         }
 
-        function generateCSVData(startDate, endDate, dataType) {
-            // Generate sample data for the selected date range
-            const headers = ['Date', 'Time', dataType.charAt(0).toUpperCase() + dataType.slice(1)];
-            let csvContent = headers.join(',') + '\n';
+        return csvContent;
+    }
 
-            // Add sample data rows
-            for (let i = 0; i < 100; i++) {
-                const date = new Date(startDate);
-                date.setDate(date.getDate() + Math.floor(i / 10));
-                const time = `${Math.floor(Math.random() * 24).toString().padStart(2, '0')}:${Math.floor(Math.random() * 60).toString().padStart(2, '0')}`;
-                const value = Math.floor(Math.random() * 100);
-
-                csvContent += `${date.toISOString().split('T')[0]},${time},${value}\n`;
-            }
-
-            return csvContent;
-        }
-
-        function downloadCSV(csvContent, filename) {
-            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-            const link = document.createElement('a');
-            const url = URL.createObjectURL(blob);
-            link.setAttribute('href', url);
-            link.setAttribute('download', filename);
-            link.style.visibility = 'hidden';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        }
-
-        // Emergency stop function
-        function emergencyStop() {
-            if (confirm('Are you sure you want to emergency stop the bionic hand?')) {
-                alert('Emergency stop activated!');
-            }
-        }
-
-        // Toggle mobile menu
-        function toggleMenu() {
-            const navMenu = document.getElementById('navMenu');
-            navMenu.classList.toggle('active');
-        }
-    </script>
-</body>
-
-</html>
+    function downloadCSV(csvContent, filename) {
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        const url = URL.createObjectURL(blob);
+        link.setAttribute('href', url);
+        link.setAttribute('download', filename);
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+</script>
+{% endblock %}
