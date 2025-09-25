@@ -13,6 +13,10 @@ def test_functionality_view(request):
     """Test page for medical functionality"""
     return render(request, 'dashboard/test_functionality.html')
 
+def model_testing_view(request):
+    """AI model testing page for bionic hand detection"""
+    return render(request, 'dashboard/model_testing.html')
+
 def dashboard_view(request):
     return render(request, "dashboard/dashboard.html")
 

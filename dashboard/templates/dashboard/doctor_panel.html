@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -62,7 +63,8 @@
             gap: 8px;
         }
 
-        .nav-item a:hover, .nav-item a.active {
+        .nav-item a:hover,
+        .nav-item a.active {
             color: #2c5282;
         }
 
@@ -382,24 +384,24 @@
                 grid-template-columns: 1fr;
                 gap: 20px;
             }
-            
+
             .form-row {
                 grid-template-columns: 1fr;
             }
-            
+
             .doctor-info {
                 flex-direction: column;
                 text-align: center;
             }
-            
+
             .nav-menu {
                 display: none;
             }
-            
+
             .action-buttons {
                 flex-direction: column;
             }
-            
+
             .btn {
                 width: 100%;
                 justify-content: center;
@@ -407,6 +409,7 @@
         }
     </style>
 </head>
+
 <body>
     <!-- Navigation Bar -->
     <nav class="nav-bar">
@@ -478,9 +481,8 @@
 
                 <!-- Patient Search -->
                 <div class="patient-search">
-                    <input type="text" class="form-control" id="patientSearch" 
-                           placeholder="Search patient by name or ID..." 
-                           oninput="searchPatients(this.value)">
+                    <input type="text" class="form-control" id="patientSearch"
+                        placeholder="Search patient by name or ID..." oninput="searchPatients(this.value)">
                     <div class="search-results" id="searchResults"></div>
                 </div>
 
@@ -488,14 +490,14 @@
                 <div class="analysis-display" id="analysisDisplay">
                     <div id="noAnalysisMessage">
                         <p style="text-align: center; color: #718096; padding: 20px;">
-                            <i class="fas fa-info-circle"></i> No analysis data available. 
+                            <i class="fas fa-info-circle"></i> No analysis data available.
                             <br><br>
                             <a href="{% url 'xray_upload' %}" class="btn btn-primary">
                                 <i class="fas fa-x-ray"></i> Upload X-ray
                             </a>
                         </p>
                     </div>
-                    
+
                     <div id="analysisResults" style="display: none;">
                         <!-- Analysis results will be populated by JavaScript -->
                     </div>
@@ -554,14 +556,14 @@
 
                     <div class="form-group">
                         <label for="diagnosis">Diagnosis *</label>
-                        <textarea class="form-control" id="diagnosis" required 
-                                placeholder="Enter detailed diagnosis based on X-ray analysis..."></textarea>
+                        <textarea class="form-control" id="diagnosis" required
+                            placeholder="Enter detailed diagnosis based on X-ray analysis..."></textarea>
                     </div>
 
                     <div class="form-group">
                         <label for="prescription">Prescription & Treatment Plan *</label>
-                        <textarea class="form-control" id="prescription" required 
-                                placeholder="Enter medications, dosages, and treatment recommendations..."></textarea>
+                        <textarea class="form-control" id="prescription" required
+                            placeholder="Enter medications, dosages, and treatment recommendations..."></textarea>
                     </div>
 
                     <div class="form-row">
@@ -583,8 +585,8 @@
 
                     <div class="form-group">
                         <label for="additionalNotes">Additional Notes</label>
-                        <textarea class="form-control" id="additionalNotes" 
-                                placeholder="Any additional observations, warnings, or special instructions..."></textarea>
+                        <textarea class="form-control" id="additionalNotes"
+                            placeholder="Any additional observations, warnings, or special instructions..."></textarea>
                     </div>
 
                     <div class="action-buttons">
@@ -608,7 +610,7 @@
         let patientData = null;
 
         // Initialize page
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             // Check if there's analysis data from X-ray upload
             const storedAnalysis = sessionStorage.getItem('analysisResults');
             if (storedAnalysis) {
@@ -720,7 +722,7 @@
             if (analysis.recommendations && analysis.recommendations.length > 0) {
                 const topRecommendation = analysis.recommendations[0];
                 const modelSelect = document.getElementById('bionicModel');
-                
+
                 // Map recommendation to select options
                 if (topRecommendation.model.toLowerCase().includes('advanced')) {
                     modelSelect.value = 'advanced-pro';
@@ -735,7 +737,7 @@
         // Patient search functionality
         async function searchPatients(query) {
             const searchResults = document.getElementById('searchResults');
-            
+
             if (query.length < 2) {
                 searchResults.style.display = 'none';
                 return;
@@ -749,7 +751,7 @@
                 { id: 4, name: 'Sarah Williams', age: 55, gender: 'Female' },
             ];
 
-            const filteredPatients = mockPatients.filter(patient => 
+            const filteredPatients = mockPatients.filter(patient =>
                 patient.name.toLowerCase().includes(query.toLowerCase()) ||
                 patient.id.toString().includes(query)
             );
@@ -775,19 +777,19 @@
             document.getElementById('patientGender').value = patient.gender.toLowerCase();
             document.getElementById('searchResults').style.display = 'none';
             document.getElementById('patientSearch').value = patient.name;
-            
+
             patientData = patient;
         }
 
         // Hide search results when clicking outside
-        document.addEventListener('click', function(event) {
+        document.addEventListener('click', function (event) {
             if (!event.target.closest('.patient-search')) {
                 document.getElementById('searchResults').style.display = 'none';
             }
         });
 
         // Handle prescription form submission
-        document.getElementById('prescriptionForm').addEventListener('submit', async function(e) {
+        document.getElementById('prescriptionForm').addEventListener('submit', async function (e) {
             e.preventDefault();
             await savePrescription();
         });
@@ -822,10 +824,10 @@
 
                 if (result.status === 'success') {
                     alert('Prescription saved successfully!');
-                    
+
                     // Clear session storage
                     sessionStorage.removeItem('analysisResults');
-                    
+
                     // Option to generate report
                     if (confirm('Would you like to generate a medical report now?')) {
                         generateMedicalReport();
@@ -902,7 +904,7 @@
             if (metaToken) {
                 return metaToken.getAttribute('content');
             }
-            
+
             let cookieValue = null;
             if (document.cookie && document.cookie !== '') {
                 const cookies = document.cookie.split(';');
@@ -918,4 +920,5 @@
         }
     </script>
 </body>
+
 </html>

@@ -16,19 +16,22 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 50%, #1a1a1a 100%);
+            background-attachment: fixed;
             min-height: 100vh;
+            color: #e0e0e0;
         }
 
-        /* Navigation Bar */
+        /* Optimized Navigation Bar */
         .navbar {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            padding: 15px 0;
-            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+            background: linear-gradient(135deg, #000000 0%, #1a1a1a 50%, #000000 100%);
+            backdrop-filter: blur(15px);
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.4);
+            padding: 8px 0;
             position: sticky;
             top: 0;
             z-index: 1000;
+            border-bottom: 1px solid rgba(192, 192, 192, 0.1);
         }
 
         .nav-container {
@@ -43,58 +46,59 @@
         .nav-brand {
             display: flex;
             align-items: center;
-            font-size: 1.8em;
+            font-size: 1.6em;
             font-weight: bold;
-            color: #4a5568;
+            color: #c0c0c0;
             text-decoration: none;
         }
 
         .nav-brand i {
             margin-right: 10px;
-            font-size: 1.2em;
-            color: #667eea;
+            font-size: 1.1em;
+            color: #c0c0c0;
         }
 
         .nav-menu {
             display: flex;
             list-style: none;
-            gap: 30px;
+            gap: 2px;
         }
 
         .nav-item a {
             text-decoration: none;
-            color: #4a5568;
+            color: #c0c0c0;
             font-weight: 500;
-            padding: 10px 15px;
-            border-radius: 8px;
+            padding: 8px 12px;
+            border-radius: 6px;
             transition: all 0.3s ease;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
+            font-size: 0.95em;
         }
 
         .nav-item a:hover,
         .nav-item a.active {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #2d2d2d 0%, #1a1a1a 100%);
             color: white;
-            transform: translateY(-2px);
+            transform: translateY(-1px);
         }
 
         .nav-controls {
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 10px;
         }
 
         .status-indicator {
             display: flex;
             align-items: center;
-            gap: 8px;
-            padding: 8px 15px;
+            gap: 6px;
+            padding: 6px 12px;
             background: #48bb78;
             color: white;
-            border-radius: 20px;
-            font-size: 0.9em;
+            border-radius: 15px;
+            font-size: 0.85em;
         }
 
         .online-indicator {
@@ -124,16 +128,88 @@
             background: #e53e3e;
             color: white;
             border: none;
-            padding: 10px 20px;
-            border-radius: 8px;
+            padding: 6px 15px;
+            border-radius: 6px;
             font-weight: bold;
             cursor: pointer;
             transition: all 0.3s ease;
+            font-size: 0.85em;
         }
 
         .emergency-btn:hover {
             background: #c53030;
             transform: scale(1.05);
+        }
+
+        /* Hamburger Menu - Hidden by default */
+        .hamburger-menu {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+            gap: 3px;
+        }
+
+        .hamburger-bar {
+            width: 25px;
+            height: 3px;
+            background-color: #c0c0c0;
+            transition: 0.3s;
+        }
+
+        .hamburger-menu.active .hamburger-bar:nth-child(1) {
+            transform: rotate(-45deg) translate(-5px, 6px);
+        }
+
+        .hamburger-menu.active .hamburger-bar:nth-child(2) {
+            opacity: 0;
+        }
+
+        .hamburger-menu.active .hamburger-bar:nth-child(3) {
+            transform: rotate(45deg) translate(-5px, -6px);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .nav-menu {
+                position: fixed;
+                left: -100%;
+                top: 70px;
+                flex-direction: column;
+                background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%);
+                width: 100%;
+                text-align: center;
+                transition: 0.3s;
+                box-shadow: 0 10px 27px rgba(0, 0, 0, 0.05);
+                gap: 0;
+                padding: 20px 0;
+                z-index: 999;
+            }
+
+            .nav-menu.active {
+                left: 0;
+            }
+
+            .nav-item {
+                margin: 5px 0;
+            }
+
+            .hamburger-menu {
+                display: flex;
+            }
+
+            .nav-controls {
+                gap: 8px;
+            }
+
+            .status-indicator {
+                font-size: 0.8em;
+                padding: 5px 10px;
+            }
+
+            .emergency-btn {
+                padding: 5px 12px;
+                font-size: 0.8em;
+            }
         }
 
         /* Main Content */
@@ -144,10 +220,12 @@
         .container {
             max-width: 1200px;
             margin: 0 auto;
-            background: rgba(255, 255, 255, 0.95);
+            background: rgba(45, 45, 45, 0.95);
             border-radius: 15px;
             padding: 30px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(192, 192, 192, 0.1);
         }
 
         .page-header {
@@ -158,11 +236,11 @@
         .page-header h1 {
             font-size: 2.5em;
             margin-bottom: 10px;
-            color: #4a5568;
+            color: #c0c0c0;
         }
 
         .page-header p {
-            color: #718096;
+            color: #888;
             font-size: 1.1em;
         }
 
@@ -173,11 +251,12 @@
         }
 
         .settings-sidebar {
-            background: white;
+            background: linear-gradient(145deg, #2d2d2d 0%, #1a1a1a 100%);
             border-radius: 12px;
             padding: 20px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
             height: fit-content;
+            border: 1px solid rgba(192, 192, 192, 0.1);
         }
 
         .settings-nav {
@@ -194,22 +273,23 @@
             gap: 10px;
             padding: 12px 15px;
             text-decoration: none;
-            color: #4a5568;
+            color: #c0c0c0;
             border-radius: 8px;
             transition: all 0.3s ease;
         }
 
         .settings-nav a:hover,
         .settings-nav a.active {
-            background: #667eea;
+            background: linear-gradient(135deg, #4a90e2 0%, #357abd 100%);
             color: white;
         }
 
         .settings-content {
-            background: white;
+            background: linear-gradient(145deg, #2d2d2d 0%, #1a1a1a 100%);
             border-radius: 12px;
             padding: 30px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(192, 192, 192, 0.1);
         }
 
         .setting-section {
@@ -222,7 +302,7 @@
         }
 
         .setting-section h3 {
-            color: #4a5568;
+            color: #c0c0c0;
             margin-bottom: 20px;
             display: flex;
             align-items: center;
@@ -236,7 +316,7 @@
         .form-group label {
             display: block;
             margin-bottom: 8px;
-            color: #4a5568;
+            color: #c0c0c0;
             font-weight: 500;
         }
 
@@ -245,17 +325,20 @@
         .form-group textarea {
             width: 100%;
             padding: 12px;
-            border: 2px solid #e2e8f0;
+            border: 2px solid rgba(192, 192, 192, 0.3);
             border-radius: 8px;
             font-size: 1em;
             transition: border-color 0.3s ease;
+            background: rgba(45, 45, 45, 0.5);
+            color: #c0c0c0;
         }
 
         .form-group input:focus,
         .form-group select:focus,
         .form-group textarea:focus {
             outline: none;
-            border-color: #667eea;
+            border-color: #4a90e2;
+            box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.2);
         }
 
         .form-row {
@@ -302,7 +385,7 @@
         }
 
         input:checked+.toggle-slider {
-            background-color: #667eea;
+            background-color: #4a90e2;
         }
 
         input:checked+.toggle-slider:before {
@@ -320,12 +403,12 @@
         }
 
         .btn-primary {
-            background: #667eea;
+            background: linear-gradient(135deg, #4a90e2 0%, #357abd 100%);
             color: white;
         }
 
         .btn-primary:hover {
-            background: #5a67d8;
+            background: linear-gradient(135deg, #357abd 0%, #2c5f95 100%);
             transform: translateY(-2px);
         }
 
@@ -352,98 +435,23 @@
             margin-bottom: 20px;
             border-radius: 8px;
             border-left: 4px solid;
+            background: linear-gradient(145deg, rgba(74, 144, 226, 0.1) 0%, rgba(53, 122, 189, 0.05) 100%);
+            border: 1px solid rgba(74, 144, 226, 0.2);
+            color: #c0c0c0;
         }
 
         .alert-success {
-            background: #f0fff4;
-            color: #276749;
+            background: linear-gradient(145deg, rgba(72, 187, 120, 0.1) 0%, rgba(56, 161, 105, 0.05) 100%);
+            color: #c0c0c0;
             border-left-color: #48bb78;
+            border: 1px solid rgba(72, 187, 120, 0.2);
         }
 
         .alert-warning {
-            background: #fffbeb;
-            color: #744210;
+            background: linear-gradient(145deg, rgba(237, 137, 54, 0.1) 0%, rgba(221, 107, 32, 0.05) 100%);
+            color: #c0c0c0;
             border-left-color: #ed8936;
-        }
-
-        /* Dark theme styles */
-        .dark-theme {
-            background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460) !important;
-            color: #ffffff !important;
-        }
-
-        .dark-theme .settings-container {
-            background: rgba(255, 255, 255, 0.1) !important;
-            border: 1px solid rgba(255, 255, 255, 0.2) !important;
-            backdrop-filter: blur(10px) !important;
-        }
-
-        .dark-theme .settings-nav {
-            background: rgba(255, 255, 255, 0.05) !important;
-            border-right: 1px solid rgba(255, 255, 255, 0.2) !important;
-        }
-
-        .dark-theme .settings-nav a {
-            color: #ffffff !important;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
-        }
-
-        .dark-theme .settings-nav a:hover,
-        .dark-theme .settings-nav a.active {
-            background: rgba(255, 255, 255, 0.1) !important;
-            color: #00d4ff !important;
-        }
-
-        .dark-theme .setting-section {
-            background: rgba(255, 255, 255, 0.05) !important;
-        }
-
-        .dark-theme .setting-group {
-            background: rgba(255, 255, 255, 0.03) !important;
-            border: 1px solid rgba(255, 255, 255, 0.1) !important;
-        }
-
-        .dark-theme .form-group label {
-            color: #ffffff !important;
-        }
-
-        .dark-theme input,
-        .dark-theme select,
-        .dark-theme textarea {
-            background: rgba(255, 255, 255, 0.1) !important;
-            color: #ffffff !important;
-            border: 2px solid rgba(255, 255, 255, 0.3) !important;
-        }
-
-        .dark-theme input:focus,
-        .dark-theme select:focus,
-        .dark-theme textarea:focus {
-            border-color: #00d4ff !important;
-            box-shadow: 0 0 0 2px rgba(0, 212, 255, 0.2) !important;
-        }
-
-        .dark-theme .btn-primary {
-            background: linear-gradient(135deg, #00d4ff, #0095cc) !important;
-        }
-
-        .dark-theme .btn-danger {
-            background: linear-gradient(135deg, #ff4757, #c44569) !important;
-        }
-
-        .dark-theme .alert {
-            background: rgba(255, 255, 255, 0.1) !important;
-            border: 2px solid rgba(255, 255, 255, 0.2) !important;
-            color: #ffffff !important;
-        }
-
-        .dark-theme .alert-success {
-            border-color: rgba(0, 255, 127, 0.3) !important;
-            background: rgba(0, 255, 127, 0.1) !important;
-        }
-
-        .dark-theme .alert-warning {
-            border-color: rgba(255, 193, 7, 0.3) !important;
-            background: rgba(255, 193, 7, 0.1) !important;
+            border: 1px solid rgba(237, 137, 54, 0.2);
         }
 
         @media (max-width: 768px) {
@@ -453,6 +461,25 @@
 
             .form-row {
                 grid-template-columns: 1fr;
+            }
+
+            .nav-menu {
+                position: fixed;
+                left: -100%;
+                top: 70px;
+                flex-direction: column;
+                background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%);
+                width: 100%;
+                text-align: center;
+                transition: 0.3s;
+                box-shadow: 0 10px 27px rgba(0, 0, 0, 0.05);
+                gap: 0;
+                padding: 20px 0;
+                z-index: 999;
+            }
+
+            .nav-menu.active {
+                left: 0;
             }
         }
     </style>
@@ -466,6 +493,12 @@
                 <i class="fas fa-hand-rock"></i>
                 Quantumix
             </a>
+
+            <div class="hamburger-menu" onclick="toggleMenu()">
+                <div class="hamburger-bar"></div>
+                <div class="hamburger-bar"></div>
+                <div class="hamburger-bar"></div>
+            </div>
 
             <ul class="nav-menu">
                 <li class="nav-item">
@@ -828,6 +861,27 @@
     </div>
 
     <script>
+        // Hamburger menu toggle
+        function toggleMenu() {
+            const navMenu = document.querySelector('.nav-menu');
+            const hamburger = document.querySelector('.hamburger-menu');
+
+            navMenu.classList.toggle('active');
+            hamburger.classList.toggle('active');
+        }
+
+        // Close menu when clicking on a link (mobile)
+        document.addEventListener('DOMContentLoaded', function () {
+            document.querySelectorAll('.nav-item a').forEach(link => {
+                link.addEventListener('click', () => {
+                    const navMenu = document.querySelector('.nav-menu');
+                    const hamburger = document.querySelector('.hamburger-menu');
+                    navMenu.classList.remove('active');
+                    hamburger.classList.remove('active');
+                });
+            });
+        });
+
         // Test function to verify settings functionality
         function testSettingsJS() {
             console.log('Settings JavaScript test:');
@@ -840,7 +894,7 @@
 
         // Settings state management
         let settings = {
-            theme: 'light',
+            theme: 'dark',
             deviceName: 'My Bionic Hand',
             language: 'English',
             autoSave: true,

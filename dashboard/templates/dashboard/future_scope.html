@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -62,7 +63,8 @@
             gap: 8px;
         }
 
-        .nav-item a:hover, .nav-item a.active {
+        .nav-item a:hover,
+        .nav-item a.active {
             color: #0f0c29;
         }
 
@@ -312,28 +314,29 @@
             .tech-grid {
                 grid-template-columns: 1fr;
             }
-            
+
             .timeline::before {
                 left: 30px;
             }
-            
+
             .timeline-content {
                 width: calc(100% - 80px);
                 margin-left: 60px !important;
                 text-align: left !important;
             }
-            
+
             .timeline-year {
                 left: 30px;
                 transform: none;
             }
-            
+
             .nav-menu {
                 display: none;
             }
         }
     </style>
 </head>
+
 <body>
     <!-- Navigation Bar -->
     <nav class="nav-bar">
@@ -384,7 +387,8 @@
                 </div>
                 <div class="tech-title">Neural Interface</div>
                 <div class="tech-description">
-                    Direct brain-computer interface technology enabling thought-controlled prosthetics with unprecedented precision and natural feel.
+                    Direct brain-computer interface technology enabling thought-controlled prosthetics with
+                    unprecedented precision and natural feel.
                 </div>
                 <ul class="tech-features">
                     <li>EEG-based control system</li>
@@ -400,7 +404,8 @@
                 </div>
                 <div class="tech-title">IoT Integration</div>
                 <div class="tech-description">
-                    Smart home and device integration allowing seamless interaction with IoT ecosystem through gesture recognition and voice commands.
+                    Smart home and device integration allowing seamless interaction with IoT ecosystem through gesture
+                    recognition and voice commands.
                 </div>
                 <ul class="tech-features">
                     <li>Smart home connectivity</li>
@@ -416,7 +421,8 @@
                 </div>
                 <div class="tech-title">Computer Vision</div>
                 <div class="tech-description">
-                    Advanced computer vision systems enabling object recognition, automatic grip adjustment, and predictive movement assistance.
+                    Advanced computer vision systems enabling object recognition, automatic grip adjustment, and
+                    predictive movement assistance.
                 </div>
                 <ul class="tech-features">
                     <li>Object recognition AI</li>
@@ -432,7 +438,8 @@
                 </div>
                 <div class="tech-title">Haptic Feedback</div>
                 <div class="tech-description">
-                    Revolutionary tactile feedback systems providing realistic touch sensations and temperature perception through advanced haptic technology.
+                    Revolutionary tactile feedback systems providing realistic touch sensations and temperature
+                    perception through advanced haptic technology.
                 </div>
                 <ul class="tech-features">
                     <li>Multi-modal tactile feedback</li>
@@ -448,7 +455,8 @@
                 </div>
                 <div class="tech-title">Energy Harvesting</div>
                 <div class="tech-description">
-                    Self-sustaining power systems using kinetic energy harvesting, solar cells, and advanced battery technology for extended operation.
+                    Self-sustaining power systems using kinetic energy harvesting, solar cells, and advanced battery
+                    technology for extended operation.
                 </div>
                 <ul class="tech-features">
                     <li>Kinetic energy harvesting</li>
@@ -464,7 +472,8 @@
                 </div>
                 <div class="tech-title">Bio-Integration</div>
                 <div class="tech-description">
-                    Advanced bio-compatible materials and tissue engineering for seamless integration with human biology and natural healing processes.
+                    Advanced bio-compatible materials and tissue engineering for seamless integration with human biology
+                    and natural healing processes.
                 </div>
                 <ul class="tech-features">
                     <li>Biocompatible materials</li>
@@ -481,14 +490,15 @@
                 <h2>Development Roadmap</h2>
                 <p>Our vision for the future of bionic hand technology</p>
             </div>
-            
+
             <div class="timeline">
                 <div class="timeline-item">
                     <div class="timeline-year">2025</div>
                     <div class="timeline-content">
                         <div class="timeline-title">Advanced ML Integration</div>
                         <div class="timeline-description">
-                            Implementation of sophisticated machine learning algorithms for better pattern recognition and adaptive control systems.
+                            Implementation of sophisticated machine learning algorithms for better pattern recognition
+                            and adaptive control systems.
                         </div>
                     </div>
                 </div>
@@ -498,7 +508,8 @@
                     <div class="timeline-content">
                         <div class="timeline-title">IoT Ecosystem Launch</div>
                         <div class="timeline-description">
-                            Full smart home integration with gesture-based device control and environmental interaction capabilities.
+                            Full smart home integration with gesture-based device control and environmental interaction
+                            capabilities.
                         </div>
                     </div>
                 </div>
@@ -508,7 +519,8 @@
                     <div class="timeline-content">
                         <div class="timeline-title">Neural Interface Beta</div>
                         <div class="timeline-description">
-                            First consumer-ready neural interface technology enabling direct thought-to-action control for prosthetic devices.
+                            First consumer-ready neural interface technology enabling direct thought-to-action control
+                            for prosthetic devices.
                         </div>
                     </div>
                 </div>
@@ -518,7 +530,8 @@
                     <div class="timeline-content">
                         <div class="timeline-title">Haptic Feedback Revolution</div>
                         <div class="timeline-description">
-                            Revolutionary tactile feedback systems providing realistic touch sensations and temperature perception.
+                            Revolutionary tactile feedback systems providing realistic touch sensations and temperature
+                            perception.
                         </div>
                     </div>
                 </div>
@@ -528,7 +541,8 @@
                     <div class="timeline-content">
                         <div class="timeline-title">Full Bio-Integration</div>
                         <div class="timeline-description">
-                            Complete biological integration with self-healing capabilities and seamless nerve interface technology.
+                            Complete biological integration with self-healing capabilities and seamless nerve interface
+                            technology.
                         </div>
                     </div>
                 </div>
@@ -539,7 +553,7 @@
         <div class="demo-section">
             <h2>Experience the Future</h2>
             <p>Explore our interactive demonstrations of future technologies</p>
-            
+
             <div class="demo-grid">
                 <div class="demo-card">
                     <h3><i class="fas fa-vr-cardboard"></i> VR Experience</h3>
@@ -598,7 +612,7 @@
         }, observerOptions);
 
         // Observe timeline items
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const timelineItems = document.querySelectorAll('.timeline-item');
             timelineItems.forEach(item => {
                 item.style.opacity = '0';
@@ -609,4 +623,5 @@
         });
     </script>
 </body>
+
 </html>

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -110,7 +111,8 @@
             margin-bottom: 30px;
         }
 
-        .upload-area:hover, .upload-area.drag-over {
+        .upload-area:hover,
+        .upload-area.drag-over {
             border-color: #4c51bf;
             background: rgba(102, 126, 234, 0.1);
             transform: translateY(-2px);
@@ -289,8 +291,13 @@
         }
 
         @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
         }
 
         /* Responsive Design */
@@ -298,25 +305,26 @@
             .nav-menu {
                 display: none;
             }
-            
+
             .upload-area {
                 padding: 40px 15px;
             }
-            
+
             .upload-icon {
                 font-size: 3em;
             }
-            
+
             .results-grid {
                 grid-template-columns: 1fr;
             }
-            
+
             .container {
                 padding: 0 10px;
             }
         }
     </style>
 </head>
+
 <body>
     <!-- Navigation Bar -->
     <nav class="nav-bar">
@@ -369,8 +377,9 @@
                 <div class="upload-text">Click to upload or drag and drop</div>
                 <div class="upload-subtext">Support for JPEG, PNG, DICOM formats (Max 10MB)</div>
             </div>
-            <input type="file" id="xrayFile" class="file-input" accept="image/*,.dcm" onchange="handleFileSelect(event)">
-            
+            <input type="file" id="xrayFile" class="file-input" accept="image/*,.dcm"
+                onchange="handleFileSelect(event)">
+
             <div class="image-preview" id="imagePreview">
                 <h3>Uploaded Image:</h3>
                 <img id="previewImage" class="preview-image" alt="X-ray preview">
@@ -432,9 +441,9 @@
             if (!file) return;
 
             uploadedFile = file;
-            
+
             const reader = new FileReader();
-            reader.onload = function(e) {
+            reader.onload = function (e) {
                 document.getElementById('previewImage').src = e.target.result;
                 document.getElementById('imagePreview').style.display = 'block';
             };
@@ -443,24 +452,24 @@
 
         // Drag and drop functionality
         const uploadArea = document.querySelector('.upload-area');
-        
+
         uploadArea.addEventListener('dragover', (e) => {
             e.preventDefault();
             uploadArea.classList.add('drag-over');
         });
-        
+
         uploadArea.addEventListener('dragleave', () => {
             uploadArea.classList.remove('drag-over');
         });
-        
+
         uploadArea.addEventListener('drop', (e) => {
             e.preventDefault();
             uploadArea.classList.remove('drag-over');
-            
+
             const files = e.dataTransfer.files;
             if (files.length > 0) {
                 document.getElementById('xrayFile').files = files;
-                handleFileSelect({target: {files: files}});
+                handleFileSelect({ target: { files: files } });
             }
         });
 
@@ -552,7 +561,7 @@
         function createResultCard(title, result, confidence, type, icon, additional) {
             const card = document.createElement('div');
             card.className = `result-card ${type}`;
-            
+
             card.innerHTML = `
                 <div class="result-title">
                     <i class="${icon}"></i>
@@ -569,7 +578,7 @@
                 </div>
                 ${additional ? `<div style="color: #718096; font-size: 0.9em; margin-top: 10px;">${additional}</div>` : ''}
             `;
-            
+
             return card;
         }
 
@@ -581,7 +590,7 @@
             recommendations.forEach(rec => {
                 const card = document.createElement('div');
                 card.className = 'recommendation-card';
-                
+
                 card.innerHTML = `
                     <div class="model-name">
                         <i class="fas fa-robot"></i>
@@ -599,7 +608,7 @@
                         </div>
                     </div>
                 `;
-                
+
                 grid.appendChild(card);
             });
         }
@@ -666,7 +675,7 @@
             if (metaToken) {
                 return metaToken.getAttribute('content');
             }
-            
+
             let cookieValue = null;
             if (document.cookie && document.cookie !== '') {
                 const cookies = document.cookie.split(';');
@@ -682,4 +691,5 @@
         }
     </script>
 </body>
+
 </html>

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -62,7 +63,8 @@
             gap: 8px;
         }
 
-        .nav-item a:hover, .nav-item a.active {
+        .nav-item a:hover,
+        .nav-item a.active {
             color: #667eea;
         }
 
@@ -426,23 +428,23 @@
             .comparison-grid {
                 grid-template-columns: 1fr;
             }
-            
+
             .hero-stats {
                 grid-template-columns: repeat(2, 1fr);
             }
-            
+
             .stories-grid {
                 grid-template-columns: 1fr;
             }
-            
+
             .metrics-grid {
                 grid-template-columns: repeat(2, 1fr);
             }
-            
+
             .nav-menu {
                 display: none;
             }
-            
+
             .cta-buttons {
                 flex-direction: column;
                 align-items: center;
@@ -450,6 +452,7 @@
         }
 
         @media (max-width: 480px) {
+
             .hero-stats,
             .metrics-grid {
                 grid-template-columns: 1fr;
@@ -457,6 +460,7 @@
         }
     </style>
 </head>
+
 <body>
     <!-- Navigation Bar -->
     <nav class="nav-bar">
@@ -551,7 +555,9 @@
                         </div>
                     </div>
                     <div class="story-content">
-                        "After losing my right hand in an accident, I thought my career was over. The bionic hand has given me back not just my ability to work, but my confidence. I can grip tools, feel textures, and even tie my shoes again. My life has been completely transformed."
+                        "After losing my right hand in an accident, I thought my career was over. The bionic hand has
+                        given me back not just my ability to work, but my confidence. I can grip tools, feel textures,
+                        and even tie my shoes again. My life has been completely transformed."
                     </div>
                     <div class="story-metrics">
                         <div class="metric">
@@ -578,7 +584,9 @@
                         </div>
                     </div>
                     <div class="story-content">
-                        "As an artist, losing my dominant hand felt like losing my identity. The precision and sensitivity of my bionic hand amazes me daily. I'm painting again, teaching again, and living fully. The advanced sensors even let me feel the brush strokes!"
+                        "As an artist, losing my dominant hand felt like losing my identity. The precision and
+                        sensitivity of my bionic hand amazes me daily. I'm painting again, teaching again, and living
+                        fully. The advanced sensors even let me feel the brush strokes!"
                     </div>
                     <div class="story-metrics">
                         <div class="metric">
@@ -605,7 +613,9 @@
                         </div>
                     </div>
                     <div class="story-content">
-                        "Born without a left hand, I always felt different at school. My bionic hand has changed everything! I can play sports, write faster, and even play video games with my friends. I feel normal for the first time in my life."
+                        "Born without a left hand, I always felt different at school. My bionic hand has changed
+                        everything! I can play sports, write faster, and even play video games with my friends. I feel
+                        normal for the first time in my life."
                     </div>
                     <div class="story-metrics">
                         <div class="metric">
@@ -738,7 +748,7 @@
                     current = end;
                     clearInterval(timer);
                 }
-                
+
                 if (element.textContent.includes('%')) {
                     element.textContent = Math.floor(current) + '%';
                 } else {
@@ -776,7 +786,7 @@
         }, observerOptions);
 
         // Observe elements for animation
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             document.querySelectorAll('.stat-card, .impact-card').forEach(card => {
                 observer.observe(card);
             });
@@ -787,7 +797,7 @@
                 card.style.opacity = '0';
                 card.style.transform = 'translateY(50px)';
                 card.style.transition = `all 0.6s ease ${index * 0.2}s`;
-                
+
                 const cardObserver = new IntersectionObserver((entries) => {
                     entries.forEach(entry => {
                         if (entry.isIntersecting) {
@@ -796,10 +806,11 @@
                         }
                     });
                 }, { threshold: 0.1 });
-                
+
                 cardObserver.observe(card);
             });
         });
     </script>
 </body>
+
 </html>
