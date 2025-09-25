@@ -1,12 +1,21 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect, get_object_or_404
 from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.decorators import login_required
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
+from django.db.models import Avg, Count, Sum, Q
+from django.utils import timezone
+from .models import (
+    Patient, Doctor, BionicDevice, SensorReading, 
+    MedicalRecord, Prescription, Appointment, 
+    DeviceAnalytics, Notification
+)
 import random
 import json
 import base64
 import io
+import numpy as np
 from datetime import datetime, timedelta
 
 def test_functionality_view(request):
