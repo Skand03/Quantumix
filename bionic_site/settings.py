@@ -15,6 +15,11 @@ from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# Load environment variables
+import os
+from dotenv import load_dotenv
+load_dotenv()
+
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
@@ -37,10 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'dashboard',
-    'api',
-    'rest_framework',
-    'channels',
+    'bionic_app',
 ]
 
 MIDDLEWARE = [
@@ -120,13 +122,26 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
-STATICFILES_DIRS = [
-    BASE_DIR / 'static',
-]
 
-# Media files
+# Static files directories - only include if exists
+STATICFILES_DIRS = []
+if (BASE_DIR / 'static').exists():
+    STATICFILES_DIRS.append(BASE_DIR / 'static')
+
+# Media files (Local storage for PDFs and images)
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
+
+# Ensure media directories exist
+import os
+MEDIA_DIRS = [
+    os.path.join(MEDIA_ROOT, 'pdfs'),
+    os.path.join(MEDIA_ROOT, 'research_files'),
+    os.path.join(MEDIA_ROOT, 'components_images'),
+    os.path.join(MEDIA_ROOT, 'progress_images'),
+]
+for directory in MEDIA_DIRS:
+    os.makedirs(directory, exist_ok=True)
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field

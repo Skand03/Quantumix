@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+
+{% block title %}Components - Bionic Hand System{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <h1 class="fw-bold mb-4">Bionic Hand Components</h1>
+    
+    {% if user.is_staff %}
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">Add New Component</h5>
+        </div>
+        <div class="card-body">
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        {{ form.name.label_tag }}
+                        {{ form.name }}
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        {{ form.cost.label_tag }}
+                        {{ form.cost }}
+                    </div>
+                </div>
+                <div class="mb-3">
+                    {{ form.description.label_tag }}
+                    {{ form.description }}
+                </div>
+                <div class="mb-3">
+                    {{ form.image.label_tag }}
+                    {{ form.image }}
+                </div>
+                <button type="submit" class="btn btn-primary">Add Component</button>
+            </form>
+        </div>
+    </div>
+    {% endif %}
+    
+    <div class="row g-4">
+        {% if components %}
+            {% for component in components %}
+            <div class="col-md-6 col-lg-4">
+                <div class="card h-100">
+                    {% if component.image_url %}
+                    <img src="{{ component.image_url }}" class="card-img-top" alt="{{ component.name }}" style="height: 200px; object-fit: cover;">
+                    {% else %}
+                    <div class="card-img-top bg-secondary d-flex align-items-center justify-content-center" style="height: 200px;">
+                        <i class="bi bi-gear-fill text-white" style="font-size: 4rem;"></i>
+                    </div>
+                    {% endif %}
+                    <div class="card-body">
+                        <h5 class="card-title">{{ component.name }}</h5>
+                        <p class="card-text">{{ component.description }}</p>
+                        {% if component.cost %}
+                        <p class="text-primary fw-bold">Cost: ${{ component.cost }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="col-12">
+                <div class="alert alert-info">
+                    <i class="bi bi-info-circle"></i> No components added yet. 
+                    {% if user.is_staff %}
+                    Use the form above to add components.
+                    {% endif %}
+                </div>
+            </div>
+        {% endif %}
+    </div>
+    
+    <div class="mt-5">
+        <h3 class="fw-bold mb-3">Common Components in Bionic Hands</h3>
+        <div class="row">
+            <div class="col-md-6">
+                <ul class="list-group">
+                    <li class="list-group-item"><i class="bi bi-cpu"></i> <strong>Microcontroller:</strong> Arduino/ESP32</li>
+                    <li class="list-group-item"><i class="bi bi-activity"></i> <strong>EMG Sensors:</strong> Muscle signal detection</li>
+                    <li class="list-group-item"><i class="bi bi-gear"></i> <strong>Servo Motors:</strong> Finger actuation (5x)</li>
+                    <li class="list-group-item"><i class="bi bi-battery-charging"></i> <strong>Battery:</strong> Li-Po 7.4V</li>
+                </ul>
+            </div>
+            <div class="col-md-6">
+                <ul class="list-group">
+                    <li class="list-group-item"><i class="bi bi-speedometer"></i> <strong>Force Sensors:</strong> Grip feedback</li>
+                    <li class="list-group-item"><i class="bi bi-wifi"></i> <strong>Bluetooth Module:</strong> Wireless control</li>
+                    <li class="list-group-item"><i class="bi bi-box"></i> <strong>3D Printed Parts:</strong> Hand structure</li>
+                    <li class="list-group-item"><i class="bi bi-plug"></i> <strong>Wiring & Connectors:</strong> Circuit connections</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

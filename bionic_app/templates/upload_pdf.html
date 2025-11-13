@@ -1,0 +1,135 @@
+{% extends 'base.html' %}
+
+{% block title %}PDF Upload - Bionic Hand System{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <h1 class="fw-bold mb-4">PDF Upload System</h1>
+    <p class="text-muted mb-4">Upload PDF files - stored locally with metadata in Firestore</p>
+    
+    <!-- Upload Form -->
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0"><i class="bi bi-file-earmark-pdf"></i> Upload PDF File</h5>
+        </div>
+        <div class="card-body">
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label for="pdf_file" class="form-label">Select PDF File</label>
+                    <input type="file" 
+                           class="form-control" 
+                           id="pdf_file" 
+                           name="pdf_file" 
+                           accept=".pdf" 
+                           required>
+                    <div class="form-text">Only PDF files are accepted</div>
+                </div>
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-upload"></i> Upload PDF
+                </button>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Storage Information -->
+    <div class="alert alert-info">
+        <h5><i class="bi bi-info-circle"></i> Storage Information</h5>
+        <ul class="mb-0">
+            <li><strong>PDF Files:</strong> Stored locally in <code>media/pdfs/</code> folder</li>
+            <li><strong>Metadata:</strong> Stored in Firestore (filename, path, upload date, file size)</li>
+            <li><strong>No Firebase Storage:</strong> Files stay on your server</li>
+        </ul>
+    </div>
+    
+    <!-- Uploaded PDFs List -->
+    <div class="card">
+        <div class="card-header bg-dark text-white">
+            <h5 class="mb-0"><i class="bi bi-list-ul"></i> Uploaded PDFs</h5>
+        </div>
+        <div class="card-body">
+            {% if pdf_list %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th><i class="bi bi-file-earmark-pdf"></i> Filename</th>
+                                <th><i class="bi bi-folder"></i> Path</th>
+                                <th><i class="bi bi-calendar"></i> Uploaded</th>
+                                <th><i class="bi bi-hdd"></i> Size</th>
+                                <th><i class="bi bi-download"></i> Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for pdf in pdf_list %}
+                            <tr>
+                                <td>
+                                    <i class="bi bi-file-earmark-pdf-fill text-danger"></i>
+                                    {{ pdf.filename }}
+                                </td>
+                                <td><code>{{ pdf.path }}</code></td>
+                                <td>{{ pdf.uploaded_at|slice:":10" }}</td>
+                                <td>
+                                    {% if pdf.file_size %}
+                                        {{ pdf.file_size|filesizeformat }}
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <a href="{{ pdf.file_url }}" 
+                                       target="_blank" 
+                                       class="btn btn-sm btn-outline-primary">
+                                        <i class="bi bi-download"></i> Download
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="text-center py-4">
+                    <i class="bi bi-inbox" style="font-size: 3rem; color: #ccc;"></i>
+                    <p class="text-muted mt-3">No PDFs uploaded yet. Use the form above to upload your first PDF.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- Technical Details -->
+    <div class="mt-4">
+        <h3 class="fw-bold mb-3">How It Works</h3>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title"><i class="bi bi-hdd-fill text-primary"></i> Local Storage</h5>
+                        <p class="card-text">PDF files are saved to your Django server's local storage:</p>
+                        <ul>
+                            <li>Location: <code>media/pdfs/</code></li>
+                            <li>Fast access</li>
+                            <li>No cloud costs</li>
+                            <li>Full control</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title"><i class="bi bi-cloud-fill text-success"></i> Firestore Metadata</h5>
+                        <p class="card-text">File information is stored in Firestore cloud database:</p>
+                        <ul>
+                            <li>Filename</li>
+                            <li>Local path</li>
+                            <li>Upload timestamp</li>
+                            <li>File size</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

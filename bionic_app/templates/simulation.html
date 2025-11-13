@@ -1,0 +1,182 @@
+{% extends 'base.html' %}
+
+{% block title %}Simulation - Bionic Hand System{% endblock %}
+
+{% block extra_css %}
+<style>
+    .simulation-panel {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 40px;
+        border-radius: 15px;
+        text-align: center;
+    }
+    
+    .hand-display {
+        font-size: 8rem;
+        margin: 30px 0;
+        transition: all 0.3s ease;
+    }
+    
+    .control-btn {
+        margin: 10px;
+        padding: 15px 30px;
+        font-size: 1.1rem;
+        border-radius: 10px;
+        transition: all 0.3s;
+    }
+    
+    .control-btn:hover {
+        transform: scale(1.05);
+    }
+    
+    .log-entry {
+        animation: slideIn 0.3s ease;
+    }
+    
+    @keyframes slideIn {
+        from {
+            opacity: 0;
+            transform: translateX(-20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <h1 class="fw-bold mb-4 text-center">Bionic Hand Simulation</h1>
+    <p class="text-center text-muted mb-5">Test different hand movements and actions digitally</p>
+    
+    <div class="simulation-panel mb-5">
+        <h3 class="mb-4">Hand Status</h3>
+        <div class="hand-display" id="handDisplay">
+            <i class="bi bi-hand-index-thumb"></i>
+        </div>
+        <p id="statusText" class="fs-4">Ready</p>
+    </div>
+    
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">Control Panel</h5>
+        </div>
+        <div class="card-body text-center">
+            <form method="post" id="simulationForm">
+                {% csrf_token %}
+                <input type="hidden" name="action" id="actionInput">
+                
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <button type="button" class="btn btn-success control-btn w-100" onclick="simulateAction('Open Hand')">
+                            <i class="bi bi-hand-index"></i> Open Hand
+                        </button>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <button type="button" class="btn btn-danger control-btn w-100" onclick="simulateAction('Close Hand')">
+                            <i class="bi bi-hand-thumbs-up"></i> Close Hand
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <button type="button" class="btn btn-warning control-btn w-100" onclick="simulateAction('Grip Mode')">
+                            <i class="bi bi-grip-horizontal"></i> Grip Mode
+                        </button>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <button type="button" class="btn btn-info control-btn w-100" onclick="simulateAction('Relax Mode')">
+                            <i class="bi bi-hand-index-thumb"></i> Relax Mode
+                        </button>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <button type="button" class="btn btn-secondary control-btn w-100" onclick="simulateAction('Pinch Grip')">
+                            <i class="bi bi-hand-index-thumb-fill"></i> Pinch Grip
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <div class="card">
+        <div class="card-header bg-dark text-white">
+            <h5 class="mb-0">Simulation Logs</h5>
+        </div>
+        <div class="card-body">
+            <div id="logContainer">
+                {% if logs %}
+                    {% for log in logs %}
+                    <div class="alert alert-secondary log-entry">
+                        <strong>{{ log.action }}</strong> - 
+                        User: {{ log.user }} - 
+                        Time: {{ log.timestamp }}
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="text-muted">No simulation logs yet. Start simulating!</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    const handIcons = {
+        'Open Hand': 'bi-hand-index',
+        'Close Hand': 'bi-hand-thumbs-up-fill',
+        'Grip Mode': 'bi-grip-horizontal',
+        'Relax Mode': 'bi-hand-index-thumb',
+        'Pinch Grip': 'bi-hand-index-thumb-fill'
+    };
+    
+    function simulateAction(action) {
+        // Update display
+        const handDisplay = document.getElementById('handDisplay');
+        const statusText = document.getElementById('statusText');
+        const icon = handIcons[action] || 'bi-hand-index-thumb';
+        
+        handDisplay.innerHTML = `<i class="bi ${icon}"></i>`;
+        statusText.textContent = `Executing: ${action}`;
+        
+        // Submit form via AJAX
+        const formData = new FormData();
+        formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+        formData.append('action', action);
+        
+        fetch('{% url "simulation" %}', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Add log entry
+                const logContainer = document.getElementById('logContainer');
+                const logEntry = document.createElement('div');
+                logEntry.className = 'alert alert-success log-entry';
+                logEntry.innerHTML = `<strong>${data.action}</strong> - ${data.message}`;
+                logContainer.insertBefore(logEntry, logContainer.firstChild);
+                
+                // Update status
+                setTimeout(() => {
+                    statusText.textContent = 'Ready';
+                }, 2000);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            statusText.textContent = 'Error occurred';
+        });
+    }
+</script>
+{% endblock %}

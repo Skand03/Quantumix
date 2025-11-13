@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+
+{% block title %}About - Bionic Hand System{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <h1 class="fw-bold mb-4">About Bionic Hand</h1>
+            
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h3 class="card-title">What is a Bionic Hand?</h3>
+                    <p class="card-text">
+                        A bionic hand is an advanced prosthetic device designed to replicate the functionality 
+                        of a human hand. It combines mechanical engineering, electronics, and software to provide 
+                        users with natural hand movements and control.
+                    </p>
+                    <p class="card-text">
+                        Modern bionic hands use sensors to detect muscle signals (EMG), process them through 
+                        microcontrollers, and actuate servo motors to move individual fingers with precision.
+                    </p>
+                </div>
+            </div>
+            
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h3 class="card-title">How Does It Work?</h3>
+                    <ol class="list-group list-group-numbered">
+                        <li class="list-group-item">
+                            <strong>Signal Detection:</strong> EMG sensors detect electrical signals from 
+                            residual muscles in the user's arm.
+                        </li>
+                        <li class="list-group-item">
+                            <strong>Signal Processing:</strong> A microcontroller (Arduino/ESP32) processes 
+                            these signals and determines the intended movement.
+                        </li>
+                        <li class="list-group-item">
+                            <strong>Actuation:</strong> Servo motors receive commands and move the fingers 
+                            to perform the desired action (grip, pinch, open, close).
+                        </li>
+                        <li class="list-group-item">
+                            <strong>Feedback:</strong> Force sensors provide feedback to prevent excessive 
+                            grip force and protect objects.
+                        </li>
+                    </ol>
+                </div>
+            </div>
+            
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h3 class="card-title">Key Features</h3>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <ul class="list-unstyled">
+                                <li><i class="bi bi-check-circle-fill text-success"></i> 5 Individually Controlled Fingers</li>
+                                <li><i class="bi bi-check-circle-fill text-success"></i> EMG Sensor Integration</li>
+                                <li><i class="bi bi-check-circle-fill text-success"></i> Multiple Grip Patterns</li>
+                                <li><i class="bi bi-check-circle-fill text-success"></i> Force Feedback System</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <ul class="list-unstyled">
+                                <li><i class="bi bi-check-circle-fill text-success"></i> Lightweight Design</li>
+                                <li><i class="bi bi-check-circle-fill text-success"></i> Rechargeable Battery</li>
+                                <li><i class="bi bi-check-circle-fill text-success"></i> Wireless Control Option</li>
+                                <li><i class="bi bi-check-circle-fill text-success"></i> Customizable Settings</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h3 class="card-title">Real-Life Applications</h3>
+                    <p class="card-text">Bionic hands have transformed the lives of amputees by providing:</p>
+                    <ul>
+                        <li><strong>Daily Activities:</strong> Eating, writing, typing, and personal care</li>
+                        <li><strong>Professional Work:</strong> Operating tools, typing, and precision tasks</li>
+                        <li><strong>Sports & Recreation:</strong> Adapted sports and recreational activities</li>
+                        <li><strong>Social Interaction:</strong> Handshakes, gestures, and natural communication</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="card mb-4 bg-primary text-white">
+                <div class="card-body text-center">
+                    <h3 class="card-title">Explore More</h3>
+                    <p class="card-text">Learn about the components, circuit design, and try our simulation!</p>
+                    <div class="d-flex justify-content-center gap-2">
+                        <a href="{% url 'components' %}" class="btn btn-light">Components</a>
+                        <a href="{% url 'circuit' %}" class="btn btn-light">Circuit</a>
+                        <a href="{% url 'simulation' %}" class="btn btn-light">Simulation</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

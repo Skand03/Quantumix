@@ -7,18 +7,37 @@ __pycache__/
 env/
 venv/
 ENV/
-env.bak/
-venv.bak/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
 
 # Django
 *.log
 local_settings.py
 db.sqlite3
 db.sqlite3-journal
-media/
+/media
+/staticfiles
+/static
 
-# Environment variables
+# Firebase
+serviceAccountKey.json
+
+# Environment
 .env
+.env.local
 
 # IDE
 .vscode/
@@ -30,13 +49,3 @@ media/
 # OS
 .DS_Store
 Thumbs.db
-
-# Celery
-celerybeat-schedule
-celerybeat.pid
-
-# Static files (if using collectstatic)
-staticfiles/
-
-# Node modules (if using any frontend tools)
-node_modules/

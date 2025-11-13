@@ -1,0 +1,164 @@
+{% extends 'base.html' %}
+
+{% block title %}Circuit & Working - Bionic Hand System{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <h1 class="fw-bold mb-4">Circuit Design & Working Principle</h1>
+    
+    <div class="card mb-4">
+        <div class="card-body">
+            <h3 class="card-title">System Architecture</h3>
+            <p class="card-text">
+                The bionic hand system consists of multiple interconnected components working together 
+                to provide natural hand movements. The architecture follows a sensor-processor-actuator model.
+            </p>
+        </div>
+    </div>
+    
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card h-100">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Input System</h5>
+                </div>
+                <div class="card-body">
+                    <h6>EMG Sensors</h6>
+                    <ul>
+                        <li>Detect muscle electrical signals</li>
+                        <li>Amplify and filter signals</li>
+                        <li>Convert to digital values</li>
+                    </ul>
+                    <h6>Force Sensors</h6>
+                    <ul>
+                        <li>Measure grip force</li>
+                        <li>Provide feedback control</li>
+                        <li>Prevent object damage</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card h-100">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">Processing Unit</h5>
+                </div>
+                <div class="card-body">
+                    <h6>Microcontroller (Arduino/ESP32)</h6>
+                    <ul>
+                        <li>Read sensor data</li>
+                        <li>Process signals using algorithms</li>
+                        <li>Determine intended movement</li>
+                        <li>Generate control signals</li>
+                        <li>Manage power distribution</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="card mb-4">
+        <div class="card-header bg-danger text-white">
+            <h5 class="mb-0">Output System - Servo Motors</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <h6>Finger Control</h6>
+                    <ul>
+                        <li><strong>Thumb:</strong> Servo 1 (0-180°)</li>
+                        <li><strong>Index Finger:</strong> Servo 2 (0-180°)</li>
+                        <li><strong>Middle Finger:</strong> Servo 3 (0-180°)</li>
+                        <li><strong>Ring Finger:</strong> Servo 4 (0-180°)</li>
+                        <li><strong>Pinky Finger:</strong> Servo 5 (0-180°)</li>
+                    </ul>
+                </div>
+                <div class="col-md-6">
+                    <h6>Movement Patterns</h6>
+                    <ul>
+                        <li><strong>Open Hand:</strong> All servos to 0°</li>
+                        <li><strong>Close Hand:</strong> All servos to 180°</li>
+                        <li><strong>Pinch Grip:</strong> Thumb + Index</li>
+                        <li><strong>Power Grip:</strong> All fingers</li>
+                        <li><strong>Point:</strong> Index extended</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="card mb-4">
+        <div class="card-body">
+            <h3 class="card-title">Circuit Diagram</h3>
+            <div class="bg-light p-4 text-center rounded">
+                <i class="bi bi-diagram-3" style="font-size: 5rem; color: var(--primary-color);"></i>
+                <p class="mt-3 text-muted">Circuit diagram placeholder - Upload diagrams via Firebase Storage</p>
+            </div>
+            
+            {% if diagrams %}
+            <div class="row mt-4">
+                {% for diagram in diagrams %}
+                <div class="col-md-6 mb-3">
+                    <img src="{{ diagram.image_url }}" class="img-fluid rounded" alt="{{ diagram.title }}">
+                    <p class="text-center mt-2">{{ diagram.title }}</p>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <div class="card mb-4">
+        <div class="card-body">
+            <h3 class="card-title">Working Principle - Step by Step</h3>
+            <ol class="list-group list-group-numbered">
+                <li class="list-group-item">
+                    <strong>Signal Acquisition:</strong> EMG sensors placed on the user's residual limb 
+                    detect electrical signals generated by muscle contractions.
+                </li>
+                <li class="list-group-item">
+                    <strong>Signal Conditioning:</strong> Raw EMG signals are amplified, filtered, and 
+                    converted from analog to digital format.
+                </li>
+                <li class="list-group-item">
+                    <strong>Pattern Recognition:</strong> The microcontroller analyzes the signal patterns 
+                    to identify the intended hand movement.
+                </li>
+                <li class="list-group-item">
+                    <strong>Control Signal Generation:</strong> Based on the recognized pattern, the 
+                    microcontroller generates PWM signals for the servo motors.
+                </li>
+                <li class="list-group-item">
+                    <strong>Motor Actuation:</strong> Servo motors receive control signals and move to 
+                    the specified positions, actuating the fingers.
+                </li>
+                <li class="list-group-item">
+                    <strong>Feedback Control:</strong> Force sensors provide real-time feedback to adjust 
+                    grip strength and prevent damage to objects.
+                </li>
+            </ol>
+        </div>
+    </div>
+    
+    <div class="card bg-info text-white">
+        <div class="card-body">
+            <h5 class="card-title">Power Requirements</h5>
+            <div class="row">
+                <div class="col-md-4">
+                    <p><strong>Battery:</strong> 7.4V Li-Po</p>
+                    <p><strong>Capacity:</strong> 2200mAh</p>
+                </div>
+                <div class="col-md-4">
+                    <p><strong>Microcontroller:</strong> 5V @ 500mA</p>
+                    <p><strong>Servos (5x):</strong> 6V @ 2A peak</p>
+                </div>
+                <div class="col-md-4">
+                    <p><strong>Sensors:</strong> 3.3V @ 100mA</p>
+                    <p><strong>Total:</strong> ~3A peak current</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

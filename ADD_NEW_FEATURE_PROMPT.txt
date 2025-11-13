@@ -1,0 +1,50 @@
+I have an existing Django 5 project called "Bionic Hand System" which already includes 9 fully working pages: Home, About, Components, Circuit, Simulation, Research Library, Progress Timeline, Contact, and PDF Upload.
+
+⚠ IMPORTANT RULES — READ BEFORE GENERATING ANY CODE:
+
+1. Do NOT modify or overwrite ANY of my existing code, pages, Firestore collections, models, views, templates, URLs, or logic unless I explicitly ask.
+
+2. Every new feature must be added as a **new page**, with completely separate views, templates, URLs, Firestore collections, and optional forms.
+
+3. I am using:
+   - Django 5.0.6
+   - Python 3.10+
+   - Firebase Firestore for metadata
+   - Local storage (media/) for all file uploads
+   - Bootstrap 5 for all UI
+
+4. You MUST follow my current architecture:
+   - Views go into bionic_app/views.py
+   - New templates must be placed in bionic_app/templates/
+   - Local file saves must use my existing helper function save_file_locally()
+   - Metadata must be saved using my existing add_document() function
+   - No changes to my existing data models or collections
+
+5. Always generate:
+   - NEW URL routes
+   - NEW views (functions)
+   - NEW templates
+   - NEW Firestore collections (if needed)
+   - NEW forms (if needed)
+   - JS/CSS only in separate blocks
+   - Clear instructions on where each new snippet should go
+
+6. The new code must integrate cleanly without breaking any existing functionality.
+
+7. My existing helper functions you can use:
+   - fb.save_file_locally(file, folder_name) - saves files to media/folder_name/
+   - fb.add_document(collection_name, data) - adds data to Firestore
+   - fb.get_collection(collection_name) - gets all documents from Firestore
+   - fb.get_document(collection_name, doc_id) - gets single document
+   - fb.delete_document(collection_name, doc_id) - deletes document
+
+8. My existing imports in views.py:
+   - from django.shortcuts import render, redirect
+   - from django.contrib import messages
+   - from django.http import JsonResponse
+   - from datetime import datetime
+   - from . import firebase_config as fb
+
+Now, based on these rules, help me add the following new feature to my project:
+
+[INSERT NEW FEATURE HERE]

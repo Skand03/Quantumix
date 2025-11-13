@@ -1,287 +1,301 @@
-<<<<<<< HEAD
-# 🦾 IoT Bionic Hand - Quantumix Medical Platform
+# Bionic Hand System - Django Web Application
 
-![Version](https://img.shields.io/badge/version-2.0.0-blue.svg)
-![Django](https://img.shields.io/badge/django-5.2.5-green.svg)
-![Python](https://img.shields.io/badge/python-3.10+-blue.svg)
-![License](https://img.shields.io/badge/license-MIT-green.svg)
-![Status](https://img.shields.io/badge/status-Active-brightgreen.svg)
+A complete Django web application for documenting, simulating, and managing a bionic hand hardware project. This platform uses Firebase (Firestore + Storage) as the backend database.
 
-## 🌟 Overview
+## Features
 
-The **IoT Bionic Hand - Quantumix Medical Platform** is a comprehensive Django-based web application that combines advanced bionic hand technology with cutting-edge medical diagnostic capabilities. This platform revolutionizes prosthetic limb management by integrating real-time IoT sensors, AI-powered medical analysis, and comprehensive patient care systems.
+- **Home Page**: Overview and introduction to the bionic hand system
+- **About Page**: Detailed information about bionic hand technology
+- **Components Page**: Dynamic component management with Firebase Firestore
+- **Circuit & Working**: Circuit diagrams and working principles
+- **Simulation Page**: Digital simulation of bionic hand movements
+- **Research Library**: Upload and manage research files (PDFs, images)
+- **Project Progress**: Timeline view of project milestones
+- **Contact Page**: Contact form with Firebase storage
+- **Admin Panel**: Django admin for managing all data
 
-### 🚀 Key Features
-
-- **🦾 Real-time Bionic Hand Monitoring**: Live sensor data tracking and visualization
-- **🏥 Advanced Medical Diagnostics**: AI-powered X-ray analysis and medical reporting
-- **👨‍⚕️ Doctor Panel**: Comprehensive consultation and prescription management
-- **📊 Medical Analytics Dashboard**: Data-driven insights and patient progress tracking
-- **🔮 Future Technology Integration**: IoT sensors, neural interfaces, and smart prosthetics
-- **💝 Impact Stories**: Real patient testimonials and success metrics
-
-## 🏗️ Architecture
-
-```
-📦 IoT Bionic Hand Platform
-├── 🦾 Bionic Hand Control System
-│   ├── Real-time sensor monitoring
-│   ├── EMG signal processing
-│   └── Device control interface
-├── 🏥 Medical Diagnostic System
-│   ├── X-ray upload and AI analysis
-│   ├── Fracture and bone density detection
-│   └── Medical report generation
-├── 👨‍⚕️ Healthcare Management
-│   ├── Doctor consultation panel
-│   ├── Prescription management
-│   └── Patient records system
-└── 📱 Responsive Web Interface
-    ├── Real-time data visualization
-    ├── Mobile-optimized design
-    └── Professional medical UI
-```
-
-## 🛠️ Technology Stack
-
-### Backend
-- **Framework**: Django 5.2.5
-- **Language**: Python 3.10+
-- **Database**: SQLite (Development) / PostgreSQL (Production)
-- **API**: RESTful JSON APIs
+## Technology Stack
 
 ### Frontend
-- **UI Framework**: Custom HTML5/CSS3/JavaScript
-- **Charts**: Chart.js for data visualization
-- **Icons**: Font Awesome 6.0
-- **Design**: Glassmorphism with medical-grade styling
+- HTML5, CSS3, JavaScript
+- Bootstrap 5
+- Bootstrap Icons
+- Responsive Design
 
-### IoT & Integration
-- **Sensors**: EMG, Force, Temperature, Battery monitoring
-- **Communication**: Real-time WebSocket connections
-- **ML Integration**: AI-powered medical analysis
-- **Future Tech**: Neural interfaces, IoT sensors, smart prosthetics
+### Backend
+- Django 4.2+
+- Python 3.10+
+- Firebase Admin SDK
 
-## 🚀 Quick Start
+### Database
+- Firebase Firestore (NoSQL)
+- Firebase Storage (file uploads)
+
+## Installation
 
 ### Prerequisites
-```bash
 - Python 3.10 or higher
-- Django 5.2.5
-- Git
+- pip (Python package manager)
+- Firebase project with Firestore and Storage enabled
+
+### Step 1: Clone the Repository
+```bash
+git clone <repository-url>
+cd Bionic_Hand_System
 ```
 
-### Installation
-
-1. **Clone the repository**
+### Step 2: Create Virtual Environment
 ```bash
-git clone https://github.com/Skand03/Quantumix.git
-cd Quantumix
+python -m venv venv
+
+# On Windows
+venv\Scripts\activate
+
+# On macOS/Linux
+source venv/bin/activate
 ```
 
-2. **Install dependencies**
+### Step 3: Install Dependencies
 ```bash
-pip install django
-pip install requests  # For API testing
+pip install -r requirements.txt
 ```
 
-3. **Run database migrations**
+### Step 4: Firebase Setup
+
+1. Go to [Firebase Console](https://console.firebase.google.com/)
+2. Create a new project or select existing project
+3. Enable Firestore Database
+4. Enable Firebase Storage
+5. Go to Project Settings > Service Accounts
+6. Click "Generate New Private Key"
+7. Save the downloaded JSON file as `serviceAccountKey.json` in the project root
+
+### Step 5: Environment Variables
+
+Create a `.env` file in the project root:
+
 ```bash
+cp .env.example .env
+```
+
+Edit `.env` and add your settings:
+
+```env
+SECRET_KEY=your-django-secret-key
+DEBUG=True
+ALLOWED_HOSTS=localhost,127.0.0.1
+FIREBASE_STORAGE_BUCKET=your-project-id.appspot.com
+```
+
+### Step 6: Run Migrations
+
+```bash
+python manage.py makemigrations
 python manage.py migrate
 ```
 
-4. **Start the development server**
+### Step 7: Create Superuser
+
 ```bash
-python manage.py runserver 8001
+python manage.py createsuperuser
 ```
 
-5. **Access the application**
-- Main Dashboard: http://127.0.0.1:8001/
-- Test Functionality: http://127.0.0.1:8001/test-functionality/
+Follow the prompts to create an admin account.
 
-## 📋 Features Overview
+### Step 8: Run Development Server
 
-### 🦾 Bionic Hand Dashboard
-- **Real-time Monitoring**: Live sensor data from bionic hand prosthetic
-- **EMG Signal Processing**: Muscle signal interpretation and control
-- **Device Control**: Remote operation and emergency stop functionality
-- **Battery Management**: Power level monitoring and optimization
-- **Finger Sensors**: Individual finger position and force feedback
-
-### 🏥 Medical Diagnostic System
-
-#### X-ray Analysis
-- **AI-Powered Detection**: Advanced fracture and bone analysis
-- **Bone Density Assessment**: Comprehensive bone health evaluation
-- **Arthritis Detection**: Early-stage joint condition identification
-- **Confidence Scoring**: Reliability metrics for all diagnoses
-
-#### Doctor Panel
-- **Patient Consultation**: Comprehensive medical evaluation interface
-- **Prescription Management**: Digital prescription creation and storage
-- **Medical History**: Complete patient record management
-- **Treatment Recommendations**: AI-assisted treatment suggestions
-
-#### Medical Analytics Dashboard
-- **Patient Metrics**: Comprehensive health data visualization
-- **Treatment Progress**: Recovery tracking and milestone monitoring
-- **Statistical Analysis**: Population health insights and trends
-- **Predictive Analytics**: Future health outcome predictions
-
-### 🔮 Future Scope Technology
-- **Neural Interfaces**: Direct brain-to-prosthetic communication
-- **Computer Vision**: Advanced visual processing for object recognition
-- **Haptic Feedback**: Realistic touch sensation restoration
-- **Smart Sensors**: IoT-enabled environmental awareness
-- **Energy Harvesting**: Self-sustaining power systems
-- **Bio-integration**: Seamless biological interface technology
-
-## 🏥 Medical API Endpoints
-
-### Patient Management
-```http
-GET  /api/sensor-data/          # Real-time bionic hand data
-POST /api/emergency-stop/       # Emergency device shutdown
-POST /api/device-control/       # Bionic hand control commands
+```bash
+python manage.py runserver
 ```
 
-### Medical Diagnostics
-```http
-POST /api/xray-analysis/        # AI X-ray analysis
-POST /api/save-prescription/    # Save medical prescriptions
-POST /api/generate-report/      # Generate medical reports
-```
+Visit `http://127.0.0.1:8000/` in your browser.
 
-### Sample API Response
-```json
-{
-  "status": "success",
-  "analysis": {
-    "fracture_detected": false,
-    "bone_density": "normal",
-    "arthritis_signs": "mild",
-    "confidence_score": 0.94
-  },
-  "recommendations": [
-    "Regular physiotherapy sessions",
-    "Calcium supplementation",
-    "Follow-up in 3 months"
-  ]
+## Firebase Firestore Collections
+
+The application uses the following Firestore collections:
+
+- `components/` - Bionic hand components
+- `simulation_logs/` - Simulation action logs
+- `research_files/` - Research file metadata
+- `contact_messages/` - Contact form submissions
+- `progress/` - Project timeline entries
+- `circuit_diagrams/` - Circuit diagram metadata
+
+## Firebase Storage Folders
+
+- `components_images/` - Component images
+- `research_files/` - Research PDFs and documents
+- `circuit_diagrams/` - Circuit diagram images
+- `progress_images/` - Progress timeline images
+
+## Firestore Security Rules
+
+Add these rules to your Firebase Firestore:
+
+```javascript
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Allow read access to all documents
+    match /{document=**} {
+      allow read: if true;
+    }
+    
+    // Allow write access only to authenticated users
+    match /{document=**} {
+      allow write: if request.auth != null;
+    }
+  }
 }
 ```
 
-## 🧪 Testing
+## Firebase Storage Rules
 
-The platform includes comprehensive testing capabilities:
+Add these rules to your Firebase Storage:
 
-```bash
-# Run the built-in functionality test
-python test_medical_apis.py
-
-# Or visit the web-based test interface
-http://127.0.0.1:8001/test-functionality/
+```javascript
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /{allPaths=**} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+  }
+}
 ```
 
-### Test Coverage
-- ✅ All medical pages accessibility
-- ✅ API endpoint functionality
-- ✅ Medical AI analysis systems
-- ✅ Navigation and user interface
-- ✅ Real-time data processing
+## Project Structure
 
-## 📊 Impact & Statistics
+```
+Bionic_Hand_System/
+│
+├── bionic_site/              # Django project settings
+│   ├── settings.py
+│   ├── urls.py
+│   └── wsgi.py
+│
+├── bionic_app/               # Main application
+│   ├── templates/            # HTML templates
+│   │   ├── base.html
+│   │   ├── home.html
+│   │   ├── about.html
+│   │   ├── components.html
+│   │   ├── circuit.html
+│   │   ├── simulation.html
+│   │   ├── research.html
+│   │   ├── progress.html
+│   │   └── contact.html
+│   ├── static/               # Static files (CSS, JS, images)
+│   ├── firebase_config.py    # Firebase configuration
+│   ├── views.py              # View functions
+│   ├── models.py             # Django models
+│   ├── forms.py              # Django forms
+│   ├── urls.py               # URL routing
+│   └── admin.py              # Admin configuration
+│
+├── manage.py                 # Django management script
+├── requirements.txt          # Python dependencies
+├── .env                      # Environment variables (create this)
+├── .env.example              # Environment variables template
+├── serviceAccountKey.json    # Firebase credentials (add this)
+└── README.md                 # This file
+```
 
-### Current Achievements
-- **1,247+ Lives Transformed**: Patients using bionic hand technology
-- **96% Satisfaction Rate**: Patient approval and quality of life improvement
-- **150+ Healthcare Partners**: Medical institutions using our platform
-- **24/7 Monitoring**: Continuous patient care and support
+## Usage
 
-### Success Stories
-Our platform has enabled remarkable patient transformations:
-- Restored independence for amputee patients
-- Improved quality of life through advanced prosthetics
-- Enhanced medical diagnosis accuracy
-- Streamlined healthcare workflow management
+### Admin Panel
 
-## 🚀 Future Roadmap
+Access the admin panel at `http://127.0.0.1:8000/admin/`
 
-### Phase 1: Enhanced AI Integration
-- Advanced machine learning models
-- Predictive health analytics
-- Personalized treatment recommendations
+Use the superuser credentials you created to:
+- Manage components
+- View simulation logs
+- View contact messages
+- Manage research files
+- Manage progress timeline
 
-### Phase 2: IoT Expansion
-- Multi-device sensor networks
-- Cloud-based data processing
-- Real-time health monitoring
+### Adding Components
 
-### Phase 3: Global Deployment
-- Multi-language support
-- International medical standards compliance
-- Scalable cloud infrastructure
+1. Log in as admin
+2. Go to Components page
+3. Use the form to add new components with images
+4. Data is automatically saved to Firebase Firestore
 
-## 🤝 Contributing
+### Uploading Research Files
 
-We welcome contributions from the medical technology community:
+1. Go to Research Library page
+2. Fill in the title and select a file
+3. Click Upload - file is stored in Firebase Storage
+
+### Running Simulations
+
+1. Go to Simulation page
+2. Click any action button (Open Hand, Close Hand, etc.)
+3. Simulation logs are saved to Firestore
+
+## Deployment
+
+### Production Settings
+
+For production deployment:
+
+1. Set `DEBUG=False` in `.env`
+2. Add your domain to `ALLOWED_HOSTS`
+3. Use a production-grade database if needed
+4. Configure static files with WhiteNoise (already included)
+5. Use gunicorn as WSGI server
+
+### Deploy with Gunicorn
+
+```bash
+gunicorn bionic_site.wsgi:application --bind 0.0.0.0:8000
+```
+
+### Collect Static Files
+
+```bash
+python manage.py collectstatic
+```
+
+## Troubleshooting
+
+### Firebase Connection Issues
+
+- Verify `serviceAccountKey.json` is in the project root
+- Check Firebase Storage Bucket name in `.env`
+- Ensure Firestore and Storage are enabled in Firebase Console
+
+### Template Not Found
+
+- Verify `bionic_app` is in `INSTALLED_APPS`
+- Check template files are in `bionic_app/templates/`
+
+### Static Files Not Loading
+
+- Run `python manage.py collectstatic`
+- Check `STATIC_URL` and `STATIC_ROOT` in settings
+
+## Contributing
+
+Contributions are welcome! Please:
 
 1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
+2. Create a feature branch
+3. Make your changes
+4. Submit a pull request
 
-### Development Guidelines
-- Follow Django best practices
-- Maintain medical data privacy standards
-- Include comprehensive testing
-- Document all API changes
+## License
 
-## 📄 License
+This project is for educational purposes.
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+## Contact
 
-## 🏆 Awards & Recognition
+For questions or support, use the Contact page on the website or reach out to the development team.
 
-- **Healthcare Innovation Award 2025**: Best Medical Technology Platform
-- **IoT Excellence Award**: Outstanding Sensor Integration
-- **Digital Health Leadership**: Advanced Patient Care System
+## Acknowledgments
 
-## 📞 Contact & Support
-
-### Development Team
-- **Lead Developer**: Quantumix Team
-- **Medical Advisor**: Healthcare Technology Specialists
-- **IoT Engineer**: Sensor Integration Experts
-
-### Support Channels
-- 📧 Email: support@quantumix-medical.com
-- 🌐 Website: https://quantumix-medical.com
-- 📱 24/7 Support: +1 (555) BIONIC-1
-
----
-
-## 🙏 Acknowledgments
-
-Special thanks to:
-- Medical professionals providing clinical insights
-- Patients who shared their experiences and feedback
-- Open-source community for foundational technologies
-- Healthcare institutions supporting development and testing
-
----
-
-**🦾 Empowering Lives Through Advanced Prosthetic Technology**
-
-*The future of healthcare is here. Experience the revolutionary integration of IoT, AI, and medical expertise in bionic prosthetics.*
-
-[![GitHub stars](https://img.shields.io/github/stars/Skand03/Quantumix.svg?style=social&label=Star)](https://github.com/Skand03/Quantumix)
-[![GitHub forks](https://img.shields.io/github/forks/Skand03/Quantumix.svg?style=social&label=Fork)](https://github.com/Skand03/Quantumix/fork)
-[![GitHub watchers](https://img.shields.io/github/watchers/Skand03/Quantumix.svg?style=social&label=Watch)](https://github.com/Skand03/Quantumix)
-
----
-
-*Made with ❤️ by the Quantumix Medical Technology Team*
-=======
-# Quantumix
->>>>>>> f2951b1fe61ea2b24a63a777861faa560edebffa
+- Django Framework
+- Firebase Platform
+- Bootstrap Framework
+- Bootstrap Icons
