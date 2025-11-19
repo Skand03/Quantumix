@@ -1,0 +1,478 @@
+{% extends 'base.html' %}
+
+{% block title %}Research Library - AI Enhanced{% endblock %}
+
+{% block extra_css %}
+<style>
+    .pdf-viewer {
+        background: #f8f9fa;
+        border-radius: 10px;
+        padding: 20px;
+        min-height: 600px;
+    }
+    
+    .chat-container {
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        height: 600px;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .chat-messages {
+        flex: 1;
+        overflow-y: auto;
+        padding: 20px;
+        background: #f8f9fa;
+    }
+    
+    .message {
+        margin-bottom: 15px;
+        padding: 10px 15px;
+        border-radius: 10px;
+        max-width: 80%;
+        animation: slideIn 0.3s ease;
+    }
+    
+    .message.user {
+        background: #007bff;
+        color: white;
+        margin-left: auto;
+        text-align: right;
+    }
+    
+    .message.bot {
+        background: white;
+        border: 1px solid #dee2e6;
+    }
+    
+    .chat-input {
+        padding: 15px;
+        border-top: 1px solid #dee2e6;
+    }
+    
+    @keyframes slideIn {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .language-selector {
+        display: inline-block;
+        margin: 5px;
+    }
+    
+    .extracted-text {
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        max-height: 500px;
+        overflow-y: auto;
+        white-space: pre-wrap;
+        font-family: 'Georgia', serif;
+        line-height: 1.8;
+    }
+    
+    .feature-card {
+        transition: transform 0.3s;
+        cursor: pointer;
+    }
+    
+    .feature-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+    }
+    
+    .loading-spinner {
+        display: none;
+        text-align: center;
+        padding: 20px;
+    }
+    
+    .loading-spinner.active {
+        display: block;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <h1 class="fw-bold mb-2">🔬 AI-Enhanced Research Library</h1>
+    <p class="text-muted mb-4">Upload PDFs, extract text, translate to multiple languages, and chat with AI about your research</p>
+    
+    <!-- Upload Section -->
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0"><i class="bi bi-cloud-upload"></i> Upload Research PDF</h5>
+        </div>
+        <div class="card-body">
+            <form method="post" enctype="multipart/form-data" id="uploadForm">
+                {% csrf_token %}
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Document Title</label>
+                        <input type="text" name="title" class="form-control" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">PDF File</label>
+                        <input type="file" name="file" class="form-control" accept=".pdf" required>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-upload"></i> Upload & Process
+                </button>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Features Overview -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card feature-card h-100">
+                <div class="card-body text-center">
+                    <i class="bi bi-file-text text-primary" style="font-size: 3rem;"></i>
+                    <h5 class="mt-3">Text Extraction</h5>
+                    <p class="text-muted">Automatically extract text from PDFs with high accuracy</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card feature-card h-100">
+                <div class="card-body text-center">
+                    <i class="bi bi-translate text-success" style="font-size: 3rem;"></i>
+                    <h5 class="mt-3">Multi-Language</h5>
+                    <p class="text-muted">Translate to 50+ languages instantly</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card feature-card h-100">
+                <div class="card-body text-center">
+                    <i class="bi bi-robot text-info" style="font-size: 3rem;"></i>
+                    <h5 class="mt-3">AI Chatbot</h5>
+                    <p class="text-muted">Ask questions about your research documents</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Research Files List -->
+    <div class="card mb-4">
+        <div class="card-header bg-dark text-white">
+            <h5 class="mb-0"><i class="bi bi-folder"></i> Your Research Files</h5>
+        </div>
+        <div class="card-body">
+            <div class="row" id="filesList">
+                {% if research_files %}
+                    {% for file in research_files %}
+                    <div class="col-md-6 col-lg-4 mb-3">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center mb-3">
+                                    <i class="bi bi-file-earmark-pdf-fill text-danger" style="font-size: 2.5rem;"></i>
+                                    <div class="ms-3 flex-grow-1">
+                                        <h6 class="mb-0">{{ file.title }}</h6>
+                                        <small class="text-muted">{{ file.uploaded_on|date:"M d, Y" }}</small>
+                                    </div>
+                                </div>
+                                <div class="btn-group w-100" role="group">
+                                    <button class="btn btn-sm btn-outline-primary" onclick="viewPDF('{{ file.file_url }}', '{{ file.title }}')">
+                                        <i class="bi bi-eye"></i> View
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-success" onclick="extractText('{{ file.id }}')">
+                                        <i class="bi bi-file-text"></i> Extract
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-info" onclick="chatWithPDF('{{ file.id }}')">
+                                        <i class="bi bi-chat-dots"></i> Chat
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="col-12">
+                        <div class="alert alert-info">
+                            <i class="bi bi-info-circle"></i> No research files uploaded yet. Upload your first PDF above!
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <!-- PDF Viewer & Text Extraction -->
+    <div class="row mb-4" id="pdfViewerSection" style="display: none;">
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="bi bi-file-pdf"></i> <span id="pdfTitle">PDF Viewer</span></h5>
+                </div>
+                <div class="card-body">
+                    <iframe id="pdfFrame" style="width: 100%; height: 600px; border: none;"></iframe>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="bi bi-file-text"></i> Extracted Text</h5>
+                    <div>
+                        <select class="form-select form-select-sm" id="languageSelect" onchange="translateText()">
+                            <option value="en">English</option>
+                            <option value="es">Spanish</option>
+                            <option value="fr">French</option>
+                            <option value="de">German</option>
+                            <option value="zh-cn">Chinese</option>
+                            <option value="ja">Japanese</option>
+                            <option value="hi">Hindi</option>
+                            <option value="ar">Arabic</option>
+                            <option value="pt">Portuguese</option>
+                            <option value="ru">Russian</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="loading-spinner" id="extractLoading">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <p class="mt-2">Extracting text from PDF...</p>
+                    </div>
+                    <div class="extracted-text" id="extractedText">
+                        <p class="text-muted">Click "Extract" on any PDF to see the text here.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- AI Chatbot -->
+    <div class="row mb-4" id="chatSection" style="display: none;">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0"><i class="bi bi-robot"></i> AI Research Assistant</h5>
+                    <small>Ask questions about your research document</small>
+                </div>
+                <div class="card-body p-0">
+                    <div class="chat-container">
+                        <div class="chat-messages" id="chatMessages">
+                            <div class="message bot">
+                                <strong>AI Assistant:</strong><br>
+                                Hello! I'm your AI research assistant. I've analyzed your document. Ask me anything about it!
+                            </div>
+                        </div>
+                        <div class="chat-input">
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="chatInput" placeholder="Ask a question about the research..." onkeypress="if(event.key==='Enter') sendMessage()">
+                                <button class="btn btn-info" onclick="sendMessage()">
+                                    <i class="bi bi-send"></i> Send
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    let currentPDFId = null;
+    let currentPDFText = '';
+    
+    // View PDF
+    function viewPDF(url, title) {
+        document.getElementById('pdfViewerSection').style.display = 'flex';
+        document.getElementById('pdfFrame').src = url;
+        document.getElementById('pdfTitle').textContent = title;
+        
+        // Scroll to viewer
+        document.getElementById('pdfViewerSection').scrollIntoView({ behavior: 'smooth' });
+    }
+    
+    // Extract Text from PDF
+    function extractText(fileId) {
+        currentPDFId = fileId;
+        document.getElementById('pdfViewerSection').style.display = 'flex';
+        document.getElementById('extractLoading').classList.add('active');
+        document.getElementById('extractedText').innerHTML = '';
+        
+        fetch(`/api/extract-pdf-text/${fileId}/`, {
+            method: 'GET',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('extractLoading').classList.remove('active');
+            if (data.success) {
+                currentPDFText = data.text;
+                document.getElementById('extractedText').textContent = data.text;
+                
+                // Show success message
+                showNotification('Text extracted successfully!', 'success');
+            } else {
+                document.getElementById('extractedText').innerHTML = `<p class="text-danger">Error: ${data.error}</p>`;
+                showNotification('Failed to extract text', 'error');
+            }
+        })
+        .catch(error => {
+            document.getElementById('extractLoading').classList.remove('active');
+            document.getElementById('extractedText').innerHTML = '<p class="text-danger">Error extracting text. Please try again.</p>';
+            console.error('Error:', error);
+        });
+        
+        // Scroll to viewer
+        document.getElementById('pdfViewerSection').scrollIntoView({ behavior: 'smooth' });
+    }
+    
+    // Translate Text
+    function translateText() {
+        const targetLang = document.getElementById('languageSelect').value;
+        
+        if (!currentPDFText) {
+            showNotification('Please extract text first', 'warning');
+            return;
+        }
+        
+        document.getElementById('extractLoading').classList.add('active');
+        document.getElementById('extractedText').innerHTML = '';
+        
+        fetch(`/api/translate-text/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: JSON.stringify({
+                text: currentPDFText,
+                target_lang: targetLang
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('extractLoading').classList.remove('active');
+            if (data.success) {
+                document.getElementById('extractedText').textContent = data.translated_text;
+                showNotification(`Translated to ${targetLang.toUpperCase()}`, 'success');
+            } else {
+                document.getElementById('extractedText').textContent = currentPDFText;
+                showNotification('Translation failed, showing original text', 'warning');
+            }
+        })
+        .catch(error => {
+            document.getElementById('extractLoading').classList.remove('active');
+            document.getElementById('extractedText').textContent = currentPDFText;
+            console.error('Error:', error);
+        });
+    }
+    
+    // Chat with PDF
+    function chatWithPDF(fileId) {
+        currentPDFId = fileId;
+        document.getElementById('chatSection').style.display = 'block';
+        
+        // Clear previous messages except welcome
+        const chatMessages = document.getElementById('chatMessages');
+        chatMessages.innerHTML = `
+            <div class="message bot">
+                <strong>AI Assistant:</strong><br>
+                Hello! I'm your AI research assistant. I've analyzed your document. Ask me anything about it!
+            </div>
+        `;
+        
+        // Scroll to chat
+        document.getElementById('chatSection').scrollIntoView({ behavior: 'smooth' });
+    }
+    
+    // Send Chat Message
+    function sendMessage() {
+        const input = document.getElementById('chatInput');
+        const message = input.value.trim();
+        
+        if (!message) return;
+        
+        // Add user message
+        addMessage(message, 'user');
+        input.value = '';
+        
+        // Show typing indicator
+        const typingDiv = document.createElement('div');
+        typingDiv.className = 'message bot';
+        typingDiv.id = 'typing';
+        typingDiv.innerHTML = '<em>AI is thinking...</em>';
+        document.getElementById('chatMessages').appendChild(typingDiv);
+        
+        // Send to backend
+        fetch(`/api/chat-with-pdf/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: JSON.stringify({
+                file_id: currentPDFId,
+                message: message,
+                context: currentPDFText
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Remove typing indicator
+            document.getElementById('typing').remove();
+            
+            if (data.success) {
+                addMessage(data.response, 'bot');
+            } else {
+                addMessage('Sorry, I encountered an error. Please try again.', 'bot');
+            }
+        })
+        .catch(error => {
+            document.getElementById('typing').remove();
+            addMessage('Sorry, I encountered an error. Please try again.', 'bot');
+            console.error('Error:', error);
+        });
+    }
+    
+    // Add Message to Chat
+    function addMessage(text, sender) {
+        const chatMessages = document.getElementById('chatMessages');
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `message ${sender}`;
+        
+        if (sender === 'bot') {
+            messageDiv.innerHTML = `<strong>AI Assistant:</strong><br>${text}`;
+        } else {
+            messageDiv.textContent = text;
+        }
+        
+        chatMessages.appendChild(messageDiv);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+    
+    // Show Notification
+    function showNotification(message, type) {
+        const alertClass = type === 'success' ? 'alert-success' : type === 'error' ? 'alert-danger' : 'alert-warning';
+        const notification = document.createElement('div');
+        notification.className = `alert ${alertClass} position-fixed top-0 end-0 m-3`;
+        notification.style.zIndex = '9999';
+        notification.textContent = message;
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+            notification.remove();
+        }, 3000);
+    }
+</script>
+{% endblock %}

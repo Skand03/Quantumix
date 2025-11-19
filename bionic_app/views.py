@@ -8,7 +8,7 @@ from django.http import JsonResponse
 from datetime import datetime
 import json
 
-from .forms import ContactForm, ComponentForm, ResearchUploadForm, ProgressForm
+from .forms import ContactForm, ComponentForm, ResearchUploadForm
 from . import firebase_config as fb
 
 def home(request):
@@ -157,46 +157,206 @@ def research(request):
     }
     return render(request, 'research.html', context)
 
-def progress(request):
-    """Project progress timeline page"""
-    if request.method == 'POST' and request.user.is_staff:
-        form = ProgressForm(request.POST, request.FILES)
+
+def edit_research_file(request, file_id):
+    """Edit research file metadata"""
+    # Get existing file data
+    file_data = fb.get_document('research_files', file_id)
+    
+    if not file_data:
+        messages.error(request, 'File not found.')
+        return redirect('research')
+    
+    if request.method == 'POST':
+        form = ResearchUploadForm(request.POST, request.FILES)
         if form.is_valid():
-            progress_data = {
+            # Update file data
+            updated_data = {
                 'title': form.cleaned_data['title'],
-                'description': form.cleaned_data['description'],
-                'date': form.cleaned_data['date'].isoformat(),
             }
             
-            # Save image locally if provided
-            if 'image' in request.FILES:
-                image_file = request.FILES['image']
-                image_url = fb.save_file_locally(image_file, 'progress_images')
+            # Handle new file upload (optional)
+            if 'file' in request.FILES:
+                # Delete old file if exists
+                old_file_path = file_data.get('path', '')
+                if old_file_path:
+                    import os
+                    full_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), old_file_path)
+                    if os.path.exists(full_path):
+                        try:
+                            os.remove(full_path)
+                        except Exception as e:
+                            print(f"Error deleting old file: {e}")
                 
-                if image_url:
-                    progress_data['image_url'] = image_url
-                    progress_data['image_path'] = f'media/progress_images/{image_file.name}'
-            
-            # Save metadata to Firestore
-            doc_id = fb.add_document('progress', progress_data)
-            if doc_id:
-                messages.success(request, 'Progress entry added successfully!')
+                # Save new file
+                new_file = request.FILES['file']
+                file_url = fb.save_file_locally(new_file, 'research_files')
+                
+                if file_url:
+                    updated_data['filename'] = new_file.name
+                    updated_data['file_url'] = file_url
+                    updated_data['path'] = f'media/research_files/{new_file.name}'
+                    updated_data['file_size'] = new_file.size
+                    updated_data['content_type'] = new_file.content_type
             else:
-                messages.warning(request, 'Progress saved locally. Enable Firestore to save metadata to cloud.')
+                # Keep existing file
+                for key in ['filename', 'file_url', 'path', 'file_size', 'content_type']:
+                    if key in file_data:
+                        updated_data[key] = file_data[key]
             
-            return redirect('progress')
+            # Update in Firestore
+            if fb.update_document('research_files', file_id, updated_data):
+                messages.success(request, 'File updated successfully!')
+            else:
+                messages.warning(request, 'File updated locally. Enable Firestore to sync to cloud.')
+            
+            return redirect('research')
     else:
-        form = ProgressForm()
-    
-    # Get all progress entries from Firestore
-    progress_list = fb.get_collection('progress', order_by='date')
+        # Pre-fill form with existing data
+        initial_data = {
+            'title': file_data.get('title', ''),
+        }
+        form = ResearchUploadForm(initial=initial_data)
     
     context = {
-        'page_title': 'Project Progress - Bionic Hand System',
-        'progress_list': progress_list,
-        'form': form
+        'page_title': 'Edit Research File - Bionic Hand System',
+        'form': form,
+        'file': file_data,
+        'file_id': file_id,
+        'is_edit': True
     }
-    return render(request, 'progress.html', context)
+    return render(request, 'edit_research_file.html', context)
+
+
+def delete_research_file(request, file_id):
+    """Delete a research file"""
+    if request.method == 'POST':
+        # Get file data from Firestore
+        file_data = fb.get_document('research_files', file_id)
+        
+        if file_data:
+            # Delete local file if it exists
+            file_path = file_data.get('path', '')
+            if file_path:
+                import os
+                full_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), file_path)
+                if os.path.exists(full_path):
+                    try:
+                        os.remove(full_path)
+                    except Exception as e:
+                        print(f"Error deleting file: {e}")
+            
+            # Delete from Firestore
+            if fb.delete_document('research_files', file_id):
+                messages.success(request, 'File deleted successfully!')
+            else:
+                messages.warning(request, 'File deleted locally but could not remove from cloud.')
+        else:
+            messages.error(request, 'File not found.')
+    
+    return redirect('research')
+
+
+def edit_component(request, component_id):
+    """Edit a component"""
+    # Get existing component data
+    component_data = fb.get_document('components', component_id)
+    
+    if not component_data:
+        messages.error(request, 'Component not found.')
+        return redirect('components')
+    
+    if request.method == 'POST':
+        form = ComponentForm(request.POST, request.FILES)
+        if form.is_valid():
+            # Update component data
+            updated_data = {
+                'name': form.cleaned_data['name'],
+                'description': form.cleaned_data['description'],
+                'cost': float(form.cleaned_data['cost']) if form.cleaned_data.get('cost') else 0,
+            }
+            
+            # Handle new image upload
+            if 'image' in request.FILES:
+                # Delete old image if exists
+                old_image_path = component_data.get('image_path', '')
+                if old_image_path:
+                    import os
+                    full_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), old_image_path)
+                    if os.path.exists(full_path):
+                        try:
+                            os.remove(full_path)
+                        except Exception as e:
+                            print(f"Error deleting old image: {e}")
+                
+                # Save new image
+                image_file = request.FILES['image']
+                image_url = fb.save_file_locally(image_file, 'components_images')
+                
+                if image_url:
+                    updated_data['image_url'] = image_url
+                    updated_data['image_path'] = f'media/components_images/{image_file.name}'
+            else:
+                # Keep existing image
+                if 'image_url' in component_data:
+                    updated_data['image_url'] = component_data['image_url']
+                if 'image_path' in component_data:
+                    updated_data['image_path'] = component_data['image_path']
+            
+            # Update in Firestore
+            if fb.update_document('components', component_id, updated_data):
+                messages.success(request, 'Component updated successfully!')
+            else:
+                messages.warning(request, 'Component updated locally. Enable Firestore to sync to cloud.')
+            
+            return redirect('components')
+    else:
+        # Pre-fill form with existing data
+        initial_data = {
+            'name': component_data.get('name', ''),
+            'description': component_data.get('description', ''),
+            'cost': component_data.get('cost', ''),
+        }
+        form = ComponentForm(initial=initial_data)
+    
+    context = {
+        'page_title': 'Edit Component - Bionic Hand System',
+        'form': form,
+        'component': component_data,
+        'component_id': component_id,
+        'is_edit': True
+    }
+    return render(request, 'edit_component.html', context)
+
+
+def delete_component(request, component_id):
+    """Delete a component"""
+    if request.method == 'POST':
+        # Get component data from Firestore
+        component_data = fb.get_document('components', component_id)
+        
+        if component_data:
+            # Delete local image if it exists
+            image_path = component_data.get('image_path', '')
+            if image_path:
+                import os
+                full_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), image_path)
+                if os.path.exists(full_path):
+                    try:
+                        os.remove(full_path)
+                    except Exception as e:
+                        print(f"Error deleting image: {e}")
+            
+            # Delete from Firestore
+            if fb.delete_document('components', component_id):
+                messages.success(request, 'Component deleted successfully!')
+            else:
+                messages.warning(request, 'Component deleted locally but could not remove from cloud.')
+        else:
+            messages.error(request, 'Component not found.')
+    
+    return redirect('components')
+
 
 def contact(request):
     """Contact page - save messages to Firestore"""

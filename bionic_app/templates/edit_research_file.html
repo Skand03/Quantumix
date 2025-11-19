@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit Research File - Bionic Hand System{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">
+                        <i class="bi bi-pencil-square"></i> Edit Research File
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle"></i> 
+                        <strong>Current File:</strong> {{ file.filename }}
+                        <br>
+                        <small>Leave file field empty to keep the current file, or upload a new one to replace it.</small>
+                    </div>
+                    
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.title.id_for_label }}" class="form-label">
+                                <i class="bi bi-tag"></i> Title *
+                            </label>
+                            {{ form.title }}
+                            {% if form.title.errors %}
+                                <div class="text-danger">{{ form.title.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.file.id_for_label }}" class="form-label">
+                                <i class="bi bi-file-earmark-arrow-up"></i> Replace File (optional)
+                            </label>
+                            {{ form.file }}
+                            {% if form.file.errors %}
+                                <div class="text-danger">{{ form.file.errors }}</div>
+                            {% endif %}
+                            <small class="form-text text-muted">
+                                Supported formats: PDF, DOC, DOCX, JPG, PNG
+                                <br>
+                                <strong>Current:</strong> {{ file.filename }} ({{ file.file_size|filesizeformat }})
+                            </small>
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="bi bi-check-circle"></i> Update File
+                            </button>
+                            <a href="{% url 'research' %}" class="btn btn-outline-secondary">
+                                <i class="bi bi-x-circle"></i> Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <div class="card mt-3">
+                <div class="card-body">
+                    <h6 class="card-title">Current File Preview</h6>
+                    <a href="{{ file.file_url }}" target="_blank" class="btn btn-outline-primary">
+                        <i class="bi bi-eye"></i> View Current File
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

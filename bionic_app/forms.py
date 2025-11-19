@@ -73,32 +73,3 @@ class ResearchUploadForm(forms.Form):
             'accept': '.pdf,.doc,.docx,.jpg,.jpeg,.png'
         })
     )
-
-class ProgressForm(forms.Form):
-    """Form for adding progress timeline entries"""
-    title = forms.CharField(
-        max_length=200,
-        widget=forms.TextInput(attrs={
-            'class': 'form-control',
-            'placeholder': 'Progress Title'
-        })
-    )
-    description = forms.CharField(
-        widget=forms.Textarea(attrs={
-            'class': 'form-control',
-            'placeholder': 'Description',
-            'rows': 4
-        })
-    )
-    date = forms.DateField(
-        widget=forms.DateInput(attrs={
-            'class': 'form-control',
-            'type': 'date'
-        })
-    )
-    image = forms.ImageField(
-        required=False,
-        widget=forms.FileInput(attrs={
-            'class': 'form-control'
-        })
-    )

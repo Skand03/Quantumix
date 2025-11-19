@@ -7,27 +7,59 @@
     .simulation-panel {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         color: white;
-        padding: 40px;
+        padding: 30px 20px;
         border-radius: 15px;
         text-align: center;
+        min-height: 700px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
     }
     
     .hand-display {
-        font-size: 8rem;
-        margin: 30px 0;
-        transition: all 0.3s ease;
+        transition: all 0.5s ease;
+        animation: pulse 2s infinite;
+    }
+    
+    .hand-display i {
+        filter: drop-shadow(0 10px 20px rgba(0,0,0,0.3));
+    }
+    
+    @keyframes pulse {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+    }
+    
+    /* 2D Hand Canvas */
+    #handCanvas {
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        margin: 15px auto;
+        display: block;
+        cursor: pointer;
+        max-width: 100%;
+        height: auto;
     }
     
     .control-btn {
-        margin: 10px;
-        padding: 15px 30px;
-        font-size: 1.1rem;
-        border-radius: 10px;
+        margin: 3px;
+        padding: 8px 12px;
+        font-size: 0.85rem;
+        border-radius: 8px;
         transition: all 0.3s;
+        border: none;
     }
     
     .control-btn:hover {
-        transform: scale(1.05);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+    
+    .finger-btn {
+        padding: 6px 10px;
+        font-size: 0.8rem;
+        margin: 2px;
     }
     
     .log-entry {
@@ -44,6 +76,23 @@
             transform: translateX(0);
         }
     }
+    
+    .status-badge {
+        display: inline-block;
+        padding: 8px 20px;
+        border-radius: 20px;
+        font-weight: 600;
+        margin: 5px;
+    }
+    
+    .finger-status {
+        display: inline-block;
+        padding: 5px 15px;
+        border-radius: 15px;
+        margin: 3px;
+        font-size: 0.85rem;
+        background: rgba(255,255,255,0.2);
+    }
 </style>
 {% endblock %}
 
@@ -52,54 +101,93 @@
     <h1 class="fw-bold mb-4 text-center">Bionic Hand Simulation</h1>
     <p class="text-center text-muted mb-5">Test different hand movements and actions digitally</p>
     
-    <div class="simulation-panel mb-5">
-        <h3 class="mb-4">Hand Status</h3>
-        <div class="hand-display" id="handDisplay">
-            <i class="bi bi-hand-index-thumb"></i>
+    <div class="row mb-4">
+        <!-- Canvas Hand Visualization -->
+        <div class="col-lg-6 mb-3">
+            <div class="simulation-panel">
+                <h5 class="mb-3">🎨 Canvas Hand (Detailed)</h5>
+                <canvas id="handCanvas" width="500" height="600"></canvas>
+                <div class="mt-2">
+                    <span class="status-badge bg-success" id="statusText">Ready</span>
+                </div>
+            </div>
         </div>
-        <p id="statusText" class="fs-4">Ready</p>
+        
+        <!-- Icon Hand Visualization -->
+        <div class="col-lg-6 mb-3">
+            <div class="simulation-panel">
+                <h5 class="mb-3">🖐️ Icon Hand (Classic)</h5>
+                <div class="hand-display" id="handDisplay" style="font-size: 12rem; margin: 80px 0;">
+                    <i class="bi bi-hand-index-thumb"></i>
+                </div>
+                <div class="mt-2">
+                    <span class="status-badge bg-info" id="iconStatus">Open Hand</span>
+                </div>
+            </div>
+        </div>
     </div>
     
-    <div class="card mb-4">
-        <div class="card-header bg-primary text-white">
-            <h5 class="mb-0">Control Panel</h5>
+    <!-- Finger Status -->
+    <div class="text-center mb-3">
+        <div id="fingerStatus" style="font-size: 0.85rem;">
+            <span class="finger-status">👍 Thumb: Extended</span>
+            <span class="finger-status">☝️ Index: Extended</span>
+            <span class="finger-status">🖕 Middle: Extended</span>
+            <span class="finger-status">💍 Ring: Extended</span>
+            <span class="finger-status">🤙 Pinky: Extended</span>
         </div>
-        <div class="card-body text-center">
-            <form method="post" id="simulationForm">
-                {% csrf_token %}
-                <input type="hidden" name="action" id="actionInput">
-                
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <button type="button" class="btn btn-success control-btn w-100" onclick="simulateAction('Open Hand')">
-                            <i class="bi bi-hand-index"></i> Open Hand
-                        </button>
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <button type="button" class="btn btn-danger control-btn w-100" onclick="simulateAction('Close Hand')">
-                            <i class="bi bi-hand-thumbs-up"></i> Close Hand
-                        </button>
-                    </div>
+    </div>
+    
+    <!-- Compact Control Panel -->
+    <div class="card mb-3">
+        <div class="card-header bg-primary text-white py-2">
+            <h6 class="mb-0">🎮 Quick Controls</h6>
+        </div>
+        <div class="card-body py-2">
+            <div class="row">
+                <div class="col-md-8">
+                    <small class="text-muted d-block mb-1">Hand Modes:</small>
+                    <button type="button" class="btn btn-success control-btn" onclick="simulateAction('Open Hand')">
+                        ✋ Open
+                    </button>
+                    <button type="button" class="btn btn-danger control-btn" onclick="simulateAction('Close Hand')">
+                        ✊ Close
+                    </button>
+                    <button type="button" class="btn btn-warning control-btn" onclick="simulateAction('Grip Mode')">
+                        🤜 Grip
+                    </button>
+                    <button type="button" class="btn btn-info control-btn" onclick="simulateAction('Pinch Grip')">
+                        🤏 Pinch
+                    </button>
+                    <button type="button" class="btn btn-secondary control-btn" onclick="simulateAction('Point Mode')">
+                        👆 Point
+                    </button>
+                    <button type="button" class="btn btn-dark control-btn" onclick="simulateAction('Peace Sign')">
+                        ✌️ Peace
+                    </button>
                 </div>
-                
-                <div class="row">
-                    <div class="col-md-4 mb-3">
-                        <button type="button" class="btn btn-warning control-btn w-100" onclick="simulateAction('Grip Mode')">
-                            <i class="bi bi-grip-horizontal"></i> Grip Mode
-                        </button>
-                    </div>
-                    <div class="col-md-4 mb-3">
-                        <button type="button" class="btn btn-info control-btn w-100" onclick="simulateAction('Relax Mode')">
-                            <i class="bi bi-hand-index-thumb"></i> Relax Mode
-                        </button>
-                    </div>
-                    <div class="col-md-4 mb-3">
-                        <button type="button" class="btn btn-secondary control-btn w-100" onclick="simulateAction('Pinch Grip')">
-                            <i class="bi bi-hand-index-thumb-fill"></i> Pinch Grip
-                        </button>
-                    </div>
+                <div class="col-md-4">
+                    <small class="text-muted d-block mb-1">Individual Fingers:</small>
+                    <button type="button" class="btn btn-outline-primary finger-btn" onclick="toggleFinger('thumb')" title="Toggle Thumb">
+                        👍
+                    </button>
+                    <button type="button" class="btn btn-outline-primary finger-btn" onclick="toggleFinger('index')" title="Toggle Index">
+                        ☝️
+                    </button>
+                    <button type="button" class="btn btn-outline-primary finger-btn" onclick="toggleFinger('middle')" title="Toggle Middle">
+                        🖕
+                    </button>
+                    <button type="button" class="btn btn-outline-primary finger-btn" onclick="toggleFinger('ring')" title="Toggle Ring">
+                        💍
+                    </button>
+                    <button type="button" class="btn btn-outline-primary finger-btn" onclick="toggleFinger('pinky')" title="Toggle Pinky">
+                        🤙
+                    </button>
+                    <button type="button" class="btn btn-outline-warning finger-btn" onclick="resetHand()" title="Reset All">
+                        🔄
+                    </button>
                 </div>
-            </form>
+            </div>
         </div>
     </div>
     
@@ -128,24 +216,444 @@
 
 {% block extra_js %}
 <script>
+    // Canvas setup
+    const canvas = document.getElementById('handCanvas');
+    const ctx = canvas.getContext('2d');
+    
+    // Finger states (true = extended, false = curled)
+    const fingerStates = {
+        thumb: true,
+        index: true,
+        middle: true,
+        ring: true,
+        pinky: true
+    };
+    
+    // Draw the hand (scaled for smaller canvas)
+    function drawHand() {
+        // Clear canvas
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        // Scale factor for smaller canvas
+        const scale = 0.83;
+        ctx.save();
+        ctx.scale(scale, scale);
+        
+        // Draw palm
+        ctx.fillStyle = '#FFD1A4';
+        ctx.strokeStyle = '#8B4513';
+        ctx.lineWidth = 3;
+        
+        // Palm shape
+        ctx.beginPath();
+        ctx.roundRect(200, 350, 200, 280, 20);
+        ctx.fill();
+        ctx.stroke();
+        
+        // Draw fingers
+        drawThumb();
+        drawIndexFinger();
+        drawMiddleFinger();
+        drawRingFinger();
+        drawPinkyFinger();
+        
+        // Draw palm details
+        drawPalmLines();
+        
+        ctx.restore();
+    }
+    
+    function drawThumb() {
+        const extended = fingerStates.thumb;
+        ctx.fillStyle = '#FFD1A4';
+        ctx.strokeStyle = '#8B4513';
+        ctx.lineWidth = 3;
+        
+        ctx.save();
+        ctx.translate(180, 450);
+        
+        // Base rotation
+        ctx.rotate(extended ? -0.5 : -0.8);
+        
+        // Proximal phalanx
+        ctx.beginPath();
+        ctx.roundRect(-30, -80, 60, 90, 15);
+        ctx.fill();
+        ctx.stroke();
+        
+        // Move to joint and rotate for curl
+        ctx.translate(0, -80);
+        if (!extended) {
+            ctx.rotate(-0.7); // Curl at joint
+        }
+        
+        // Distal phalanx
+        ctx.beginPath();
+        ctx.roundRect(-25, -80, 50, 85, 15);
+        ctx.fill();
+        ctx.stroke();
+        
+        // Fingernail
+        ctx.fillStyle = '#FFE5CC';
+        ctx.beginPath();
+        ctx.ellipse(0, -75, 18, 12, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+        
+        ctx.restore();
+    }
+    
+    function drawIndexFinger() {
+        const extended = fingerStates.index;
+        ctx.fillStyle = '#FFD1A4';
+        ctx.strokeStyle = '#8B4513';
+        ctx.lineWidth = 3;
+        
+        ctx.save();
+        ctx.translate(250, 350);
+        
+        // Proximal phalanx (base)
+        ctx.beginPath();
+        ctx.roundRect(-20, -110, 40, 110, 10);
+        ctx.fill();
+        ctx.stroke();
+        
+        // Move to first joint
+        ctx.translate(0, -110);
+        if (!extended) {
+            ctx.rotate(-0.6); // First joint curl
+        }
+        
+        // Middle phalanx
+        ctx.beginPath();
+        ctx.roundRect(-18, -95, 36, 95, 10);
+        ctx.fill();
+        ctx.stroke();
+        
+        // Move to second joint
+        ctx.translate(0, -95);
+        if (!extended) {
+            ctx.rotate(-0.7); // Second joint curl (more)
+        }
+        
+        // Distal phalanx (tip)
+        ctx.beginPath();
+        ctx.roundRect(-16, -85, 32, 85, 10);
+        ctx.fill();
+        ctx.stroke();
+        
+        // Fingernail
+        ctx.fillStyle = '#FFE5CC';
+        ctx.beginPath();
+        ctx.ellipse(0, -80, 12, 8, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+        
+        ctx.restore();
+    }
+    
+    function drawMiddleFinger() {
+        const extended = fingerStates.middle;
+        ctx.fillStyle = '#FFD1A4';
+        ctx.strokeStyle = '#8B4513';
+        ctx.lineWidth = 3;
+        
+        ctx.save();
+        ctx.translate(300, 350);
+        
+        // Proximal phalanx (longest finger)
+        ctx.beginPath();
+        ctx.roundRect(-20, -130, 40, 130, 10);
+        ctx.fill();
+        ctx.stroke();
+        
+        // Move to first joint
+        ctx.translate(0, -130);
+        if (!extended) {
+            ctx.rotate(-0.6);
+        }
+        
+        // Middle phalanx
+        ctx.beginPath();
+        ctx.roundRect(-18, -115, 36, 115, 10);
+        ctx.fill();
+        ctx.stroke();
+        
+        // Move to second joint
+        ctx.translate(0, -115);
+        if (!extended) {
+            ctx.rotate(-0.7);
+        }
+        
+        // Distal phalanx
+        ctx.beginPath();
+        ctx.roundRect(-16, -100, 32, 100, 10);
+        ctx.fill();
+        ctx.stroke();
+        
+        // Fingernail
+        ctx.fillStyle = '#FFE5CC';
+        ctx.beginPath();
+        ctx.ellipse(0, -95, 12, 8, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+        
+        ctx.restore();
+    }
+    
+    function drawRingFinger() {
+        const extended = fingerStates.ring;
+        ctx.fillStyle = '#FFD1A4';
+        ctx.strokeStyle = '#8B4513';
+        ctx.lineWidth = 3;
+        
+        ctx.save();
+        ctx.translate(350, 350);
+        
+        // Proximal phalanx
+        ctx.beginPath();
+        ctx.roundRect(-20, -110, 40, 110, 10);
+        ctx.fill();
+        ctx.stroke();
+        
+        // Move to first joint
+        ctx.translate(0, -110);
+        if (!extended) {
+            ctx.rotate(-0.6);
+        }
+        
+        // Middle phalanx
+        ctx.beginPath();
+        ctx.roundRect(-18, -95, 36, 95, 10);
+        ctx.fill();
+        ctx.stroke();
+        
+        // Move to second joint
+        ctx.translate(0, -95);
+        if (!extended) {
+            ctx.rotate(-0.7);
+        }
+        
+        // Distal phalanx
+        ctx.beginPath();
+        ctx.roundRect(-16, -85, 32, 85, 10);
+        ctx.fill();
+        ctx.stroke();
+        
+        // Fingernail
+        ctx.fillStyle = '#FFE5CC';
+        ctx.beginPath();
+        ctx.ellipse(0, -80, 12, 8, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+        
+        ctx.restore();
+    }
+    
+    function drawPinkyFinger() {
+        const extended = fingerStates.pinky;
+        ctx.fillStyle = '#FFD1A4';
+        ctx.strokeStyle = '#8B4513';
+        ctx.lineWidth = 3;
+        
+        ctx.save();
+        ctx.translate(395, 370);
+        
+        // Proximal phalanx (shortest finger)
+        ctx.beginPath();
+        ctx.roundRect(-17, -90, 35, 90, 10);
+        ctx.fill();
+        ctx.stroke();
+        
+        // Move to first joint
+        ctx.translate(0, -90);
+        if (!extended) {
+            ctx.rotate(-0.6);
+        }
+        
+        // Middle phalanx
+        ctx.beginPath();
+        ctx.roundRect(-15, -75, 31, 75, 10);
+        ctx.fill();
+        ctx.stroke();
+        
+        // Move to second joint
+        ctx.translate(0, -75);
+        if (!extended) {
+            ctx.rotate(-0.7);
+        }
+        
+        // Distal phalanx
+        ctx.beginPath();
+        ctx.roundRect(-13, -65, 27, 65, 10);
+        ctx.fill();
+        ctx.stroke();
+        
+        // Fingernail
+        ctx.fillStyle = '#FFE5CC';
+        ctx.beginPath();
+        ctx.ellipse(0, -60, 10, 7, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+        
+        ctx.restore();
+    }
+    
+    function drawPalmLines() {
+        ctx.strokeStyle = '#D2A679';
+        ctx.lineWidth = 2;
+        
+        // Life line
+        ctx.beginPath();
+        ctx.moveTo(210, 400);
+        ctx.quadraticCurveTo(220, 500, 250, 600);
+        ctx.stroke();
+        
+        // Heart line
+        ctx.beginPath();
+        ctx.moveTo(210, 420);
+        ctx.quadraticCurveTo(280, 410, 390, 420);
+        ctx.stroke();
+        
+        // Head line
+        ctx.beginPath();
+        ctx.moveTo(210, 450);
+        ctx.quadraticCurveTo(280, 460, 380, 470);
+        ctx.stroke();
+    }
+    
+    // Toggle individual finger
+    function toggleFinger(finger) {
+        fingerStates[finger] = !fingerStates[finger];
+        drawHand();
+        updateFingerStatus();
+        updateIconHandFromState();
+        logAction(`Toggle ${finger.charAt(0).toUpperCase() + finger.slice(1)}`);
+    }
+    
+    // Reset all fingers
+    function resetHand() {
+        Object.keys(fingerStates).forEach(key => fingerStates[key] = true);
+        drawHand();
+        updateFingerStatus();
+        updateIconHand('Open Hand');
+        logAction('Reset Hand');
+    }
+    
+    // Update icon hand based on current finger states
+    function updateIconHandFromState() {
+        const allExtended = Object.values(fingerStates).every(v => v);
+        const allCurled = Object.values(fingerStates).every(v => !v);
+        const thumbIndexOnly = fingerStates.thumb && fingerStates.index && !fingerStates.middle && !fingerStates.ring && !fingerStates.pinky;
+        const indexOnly = !fingerStates.thumb && fingerStates.index && !fingerStates.middle && !fingerStates.ring && !fingerStates.pinky;
+        const peaceSign = !fingerStates.thumb && fingerStates.index && fingerStates.middle && !fingerStates.ring && !fingerStates.pinky;
+        
+        if (allExtended) {
+            updateIconHand('Open Hand');
+        } else if (allCurled) {
+            updateIconHand('Close Hand');
+        } else if (thumbIndexOnly) {
+            updateIconHand('Pinch Grip');
+        } else if (indexOnly) {
+            updateIconHand('Point Mode');
+        } else if (peaceSign) {
+            updateIconHand('Peace Sign');
+        } else {
+            updateIconHand('Custom Position');
+        }
+    }
+    
+    // Update finger status display
+    function updateFingerStatus() {
+        const statusDiv = document.getElementById('fingerStatus');
+        const emojis = { thumb: '👍', index: '☝️', middle: '🖕', ring: '💍', pinky: '🤙' };
+        const names = { thumb: 'Thumb', index: 'Index', middle: 'Middle', ring: 'Ring', pinky: 'Pinky' };
+        
+        statusDiv.innerHTML = Object.keys(fingerStates).map(finger => {
+            const state = fingerStates[finger] ? 'Extended' : 'Curled';
+            const color = fingerStates[finger] ? 'rgba(40, 167, 69, 0.3)' : 'rgba(220, 53, 69, 0.3)';
+            return `<span class="finger-status" style="background: ${color}">${emojis[finger]} ${names[finger]}: ${state}</span>`;
+        }).join('');
+    }
+    
+    // Icon mapping for old hand display
     const handIcons = {
         'Open Hand': 'bi-hand-index',
         'Close Hand': 'bi-hand-thumbs-up-fill',
         'Grip Mode': 'bi-grip-horizontal',
-        'Relax Mode': 'bi-hand-index-thumb',
-        'Pinch Grip': 'bi-hand-index-thumb-fill'
+        'Pinch Grip': 'bi-hand-index-thumb-fill',
+        'Point Mode': 'bi-hand-index-fill',
+        'Peace Sign': 'bi-hand-index-thumb'
     };
     
-    function simulateAction(action) {
-        // Update display
+    // Update icon hand display
+    function updateIconHand(action) {
         const handDisplay = document.getElementById('handDisplay');
-        const statusText = document.getElementById('statusText');
+        const iconStatus = document.getElementById('iconStatus');
         const icon = handIcons[action] || 'bi-hand-index-thumb';
         
         handDisplay.innerHTML = `<i class="bi ${icon}"></i>`;
+        iconStatus.textContent = action;
+        iconStatus.className = 'status-badge bg-info';
+    }
+    
+    // Simulate hand modes
+    function simulateAction(action) {
+        const statusText = document.getElementById('statusText');
         statusText.textContent = `Executing: ${action}`;
+        statusText.className = 'status-badge bg-warning';
         
-        // Submit form via AJAX
+        switch(action) {
+            case 'Open Hand':
+                Object.keys(fingerStates).forEach(key => fingerStates[key] = true);
+                break;
+            case 'Close Hand':
+                Object.keys(fingerStates).forEach(key => fingerStates[key] = false);
+                break;
+            case 'Grip Mode':
+                fingerStates.thumb = false;
+                fingerStates.index = false;
+                fingerStates.middle = false;
+                fingerStates.ring = false;
+                fingerStates.pinky = false;
+                break;
+            case 'Pinch Grip':
+                fingerStates.thumb = false;
+                fingerStates.index = false;
+                fingerStates.middle = true;
+                fingerStates.ring = true;
+                fingerStates.pinky = true;
+                break;
+            case 'Point Mode':
+                fingerStates.thumb = false;
+                fingerStates.index = true;
+                fingerStates.middle = false;
+                fingerStates.ring = false;
+                fingerStates.pinky = false;
+                break;
+            case 'Peace Sign':
+                fingerStates.thumb = false;
+                fingerStates.index = true;
+                fingerStates.middle = true;
+                fingerStates.ring = false;
+                fingerStates.pinky = false;
+                break;
+        }
+        
+        // Update both visualizations
+        drawHand();
+        updateIconHand(action);
+        updateFingerStatus();
+        logAction(action);
+        
+        setTimeout(() => {
+            statusText.textContent = 'Ready';
+            statusText.className = 'status-badge bg-success';
+        }, 1500);
+    }
+    
+    // Log action to server
+    function logAction(action) {
         const formData = new FormData();
         formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
         formData.append('action', action);
@@ -160,23 +668,20 @@
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                // Add log entry
                 const logContainer = document.getElementById('logContainer');
                 const logEntry = document.createElement('div');
                 logEntry.className = 'alert alert-success log-entry';
                 logEntry.innerHTML = `<strong>${data.action}</strong> - ${data.message}`;
                 logContainer.insertBefore(logEntry, logContainer.firstChild);
-                
-                // Update status
-                setTimeout(() => {
-                    statusText.textContent = 'Ready';
-                }, 2000);
             }
         })
-        .catch(error => {
-            console.error('Error:', error);
-            statusText.textContent = 'Error occurred';
-        });
+        .catch(error => console.error('Error:', error));
     }
+    
+    // Initialize
+    window.addEventListener('load', () => {
+        drawHand();
+        updateFingerStatus();
+    });
 </script>
 {% endblock %}

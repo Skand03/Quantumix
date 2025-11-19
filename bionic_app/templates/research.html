@@ -2,6 +2,197 @@
 
 {% block title %}Research Library - Bionic Hand System{% endblock %}
 
+{% block extra_css %}
+<style>
+    .chatbot-container {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        width: 350px;
+        z-index: 1000;
+    }
+    
+    .chatbot-toggle {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        transition: transform 0.3s;
+        z-index: 1001;
+    }
+    
+    .chatbot-toggle:hover {
+        transform: scale(1.1);
+    }
+    
+    .chatbot-window {
+        display: none;
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        overflow: hidden;
+        animation: slideUp 0.3s ease;
+    }
+    
+    .chatbot-window.active {
+        display: flex;
+        flex-direction: column;
+        height: 500px;
+    }
+    
+    @keyframes slideUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .chatbot-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 15px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .chatbot-messages {
+        flex: 1;
+        overflow-y: auto;
+        padding: 15px;
+        background: #f8f9fa;
+    }
+    
+    .chat-message {
+        margin-bottom: 12px;
+        padding: 10px 12px;
+        border-radius: 10px;
+        max-width: 85%;
+        animation: fadeIn 0.3s ease;
+    }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(5px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .chat-message.user {
+        background: #667eea;
+        color: white;
+        margin-left: auto;
+        text-align: right;
+    }
+    
+    .chat-message.bot {
+        background: white;
+        border: 1px solid #dee2e6;
+        line-height: 1.6;
+    }
+    
+    .chat-message.bot strong {
+        color: #667eea;
+        font-weight: 600;
+    }
+    
+    .chat-message.bot ul, .chat-message.bot ol {
+        margin: 8px 0;
+        padding-left: 20px;
+    }
+    
+    .chat-message.bot li {
+        margin: 4px 0;
+    }
+    
+    .chat-message.bot code {
+        background: #f8f9fa;
+        padding: 2px 6px;
+        border-radius: 3px;
+        font-family: 'Courier New', monospace;
+        font-size: 0.9em;
+    }
+    
+    .chatbot-input {
+        padding: 12px;
+        border-top: 1px solid #dee2e6;
+        display: flex;
+        gap: 8px;
+    }
+    
+    .chatbot-input input {
+        flex: 1;
+        border: 1px solid #dee2e6;
+        border-radius: 20px;
+        padding: 8px 15px;
+        outline: none;
+    }
+    
+    .chatbot-input button {
+        background: #667eea;
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        cursor: pointer;
+        transition: background 0.3s;
+    }
+    
+    .chatbot-input button:hover {
+        background: #764ba2;
+    }
+    
+    .typing-indicator {
+        display: none;
+        padding: 10px;
+        background: white;
+        border-radius: 10px;
+        width: fit-content;
+    }
+    
+    .typing-indicator.active {
+        display: block;
+    }
+    
+    .typing-indicator span {
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #667eea;
+        margin: 0 2px;
+        animation: bounce 1.4s infinite;
+    }
+    
+    .typing-indicator span:nth-child(2) {
+        animation-delay: 0.2s;
+    }
+    
+    .typing-indicator span:nth-child(3) {
+        animation-delay: 0.4s;
+    }
+    
+    @keyframes bounce {
+        0%, 60%, 100% { transform: translateY(0); }
+        30% { transform: translateY(-10px); }
+    }
+</style>
+{% endblock %}
+
 {% block content %}
 <div class="container my-5">
     <h1 class="fw-bold mb-4">Research Library</h1>
@@ -9,22 +200,27 @@
     
     <div class="card mb-4">
         <div class="card-header bg-primary text-white">
-            <h5 class="mb-0">Upload Research File</h5>
+            <h5 class="mb-0"><i class="bi bi-cloud-upload"></i> Upload Research File</h5>
         </div>
         <div class="card-body">
             <form method="post" enctype="multipart/form-data">
                 {% csrf_token %}
                 <div class="row">
                     <div class="col-md-8 mb-3">
-                        {{ form.title.label_tag }}
+                        <label for="{{ form.title.id_for_label }}" class="form-label">
+                            <i class="bi bi-tag"></i> File Title *
+                        </label>
                         {{ form.title }}
                     </div>
                     <div class="col-md-4 mb-3">
-                        {{ form.file.label_tag }}
+                        <label for="{{ form.file.id_for_label }}" class="form-label">
+                            <i class="bi bi-file-earmark-arrow-up"></i> Select File *
+                        </label>
                         {{ form.file }}
+                        <small class="form-text text-muted d-block">PDF, DOC, DOCX, JPG, PNG</small>
                     </div>
                 </div>
-                <button type="submit" class="btn btn-primary">
+                <button type="submit" class="btn btn-primary btn-lg">
                     <i class="bi bi-upload"></i> Upload File
                 </button>
             </form>
@@ -39,14 +235,25 @@
                     <div class="card-body">
                         <div class="d-flex align-items-center mb-3">
                             <i class="bi bi-file-earmark-pdf-fill text-danger" style="font-size: 3rem;"></i>
-                            <div class="ms-3">
+                            <div class="ms-3 flex-grow-1">
                                 <h5 class="card-title mb-0">{{ file.title }}</h5>
                                 <small class="text-muted">{{ file.uploaded_on }}</small>
                             </div>
                         </div>
-                        <a href="{{ file.file_url }}" target="_blank" class="btn btn-outline-primary w-100">
-                            <i class="bi bi-download"></i> Download
-                        </a>
+                        <div class="d-grid gap-2">
+                            <a href="{{ file.file_url }}" target="_blank" class="btn btn-outline-primary">
+                                <i class="bi bi-download"></i> Download
+                            </a>
+                            <a href="{% url 'edit_research_file' file.id %}" class="btn btn-outline-info">
+                                <i class="bi bi-pencil"></i> Edit
+                            </a>
+                            <form method="post" action="{% url 'delete_research_file' file.id %}" onsubmit="return confirm('Are you sure you want to delete this file?');" class="m-0">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-outline-danger w-100">
+                                    <i class="bi bi-trash"></i> Delete
+                                </button>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -98,4 +305,203 @@
         </div>
     </div>
 </div>
+
+<!-- AI Research Chatbot -->
+<div class="chatbot-container">
+    <button class="chatbot-toggle" onclick="toggleChatbot()" id="chatToggle">
+        <i class="bi bi-chat-dots-fill"></i>
+    </button>
+    
+    <div class="chatbot-window" id="chatWindow">
+        <div class="chatbot-header">
+            <div>
+                <strong>🤖 Research Assistant</strong>
+                <br><small>Ask me about bionic hands!</small>
+            </div>
+            <button onclick="toggleChatbot()" style="background: none; border: none; color: white; font-size: 1.2rem; cursor: pointer;">
+                <i class="bi bi-x-lg"></i>
+            </button>
+        </div>
+        
+        <div class="chatbot-messages" id="chatMessages">
+            <div class="chat-message bot">
+                <strong>🤖 AI Assistant:</strong><br>
+                Hello! I'm your bionic hand research assistant powered by Gemini AI. I can help you with:
+                <ul class="mb-0 mt-2" style="font-size: 0.9rem;">
+                    <li>EMG signal processing & filtering</li>
+                    <li>Prosthetic control systems & algorithms</li>
+                    <li>3D printing techniques & materials</li>
+                    <li>Machine learning applications</li>
+                    <li>Component selection & assembly</li>
+                    <li>Cost, calibration, and troubleshooting</li>
+                </ul>
+                <small class="text-muted">Try asking: "how does emg work?" or "what components do I need?"</small>
+            </div>
+        </div>
+        
+        <div class="typing-indicator" id="typingIndicator">
+            <span></span><span></span><span></span>
+        </div>
+        
+        <div class="chatbot-input">
+            <input type="text" id="chatInput" placeholder="Ask about bionic hands..." onkeypress="if(event.key==='Enter') sendChatMessage()">
+            <button onclick="sendChatMessage()">
+                <i class="bi bi-send-fill"></i>
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Chatbot functionality
+    function toggleChatbot() {
+        const chatWindow = document.getElementById('chatWindow');
+        const chatToggle = document.getElementById('chatToggle');
+        
+        if (chatWindow.classList.contains('active')) {
+            chatWindow.classList.remove('active');
+            chatToggle.innerHTML = '<i class="bi bi-chat-dots-fill"></i>';
+        } else {
+            chatWindow.classList.add('active');
+            chatToggle.innerHTML = '<i class="bi bi-x-lg"></i>';
+        }
+    }
+    
+    function sendChatMessage() {
+        const input = document.getElementById('chatInput');
+        const message = input.value.trim();
+        
+        if (!message) return;
+        
+        // Add user message
+        addChatMessage(message, 'user');
+        input.value = '';
+        
+        // Show typing indicator
+        const typingIndicator = document.getElementById('typingIndicator');
+        if (typingIndicator) {
+            typingIndicator.classList.add('active');
+        }
+        
+        // Call AI API
+        fetch('/api/chat/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: JSON.stringify({
+                question: message
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (typingIndicator) {
+                typingIndicator.classList.remove('active');
+            }
+            
+            if (data.response) {
+                // Add AI provider badge if not fallback
+                const providerBadge = data.provider && data.provider !== 'Fallback' ? 
+                    `<small class="badge bg-success mb-1">${data.provider}</small><br>` : '';
+                addChatMessage(providerBadge + data.response, 'bot');
+            } else {
+                // Use local fallback
+                const response = generateResponse(message);
+                addChatMessage(response, 'bot');
+            }
+        })
+        .catch(error => {
+            console.error('Chat API error:', error);
+            if (typingIndicator) {
+                typingIndicator.classList.remove('active');
+            }
+            // Always fallback to local response
+            const response = generateResponse(message);
+            addChatMessage(response, 'bot');
+        });
+    }
+    
+    function addChatMessage(text, sender) {
+        const messagesDiv = document.getElementById('chatMessages');
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `chat-message ${sender}`;
+        
+        if (sender === 'bot') {
+            messageDiv.innerHTML = `<strong>AI:</strong><br>${text}`;
+        } else {
+            messageDiv.textContent = text;
+        }
+        
+        messagesDiv.appendChild(messageDiv);
+        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    }
+    
+    function generateResponse(question) {
+        const q = question.toLowerCase();
+        
+        // EMG Signal Processing
+        if (q.includes('emg') || q.includes('signal') || q.includes('electrode')) {
+            return "EMG (Electromyography) signals are electrical signals generated by muscle contractions. In bionic hands, EMG sensors detect these signals from residual limb muscles. The signals are then filtered, amplified, and processed using pattern recognition algorithms to control the prosthetic hand movements. Key techniques include: signal filtering (50-500 Hz), feature extraction (RMS, MAV, WL), and classification (SVM, Neural Networks).";
+        }
+        
+        // Prosthetic Control
+        if (q.includes('control') || q.includes('prosthetic') || q.includes('myoelectric')) {
+            return "Prosthetic control systems use various strategies: <br><br>1. <strong>Myoelectric Control:</strong> Uses EMG signals from muscles<br>2. <strong>Pattern Recognition:</strong> ML algorithms classify hand gestures<br>3. <strong>Proportional Control:</strong> Signal strength controls grip force<br>4. <strong>Sequential Control:</strong> Muscle contractions trigger different modes<br><br>Modern systems combine multiple approaches for natural, intuitive control.";
+        }
+        
+        // 3D Printing
+        if (q.includes('3d print') || q.includes('manufacturing') || q.includes('material')) {
+            return "3D printing revolutionizes prosthetic manufacturing:<br><br>• <strong>Materials:</strong> PLA, ABS, TPU, Carbon Fiber<br>• <strong>Benefits:</strong> Customization, low cost, rapid prototyping<br>• <strong>Techniques:</strong> FDM, SLA, SLS<br>• <strong>Design:</strong> Parametric modeling for perfect fit<br><br>3D printed prosthetics cost 10-100x less than traditional ones while offering better customization!";
+        }
+        
+        // Machine Learning
+        if (q.includes('machine learning') || q.includes('ml') || q.includes('ai') || q.includes('neural')) {
+            return "Machine Learning enhances bionic hands:<br><br>1. <strong>Gesture Recognition:</strong> CNN/RNN classify hand movements<br>2. <strong>Adaptive Control:</strong> System learns user patterns<br>3. <strong>Sensor Fusion:</strong> Combines EMG, IMU, force sensors<br>4. <strong>Real-time Processing:</strong> Edge AI for low latency<br><br>Accuracy rates exceed 95% with proper training!";
+        }
+        
+        // Components
+        if (q.includes('component') || q.includes('servo') || q.includes('sensor') || q.includes('arduino')) {
+            return "Key bionic hand components:<br><br>• <strong>Servos:</strong> SG90 (9g), MG996R (high torque)<br>• <strong>Microcontroller:</strong> Arduino Uno, ESP32<br>• <strong>Sensors:</strong> EMG sensors, flex sensors, force sensors<br>• <strong>Power:</strong> LiPo batteries (7.4V, 2200mAh)<br>• <strong>Structure:</strong> 3D printed fingers, palm, wrist<br><br>Total cost: $150-300 for DIY version!";
+        }
+        
+        // Simulation
+        if (q.includes('simulation') || q.includes('test') || q.includes('3d model')) {
+            return "Our simulation features let you:<br><br>✅ Test hand movements virtually<br>✅ Visualize finger positions in 2D/3D<br>✅ Try different grip modes<br>✅ Validate control algorithms<br><br>Check out our 3D Simulation page for interactive testing!";
+        }
+        
+        // Research
+        if (q.includes('research') || q.includes('paper') || q.includes('study')) {
+            return "Important research areas:<br><br>1. EMG pattern recognition<br>2. Sensory feedback systems<br>3. Brain-computer interfaces<br>4. Soft robotics<br>5. Osseointegration<br><br>Upload your research PDFs here to organize your studies!";
+        }
+        
+        // Cost
+        if (q.includes('cost') || q.includes('price') || q.includes('expensive')) {
+            return "Bionic hand costs vary:<br><br>• <strong>DIY Version:</strong> $150-500<br>• <strong>Commercial Basic:</strong> $5,000-15,000<br>• <strong>Advanced Myoelectric:</strong> $20,000-100,000<br>• <strong>Research Grade:</strong> $100,000+<br><br>Our project focuses on affordable, open-source solutions!";
+        }
+        
+        // How to build
+        if (q.includes('how to') || q.includes('build') || q.includes('make') || q.includes('create')) {
+            return "Building a bionic hand:<br><br>1. <strong>Design:</strong> 3D model fingers and palm<br>2. <strong>Print:</strong> Use PLA/ABS filament<br>3. <strong>Assemble:</strong> Install servos and tendons<br>4. <strong>Wire:</strong> Connect to Arduino<br>5. <strong>Program:</strong> Upload control code<br>6. <strong>Test:</strong> Use our simulation page<br>7. <strong>Calibrate:</strong> Adjust sensor thresholds<br><br>Check our Components and Circuit pages for details!";
+        }
+        
+        // General questions
+        if (q.includes('hello') || q.includes('hi') || q.includes('hey')) {
+            return "Hello! I'm here to help with your bionic hand research. What would you like to know about?";
+        }
+        
+        if (q.includes('thank')) {
+            return "You're welcome! Feel free to ask more questions anytime. Happy researching! 🤖";
+        }
+        
+        if (q.includes('help') || q.includes('what can you')) {
+            return "I can help you with:<br><br>• EMG signal processing<br>• Prosthetic control systems<br>• 3D printing techniques<br>• Machine learning applications<br>• Component selection<br>• Building instructions<br>• Research topics<br><br>Just ask your question!";
+        }
+        
+        // Default response
+        return "That's an interesting question! While I don't have specific information about that, I can help you with:<br><br>• EMG signals and sensors<br>• Control systems<br>• 3D printing<br>• Machine learning<br>• Components and circuits<br><br>Try asking about one of these topics, or explore our other pages for more information!";
+    }
+</script>
 {% endblock %}

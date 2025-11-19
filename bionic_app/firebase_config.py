@@ -119,6 +119,18 @@ def get_collection(collection_name, order_by=None, limit=None):
         print(f"Error getting collection: {e}")
         return []
 
+def update_document(collection_name, document_id, data):
+    """Update a document in Firestore"""
+    try:
+        db = get_firestore_client()
+        if db:
+            db.collection(collection_name).document(document_id).update(data)
+            return True
+        return False
+    except Exception as e:
+        print(f"Error updating document: {e}")
+        return False
+
 def delete_document(collection_name, document_id):
     """Delete a document from Firestore"""
     try:
